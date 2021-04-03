@@ -33,17 +33,18 @@ def acados_settings(Tf, N):
     ocp.dims.N = N
 
     # set cost 
-    Q = np.diag([5, 1e-1])
+    Q = np.diag([5e0, 5e0, 5e0, 2e0, 2e0, 2e0])
     R = np.eye(nu)
+    R[1][1] = 5e0 # weight of qw
+    R[2][2] = 5e0 # weight of qx
+    R[3][3] = 5e0 # weight of qy
+    R[4][4] = 5e0 # weight of qz
+    
 
     Qe = Q
 
     ocp.cost.cost_type   = "LINEAR_LS"
     ocp.cost.cost_type_e = "LINEAR_LS"
-
-    # unscale = N / Tf
-    # ocp.cost.W   = unscale * scipy.linalg.block_diag(Q,R)
-    # ocp.cost.W_e = Qe / unscale
     
     ocp.cost.W   = scipy.linalg.block_diag(Q,R)
     ocp.cost.W_e = Qe
@@ -53,7 +54,7 @@ def acados_settings(Tf, N):
     ocp.cost.Vx = Vx
 
     Vu = np.zeros((ny, nu))
-    Vu[2,0] = 1.0
+    Vu[-5:,-5:] = np.eye(nu)
     ocp.cost.Vu = Vu
 
     Vx_e = np.zeros((ny_e, nx))
@@ -61,8 +62,9 @@ def acados_settings(Tf, N):
     ocp.cost.Vx_e = Vx_e
     
     # Initial reference trajectory (can be overwritten during the simulation if required)
-    x_ref = np.array([-1, 0])
-    ocp.cost.yref   = np.concatenate((x_ref, np.array([9.81])))
+    x_ref = np.array([1.0, 1.0, 2.0, 0.0, 0.0, 0.0])
+    ocp.cost.yref   = np.concatenate((x_ref, np.array([9.81, 1.0, 0.0, 0.0, 0.0])))
+
     ocp.cost.yref_e = x_ref
 
     # set constraints
