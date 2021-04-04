@@ -1,0 +1,29 @@
+{
+    "acados_include_path": "/home/elie/Documents/acados//include",
+    "acados_lib_path": "/home/elie/Documents/acados//lib",
+    "code_export_directory": "c_generated_code",
+    "dims": {
+        "np": 0,
+        "nu": 5,
+        "nx": 6,
+        "nz": 0
+    },
+    "model": {
+        "name": "Translational_drone"
+    },
+    "problem_class": "SIM",
+    "solver_options": {
+        "Tsim": 0.2,
+        "integrator_type": "IRK",
+        "output_z": false,
+        "sens_adj": false,
+        "sens_algebraic": false,
+        "sens_forw": true,
+        "sens_hess": false,
+        "sim_method_jac_reuse": false,
+        "sim_method_newton_iter": 3,
+        "sim_method_num_stages": 4,
+        "sim_method_num_steps": 3,
+        "tf": null
+    }
+}

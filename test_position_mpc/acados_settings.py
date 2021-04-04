@@ -1,11 +1,9 @@
 from acados_template import AcadosModel, AcadosOcp, AcadosOcpSolver
 from drone_model import drone_model
-from acados_integrator import export_drone_integrator
-
 import scipy.linalg
 import numpy as np
 
-def acados_settings(Ts, Tf, N):
+def acados_settings(Tf, N):
 
     # create OCP object to formulate the optimization
     ocp = AcadosOcp()
@@ -35,12 +33,13 @@ def acados_settings(Ts, Tf, N):
     ocp.dims.N = N
 
     # set cost 
-    Q = np.diag([1e1, 1e1, 1e1, 2e0, 2e0, 2e0])
+    #Q = np.diag([5e0, 5e0, 5e0, 2e0, 2e0, 2e0])
+    Q = np.diag([1e0,1e-1])
     R = np.eye(nu)
-    R[1][1] = 5e0 # weight of qw
-    R[2][2] = 5e0 # weight of qx
-    R[3][3] = 5e0 # weight of qy
-    R[4][4] = 5e0 # weight of qz
+    #R[1][1] = 5e0 # weight of qw
+    #R[2][2] = 5e0 # weight of qx
+    #R[3][3] = 5e0 # weight of qy
+    #R[4][4] = 5e0 # weight of qz
     
 
     Qe = Q
@@ -56,7 +55,7 @@ def acados_settings(Ts, Tf, N):
     ocp.cost.Vx = Vx
 
     Vu = np.zeros((ny, nu))
-    Vu[-5:,-5:] = np.eye(nu)
+    Vu[-1:,-1:] = np.eye(nu)
     ocp.cost.Vu = Vu
 
     Vx_e = np.zeros((ny_e, nx))
@@ -64,8 +63,10 @@ def acados_settings(Ts, Tf, N):
     ocp.cost.Vx_e = Vx_e
     
     # Initial reference trajectory (can be overwritten during the simulation if required)
-    x_ref = np.array([1.0, 1.0, 2.0, 0.0, 0.0, 0.0])
-    ocp.cost.yref   = np.concatenate((x_ref, np.array([9.81, 1.0, 0.0, 0.0, 0.0])))
+    #x_ref = np.array([1.0, 1.0, 2.0, 0.0, 0.0, 0.0])
+    #ocp.cost.yref   = np.concatenate((x_ref, np.array([9.81, 1.0, 0.0, 0.0, 0.0])))
+    x_ref = np.array([1.0, 0.0])
+    ocp.cost.yref = np.concatenate((x_ref, np.array([9.81])))
 
     ocp.cost.yref_e = x_ref
 
@@ -73,11 +74,6 @@ def acados_settings(Ts, Tf, N):
     ocp.constraints.lbu   = np.array([model.throttle_min])
     ocp.constraints.ubu   = np.array([model.throttle_max])
     ocp.constraints.idxbu = np.array([0])
-
-    ocp.constraints.lbx = np.array([-5.0, -5.0, 0.0, -15.0, -15.0, -15.0]) # bounds on minimum states
-    ocp.constraints.ubx = np.array([5.0, 5.0, 5.0, 15.0,  15.0,  15.0]) # bounds on maximum states
-    ocp.constraints.idxbx = np.array([0, 1, 2, 3, 4, 5])
-
 
     # set initial condition
     ocp.constraints.x0 = model.x0
@@ -96,8 +92,4 @@ def acados_settings(Ts, Tf, N):
     # create ocp solver 
     acados_solver = AcadosOcpSolver(ocp, json_file=(model_ac.name + "_" + "acados_ocp.json"))
 
-
-    acados_integrator = export_drone_integrator(Ts, model_ac)
-
-
-    return model, acados_solver, acados_integrator
+    return model, acados_solver

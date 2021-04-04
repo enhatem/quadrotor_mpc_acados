@@ -31,44 +31,44 @@
  * POSSIBILITY OF SUCH DAMAGE.;
  */
 
-#ifndef ACADOS_SIM_Translational_drone_H_
-#define ACADOS_SIM_Translational_drone_H_
-
-#include "acados_c/sim_interface.h"
-#include "acados_c/external_function_interface.h"
+#ifndef Translational_drone_MODEL
+#define Translational_drone_MODEL
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-int Translational_drone_acados_sim_create();
-int Translational_drone_acados_sim_solve();
-int Translational_drone_acados_sim_free();
-int Translational_drone_acados_sim_update_params(double *value, int np);
 
-sim_config  * Translational_drone_acados_get_sim_config();
-sim_in      * Translational_drone_acados_get_sim_in();
-sim_out     * Translational_drone_acados_get_sim_out();
-void        * Translational_drone_acados_get_sim_dims();
-sim_opts    * Translational_drone_acados_get_sim_opts();
-sim_solver  * Translational_drone_acados_get_sim_solver();
+/* explicit ODE */
 
-// ** global data **
-extern sim_config  * Translational_drone_sim_config;
-extern sim_in      * Translational_drone_sim_in;
-extern sim_out     * Translational_drone_sim_out;
-extern void        * Translational_drone_sim_dims;
-extern sim_opts    * Translational_drone_sim_opts;
-extern sim_solver  * Translational_drone_sim_solver;
+// explicit ODE
+int Translational_drone_expl_ode_fun(const real_t** arg, real_t** res, int* iw, real_t* w, void *mem);
+int Translational_drone_expl_ode_fun_work(int *, int *, int *, int *);
+const int *Translational_drone_expl_ode_fun_sparsity_in(int);
+const int *Translational_drone_expl_ode_fun_sparsity_out(int);
+int Translational_drone_expl_ode_fun_n_in();
+int Translational_drone_expl_ode_fun_n_out();
+
+// explicit forward VDE
+int Translational_drone_expl_vde_forw(const real_t** arg, real_t** res, int* iw, real_t* w, void *mem);
+int Translational_drone_expl_vde_forw_work(int *, int *, int *, int *);
+const int *Translational_drone_expl_vde_forw_sparsity_in(int);
+const int *Translational_drone_expl_vde_forw_sparsity_out(int);
+int Translational_drone_expl_vde_forw_n_in();
+int Translational_drone_expl_vde_forw_n_out();
+
+// explicit adjoint VDE
+int Translational_drone_expl_vde_adj(const real_t** arg, real_t** res, int* iw, real_t* w, void *mem);
+int Translational_drone_expl_vde_adj_work(int *, int *, int *, int *);
+const int *Translational_drone_expl_vde_adj_sparsity_in(int);
+const int *Translational_drone_expl_vde_adj_sparsity_out(int);
+int Translational_drone_expl_vde_adj_n_in();
+int Translational_drone_expl_vde_adj_n_out();
+
+
 
 #ifdef __cplusplus
-}
+} /* extern "C" */
 #endif
 
-
-extern external_function_param_casadi * sim_impl_dae_fun;
-extern external_function_param_casadi * sim_impl_dae_fun_jac_x_xdot_z;
-extern external_function_param_casadi * sim_impl_dae_jac_x_xdot_u_z;
-
-
-#endif  // ACADOS_SIM_Translational_drone_H_
+#endif  // Translational_drone_MODEL

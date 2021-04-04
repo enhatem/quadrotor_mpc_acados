@@ -8,4 +8,3 @@ def quaternion_to_euler(q):
 
 def R2D(rad):
     return rad*180 / np.pi
-

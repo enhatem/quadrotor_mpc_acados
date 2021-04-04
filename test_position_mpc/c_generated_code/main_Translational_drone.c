@@ -63,49 +63,29 @@ int main()
     void *nlp_opts = Translational_drone_acados_get_nlp_opts(acados_ocp_capsule);
 
     // initial condition
-    int idxbx0[6];
+    int idxbx0[2];
     idxbx0[0] = 0;
     idxbx0[1] = 1;
-    idxbx0[2] = 2;
-    idxbx0[3] = 3;
-    idxbx0[4] = 4;
-    idxbx0[5] = 5;
 
-    double lbx0[6];
-    double ubx0[6];
-    lbx0[0] = 0;
-    ubx0[0] = 0;
+    double lbx0[2];
+    double ubx0[2];
+    lbx0[0] = 0.3;
+    ubx0[0] = 0.3;
     lbx0[1] = 0;
     ubx0[1] = 0;
-    lbx0[2] = 0.3;
-    ubx0[2] = 0.3;
-    lbx0[3] = 0;
-    ubx0[3] = 0;
-    lbx0[4] = 0;
-    ubx0[4] = 0;
-    lbx0[5] = 0;
-    ubx0[5] = 0;
 
     ocp_nlp_constraints_model_set(nlp_config, nlp_dims, nlp_in, 0, "idxbx", idxbx0);
     ocp_nlp_constraints_model_set(nlp_config, nlp_dims, nlp_in, 0, "lbx", lbx0);
     ocp_nlp_constraints_model_set(nlp_config, nlp_dims, nlp_in, 0, "ubx", ubx0);
 
     // initialization for state values
-    double x_init[6];
+    double x_init[2];
     x_init[0] = 0.0;
     x_init[1] = 0.0;
-    x_init[2] = 0.0;
-    x_init[3] = 0.0;
-    x_init[4] = 0.0;
-    x_init[5] = 0.0;
 
     // initial value for control input
-    double u0[5];
+    double u0[1];
     u0[0] = 0.0;
-    u0[1] = 0.0;
-    u0[2] = 0.0;
-    u0[3] = 0.0;
-    u0[4] = 0.0;
 
     // prepare evaluation
     int NTIMINGS = 1;
@@ -114,8 +94,8 @@ int main()
     double elapsed_time;
     int sqp_iter;
 
-    double xtraj[6 * (10+1)];
-    double utraj[5 * (10)];
+    double xtraj[2 * (5+1)];
+    double utraj[1 * (5)];
 
 
     // solve ocp in loop
@@ -137,14 +117,14 @@ int main()
 
     /* print solution and statistics */
     for (int ii = 0; ii <= nlp_dims->N; ii++)
-        ocp_nlp_out_get(nlp_config, nlp_dims, nlp_out, ii, "x", &xtraj[ii*6]);
+        ocp_nlp_out_get(nlp_config, nlp_dims, nlp_out, ii, "x", &xtraj[ii*2]);
     for (int ii = 0; ii < nlp_dims->N; ii++)
-        ocp_nlp_out_get(nlp_config, nlp_dims, nlp_out, ii, "u", &utraj[ii*5]);
+        ocp_nlp_out_get(nlp_config, nlp_dims, nlp_out, ii, "u", &utraj[ii*1]);
 
     printf("\n--- xtraj ---\n");
-    d_print_exp_tran_mat( 6, 10+1, xtraj, 6 );
+    d_print_exp_tran_mat( 2, 5+1, xtraj, 2 );
     printf("\n--- utraj ---\n");
-    d_print_exp_tran_mat( 5, 10, utraj, 5 );
+    d_print_exp_tran_mat( 1, 5, utraj, 1 );
     // ocp_nlp_out_print(nlp_solver->dims, nlp_out);
 
     printf("\nsolved ocp %d times, solution printed above\n\n", NTIMINGS);

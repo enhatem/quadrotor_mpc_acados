@@ -48,12 +48,12 @@
 
 #include "acados_solver_Translational_drone.h"
 
-#define NX     6
+#define NX     2
 #define NZ     0
-#define NU     5
+#define NU     1
 #define NP     0
-#define NBX    6
-#define NBX0   6
+#define NBX    0
+#define NBX0   2
 #define NBU    1
 #define NSBX   0
 #define NSBU   0
@@ -69,10 +69,10 @@
 #define NG     0
 #define NBXN   0
 #define NGN    0
-#define NY0    11
-#define NY     11
-#define NYN    6
-#define N      10
+#define NY0    3
+#define NY     3
+#define NYN    2
+#define N      5
 #define NH     0
 #define NPHI   0
 #define NHN    0
@@ -185,7 +185,7 @@ int Translational_drone_acados_create(nlp_solver_capsule * capsule)
     nbx[0]  = NBX0;
     nsbx[0] = 0;
     ns[0] = NS - NSBX;
-    nbxe[0] = 6;
+    nbxe[0] = 2;
     ny[0] = NY0;
 
     // terminal - common
@@ -282,11 +282,6 @@ int Translational_drone_acados_create(nlp_solver_capsule * capsule)
     time_steps[2] = 0.2;
     time_steps[3] = 0.2;
     time_steps[4] = 0.2;
-    time_steps[5] = 0.2;
-    time_steps[6] = 0.2;
-    time_steps[7] = 0.2;
-    time_steps[8] = 0.2;
-    time_steps[9] = 0.2;
 
     for (int i = 0; i < N; i++)
     {
@@ -307,283 +302,43 @@ int Translational_drone_acados_create(nlp_solver_capsule * capsule)
 
     double W_0[NY0*NY0];
     
-    W_0[0+(NY0) * 0] = 10;
+    W_0[0+(NY0) * 0] = 1;
     W_0[0+(NY0) * 1] = 0;
     W_0[0+(NY0) * 2] = 0;
-    W_0[0+(NY0) * 3] = 0;
-    W_0[0+(NY0) * 4] = 0;
-    W_0[0+(NY0) * 5] = 0;
-    W_0[0+(NY0) * 6] = 0;
-    W_0[0+(NY0) * 7] = 0;
-    W_0[0+(NY0) * 8] = 0;
-    W_0[0+(NY0) * 9] = 0;
-    W_0[0+(NY0) * 10] = 0;
     W_0[1+(NY0) * 0] = 0;
-    W_0[1+(NY0) * 1] = 10;
+    W_0[1+(NY0) * 1] = 0.1;
     W_0[1+(NY0) * 2] = 0;
-    W_0[1+(NY0) * 3] = 0;
-    W_0[1+(NY0) * 4] = 0;
-    W_0[1+(NY0) * 5] = 0;
-    W_0[1+(NY0) * 6] = 0;
-    W_0[1+(NY0) * 7] = 0;
-    W_0[1+(NY0) * 8] = 0;
-    W_0[1+(NY0) * 9] = 0;
-    W_0[1+(NY0) * 10] = 0;
     W_0[2+(NY0) * 0] = 0;
     W_0[2+(NY0) * 1] = 0;
-    W_0[2+(NY0) * 2] = 10;
-    W_0[2+(NY0) * 3] = 0;
-    W_0[2+(NY0) * 4] = 0;
-    W_0[2+(NY0) * 5] = 0;
-    W_0[2+(NY0) * 6] = 0;
-    W_0[2+(NY0) * 7] = 0;
-    W_0[2+(NY0) * 8] = 0;
-    W_0[2+(NY0) * 9] = 0;
-    W_0[2+(NY0) * 10] = 0;
-    W_0[3+(NY0) * 0] = 0;
-    W_0[3+(NY0) * 1] = 0;
-    W_0[3+(NY0) * 2] = 0;
-    W_0[3+(NY0) * 3] = 2;
-    W_0[3+(NY0) * 4] = 0;
-    W_0[3+(NY0) * 5] = 0;
-    W_0[3+(NY0) * 6] = 0;
-    W_0[3+(NY0) * 7] = 0;
-    W_0[3+(NY0) * 8] = 0;
-    W_0[3+(NY0) * 9] = 0;
-    W_0[3+(NY0) * 10] = 0;
-    W_0[4+(NY0) * 0] = 0;
-    W_0[4+(NY0) * 1] = 0;
-    W_0[4+(NY0) * 2] = 0;
-    W_0[4+(NY0) * 3] = 0;
-    W_0[4+(NY0) * 4] = 2;
-    W_0[4+(NY0) * 5] = 0;
-    W_0[4+(NY0) * 6] = 0;
-    W_0[4+(NY0) * 7] = 0;
-    W_0[4+(NY0) * 8] = 0;
-    W_0[4+(NY0) * 9] = 0;
-    W_0[4+(NY0) * 10] = 0;
-    W_0[5+(NY0) * 0] = 0;
-    W_0[5+(NY0) * 1] = 0;
-    W_0[5+(NY0) * 2] = 0;
-    W_0[5+(NY0) * 3] = 0;
-    W_0[5+(NY0) * 4] = 0;
-    W_0[5+(NY0) * 5] = 2;
-    W_0[5+(NY0) * 6] = 0;
-    W_0[5+(NY0) * 7] = 0;
-    W_0[5+(NY0) * 8] = 0;
-    W_0[5+(NY0) * 9] = 0;
-    W_0[5+(NY0) * 10] = 0;
-    W_0[6+(NY0) * 0] = 0;
-    W_0[6+(NY0) * 1] = 0;
-    W_0[6+(NY0) * 2] = 0;
-    W_0[6+(NY0) * 3] = 0;
-    W_0[6+(NY0) * 4] = 0;
-    W_0[6+(NY0) * 5] = 0;
-    W_0[6+(NY0) * 6] = 1;
-    W_0[6+(NY0) * 7] = 0;
-    W_0[6+(NY0) * 8] = 0;
-    W_0[6+(NY0) * 9] = 0;
-    W_0[6+(NY0) * 10] = 0;
-    W_0[7+(NY0) * 0] = 0;
-    W_0[7+(NY0) * 1] = 0;
-    W_0[7+(NY0) * 2] = 0;
-    W_0[7+(NY0) * 3] = 0;
-    W_0[7+(NY0) * 4] = 0;
-    W_0[7+(NY0) * 5] = 0;
-    W_0[7+(NY0) * 6] = 0;
-    W_0[7+(NY0) * 7] = 5;
-    W_0[7+(NY0) * 8] = 0;
-    W_0[7+(NY0) * 9] = 0;
-    W_0[7+(NY0) * 10] = 0;
-    W_0[8+(NY0) * 0] = 0;
-    W_0[8+(NY0) * 1] = 0;
-    W_0[8+(NY0) * 2] = 0;
-    W_0[8+(NY0) * 3] = 0;
-    W_0[8+(NY0) * 4] = 0;
-    W_0[8+(NY0) * 5] = 0;
-    W_0[8+(NY0) * 6] = 0;
-    W_0[8+(NY0) * 7] = 0;
-    W_0[8+(NY0) * 8] = 5;
-    W_0[8+(NY0) * 9] = 0;
-    W_0[8+(NY0) * 10] = 0;
-    W_0[9+(NY0) * 0] = 0;
-    W_0[9+(NY0) * 1] = 0;
-    W_0[9+(NY0) * 2] = 0;
-    W_0[9+(NY0) * 3] = 0;
-    W_0[9+(NY0) * 4] = 0;
-    W_0[9+(NY0) * 5] = 0;
-    W_0[9+(NY0) * 6] = 0;
-    W_0[9+(NY0) * 7] = 0;
-    W_0[9+(NY0) * 8] = 0;
-    W_0[9+(NY0) * 9] = 5;
-    W_0[9+(NY0) * 10] = 0;
-    W_0[10+(NY0) * 0] = 0;
-    W_0[10+(NY0) * 1] = 0;
-    W_0[10+(NY0) * 2] = 0;
-    W_0[10+(NY0) * 3] = 0;
-    W_0[10+(NY0) * 4] = 0;
-    W_0[10+(NY0) * 5] = 0;
-    W_0[10+(NY0) * 6] = 0;
-    W_0[10+(NY0) * 7] = 0;
-    W_0[10+(NY0) * 8] = 0;
-    W_0[10+(NY0) * 9] = 0;
-    W_0[10+(NY0) * 10] = 5;
+    W_0[2+(NY0) * 2] = 1;
     ocp_nlp_cost_model_set(nlp_config, nlp_dims, nlp_in, 0, "W", W_0);
 
     double yref_0[NY0];
     
     yref_0[0] = 1;
-    yref_0[1] = 1;
-    yref_0[2] = 2;
-    yref_0[3] = 0;
-    yref_0[4] = 0;
-    yref_0[5] = 0;
-    yref_0[6] = 9.81;
-    yref_0[7] = 1;
-    yref_0[8] = 0;
-    yref_0[9] = 0;
-    yref_0[10] = 0;
+    yref_0[1] = 0;
+    yref_0[2] = 9.81;
     ocp_nlp_cost_model_set(nlp_config, nlp_dims, nlp_in, 0, "yref", yref_0);
 
 
 
     double W[NY*NY];
     
-    W[0+(NY) * 0] = 10;
+    W[0+(NY) * 0] = 1;
     W[0+(NY) * 1] = 0;
     W[0+(NY) * 2] = 0;
-    W[0+(NY) * 3] = 0;
-    W[0+(NY) * 4] = 0;
-    W[0+(NY) * 5] = 0;
-    W[0+(NY) * 6] = 0;
-    W[0+(NY) * 7] = 0;
-    W[0+(NY) * 8] = 0;
-    W[0+(NY) * 9] = 0;
-    W[0+(NY) * 10] = 0;
     W[1+(NY) * 0] = 0;
-    W[1+(NY) * 1] = 10;
+    W[1+(NY) * 1] = 0.1;
     W[1+(NY) * 2] = 0;
-    W[1+(NY) * 3] = 0;
-    W[1+(NY) * 4] = 0;
-    W[1+(NY) * 5] = 0;
-    W[1+(NY) * 6] = 0;
-    W[1+(NY) * 7] = 0;
-    W[1+(NY) * 8] = 0;
-    W[1+(NY) * 9] = 0;
-    W[1+(NY) * 10] = 0;
     W[2+(NY) * 0] = 0;
     W[2+(NY) * 1] = 0;
-    W[2+(NY) * 2] = 10;
-    W[2+(NY) * 3] = 0;
-    W[2+(NY) * 4] = 0;
-    W[2+(NY) * 5] = 0;
-    W[2+(NY) * 6] = 0;
-    W[2+(NY) * 7] = 0;
-    W[2+(NY) * 8] = 0;
-    W[2+(NY) * 9] = 0;
-    W[2+(NY) * 10] = 0;
-    W[3+(NY) * 0] = 0;
-    W[3+(NY) * 1] = 0;
-    W[3+(NY) * 2] = 0;
-    W[3+(NY) * 3] = 2;
-    W[3+(NY) * 4] = 0;
-    W[3+(NY) * 5] = 0;
-    W[3+(NY) * 6] = 0;
-    W[3+(NY) * 7] = 0;
-    W[3+(NY) * 8] = 0;
-    W[3+(NY) * 9] = 0;
-    W[3+(NY) * 10] = 0;
-    W[4+(NY) * 0] = 0;
-    W[4+(NY) * 1] = 0;
-    W[4+(NY) * 2] = 0;
-    W[4+(NY) * 3] = 0;
-    W[4+(NY) * 4] = 2;
-    W[4+(NY) * 5] = 0;
-    W[4+(NY) * 6] = 0;
-    W[4+(NY) * 7] = 0;
-    W[4+(NY) * 8] = 0;
-    W[4+(NY) * 9] = 0;
-    W[4+(NY) * 10] = 0;
-    W[5+(NY) * 0] = 0;
-    W[5+(NY) * 1] = 0;
-    W[5+(NY) * 2] = 0;
-    W[5+(NY) * 3] = 0;
-    W[5+(NY) * 4] = 0;
-    W[5+(NY) * 5] = 2;
-    W[5+(NY) * 6] = 0;
-    W[5+(NY) * 7] = 0;
-    W[5+(NY) * 8] = 0;
-    W[5+(NY) * 9] = 0;
-    W[5+(NY) * 10] = 0;
-    W[6+(NY) * 0] = 0;
-    W[6+(NY) * 1] = 0;
-    W[6+(NY) * 2] = 0;
-    W[6+(NY) * 3] = 0;
-    W[6+(NY) * 4] = 0;
-    W[6+(NY) * 5] = 0;
-    W[6+(NY) * 6] = 1;
-    W[6+(NY) * 7] = 0;
-    W[6+(NY) * 8] = 0;
-    W[6+(NY) * 9] = 0;
-    W[6+(NY) * 10] = 0;
-    W[7+(NY) * 0] = 0;
-    W[7+(NY) * 1] = 0;
-    W[7+(NY) * 2] = 0;
-    W[7+(NY) * 3] = 0;
-    W[7+(NY) * 4] = 0;
-    W[7+(NY) * 5] = 0;
-    W[7+(NY) * 6] = 0;
-    W[7+(NY) * 7] = 5;
-    W[7+(NY) * 8] = 0;
-    W[7+(NY) * 9] = 0;
-    W[7+(NY) * 10] = 0;
-    W[8+(NY) * 0] = 0;
-    W[8+(NY) * 1] = 0;
-    W[8+(NY) * 2] = 0;
-    W[8+(NY) * 3] = 0;
-    W[8+(NY) * 4] = 0;
-    W[8+(NY) * 5] = 0;
-    W[8+(NY) * 6] = 0;
-    W[8+(NY) * 7] = 0;
-    W[8+(NY) * 8] = 5;
-    W[8+(NY) * 9] = 0;
-    W[8+(NY) * 10] = 0;
-    W[9+(NY) * 0] = 0;
-    W[9+(NY) * 1] = 0;
-    W[9+(NY) * 2] = 0;
-    W[9+(NY) * 3] = 0;
-    W[9+(NY) * 4] = 0;
-    W[9+(NY) * 5] = 0;
-    W[9+(NY) * 6] = 0;
-    W[9+(NY) * 7] = 0;
-    W[9+(NY) * 8] = 0;
-    W[9+(NY) * 9] = 5;
-    W[9+(NY) * 10] = 0;
-    W[10+(NY) * 0] = 0;
-    W[10+(NY) * 1] = 0;
-    W[10+(NY) * 2] = 0;
-    W[10+(NY) * 3] = 0;
-    W[10+(NY) * 4] = 0;
-    W[10+(NY) * 5] = 0;
-    W[10+(NY) * 6] = 0;
-    W[10+(NY) * 7] = 0;
-    W[10+(NY) * 8] = 0;
-    W[10+(NY) * 9] = 0;
-    W[10+(NY) * 10] = 5;
+    W[2+(NY) * 2] = 1;
 
     double yref[NY];
     
     yref[0] = 1;
-    yref[1] = 1;
-    yref[2] = 2;
-    yref[3] = 0;
-    yref[4] = 0;
-    yref[5] = 0;
-    yref[6] = 9.81;
-    yref[7] = 1;
-    yref[8] = 0;
-    yref[9] = 0;
-    yref[10] = 0;
+    yref[1] = 0;
+    yref[2] = 9.81;
 
     for (int i = 1; i < N; i++)
     {
@@ -596,130 +351,18 @@ int Translational_drone_acados_create(nlp_solver_capsule * capsule)
     
     Vx_0[0+(NY0) * 0] = 1;
     Vx_0[0+(NY0) * 1] = 0;
-    Vx_0[0+(NY0) * 2] = 0;
-    Vx_0[0+(NY0) * 3] = 0;
-    Vx_0[0+(NY0) * 4] = 0;
-    Vx_0[0+(NY0) * 5] = 0;
     Vx_0[1+(NY0) * 0] = 0;
     Vx_0[1+(NY0) * 1] = 1;
-    Vx_0[1+(NY0) * 2] = 0;
-    Vx_0[1+(NY0) * 3] = 0;
-    Vx_0[1+(NY0) * 4] = 0;
-    Vx_0[1+(NY0) * 5] = 0;
     Vx_0[2+(NY0) * 0] = 0;
     Vx_0[2+(NY0) * 1] = 0;
-    Vx_0[2+(NY0) * 2] = 1;
-    Vx_0[2+(NY0) * 3] = 0;
-    Vx_0[2+(NY0) * 4] = 0;
-    Vx_0[2+(NY0) * 5] = 0;
-    Vx_0[3+(NY0) * 0] = 0;
-    Vx_0[3+(NY0) * 1] = 0;
-    Vx_0[3+(NY0) * 2] = 0;
-    Vx_0[3+(NY0) * 3] = 1;
-    Vx_0[3+(NY0) * 4] = 0;
-    Vx_0[3+(NY0) * 5] = 0;
-    Vx_0[4+(NY0) * 0] = 0;
-    Vx_0[4+(NY0) * 1] = 0;
-    Vx_0[4+(NY0) * 2] = 0;
-    Vx_0[4+(NY0) * 3] = 0;
-    Vx_0[4+(NY0) * 4] = 1;
-    Vx_0[4+(NY0) * 5] = 0;
-    Vx_0[5+(NY0) * 0] = 0;
-    Vx_0[5+(NY0) * 1] = 0;
-    Vx_0[5+(NY0) * 2] = 0;
-    Vx_0[5+(NY0) * 3] = 0;
-    Vx_0[5+(NY0) * 4] = 0;
-    Vx_0[5+(NY0) * 5] = 1;
-    Vx_0[6+(NY0) * 0] = 0;
-    Vx_0[6+(NY0) * 1] = 0;
-    Vx_0[6+(NY0) * 2] = 0;
-    Vx_0[6+(NY0) * 3] = 0;
-    Vx_0[6+(NY0) * 4] = 0;
-    Vx_0[6+(NY0) * 5] = 0;
-    Vx_0[7+(NY0) * 0] = 0;
-    Vx_0[7+(NY0) * 1] = 0;
-    Vx_0[7+(NY0) * 2] = 0;
-    Vx_0[7+(NY0) * 3] = 0;
-    Vx_0[7+(NY0) * 4] = 0;
-    Vx_0[7+(NY0) * 5] = 0;
-    Vx_0[8+(NY0) * 0] = 0;
-    Vx_0[8+(NY0) * 1] = 0;
-    Vx_0[8+(NY0) * 2] = 0;
-    Vx_0[8+(NY0) * 3] = 0;
-    Vx_0[8+(NY0) * 4] = 0;
-    Vx_0[8+(NY0) * 5] = 0;
-    Vx_0[9+(NY0) * 0] = 0;
-    Vx_0[9+(NY0) * 1] = 0;
-    Vx_0[9+(NY0) * 2] = 0;
-    Vx_0[9+(NY0) * 3] = 0;
-    Vx_0[9+(NY0) * 4] = 0;
-    Vx_0[9+(NY0) * 5] = 0;
-    Vx_0[10+(NY0) * 0] = 0;
-    Vx_0[10+(NY0) * 1] = 0;
-    Vx_0[10+(NY0) * 2] = 0;
-    Vx_0[10+(NY0) * 3] = 0;
-    Vx_0[10+(NY0) * 4] = 0;
-    Vx_0[10+(NY0) * 5] = 0;
     ocp_nlp_cost_model_set(nlp_config, nlp_dims, nlp_in, 0, "Vx", Vx_0);
 
 
     double Vu_0[NY0*NU];
     
     Vu_0[0+(NY0) * 0] = 0;
-    Vu_0[0+(NY0) * 1] = 0;
-    Vu_0[0+(NY0) * 2] = 0;
-    Vu_0[0+(NY0) * 3] = 0;
-    Vu_0[0+(NY0) * 4] = 0;
     Vu_0[1+(NY0) * 0] = 0;
-    Vu_0[1+(NY0) * 1] = 0;
-    Vu_0[1+(NY0) * 2] = 0;
-    Vu_0[1+(NY0) * 3] = 0;
-    Vu_0[1+(NY0) * 4] = 0;
-    Vu_0[2+(NY0) * 0] = 0;
-    Vu_0[2+(NY0) * 1] = 0;
-    Vu_0[2+(NY0) * 2] = 0;
-    Vu_0[2+(NY0) * 3] = 0;
-    Vu_0[2+(NY0) * 4] = 0;
-    Vu_0[3+(NY0) * 0] = 0;
-    Vu_0[3+(NY0) * 1] = 0;
-    Vu_0[3+(NY0) * 2] = 0;
-    Vu_0[3+(NY0) * 3] = 0;
-    Vu_0[3+(NY0) * 4] = 0;
-    Vu_0[4+(NY0) * 0] = 0;
-    Vu_0[4+(NY0) * 1] = 0;
-    Vu_0[4+(NY0) * 2] = 0;
-    Vu_0[4+(NY0) * 3] = 0;
-    Vu_0[4+(NY0) * 4] = 0;
-    Vu_0[5+(NY0) * 0] = 0;
-    Vu_0[5+(NY0) * 1] = 0;
-    Vu_0[5+(NY0) * 2] = 0;
-    Vu_0[5+(NY0) * 3] = 0;
-    Vu_0[5+(NY0) * 4] = 0;
-    Vu_0[6+(NY0) * 0] = 1;
-    Vu_0[6+(NY0) * 1] = 0;
-    Vu_0[6+(NY0) * 2] = 0;
-    Vu_0[6+(NY0) * 3] = 0;
-    Vu_0[6+(NY0) * 4] = 0;
-    Vu_0[7+(NY0) * 0] = 0;
-    Vu_0[7+(NY0) * 1] = 1;
-    Vu_0[7+(NY0) * 2] = 0;
-    Vu_0[7+(NY0) * 3] = 0;
-    Vu_0[7+(NY0) * 4] = 0;
-    Vu_0[8+(NY0) * 0] = 0;
-    Vu_0[8+(NY0) * 1] = 0;
-    Vu_0[8+(NY0) * 2] = 1;
-    Vu_0[8+(NY0) * 3] = 0;
-    Vu_0[8+(NY0) * 4] = 0;
-    Vu_0[9+(NY0) * 0] = 0;
-    Vu_0[9+(NY0) * 1] = 0;
-    Vu_0[9+(NY0) * 2] = 0;
-    Vu_0[9+(NY0) * 3] = 1;
-    Vu_0[9+(NY0) * 4] = 0;
-    Vu_0[10+(NY0) * 0] = 0;
-    Vu_0[10+(NY0) * 1] = 0;
-    Vu_0[10+(NY0) * 2] = 0;
-    Vu_0[10+(NY0) * 3] = 0;
-    Vu_0[10+(NY0) * 4] = 1;
+    Vu_0[2+(NY0) * 0] = 1;
     ocp_nlp_cost_model_set(nlp_config, nlp_dims, nlp_in, 0, "Vu", Vu_0);
 
 
@@ -727,70 +370,10 @@ int Translational_drone_acados_create(nlp_solver_capsule * capsule)
     
     Vx[0+(NY) * 0] = 1;
     Vx[0+(NY) * 1] = 0;
-    Vx[0+(NY) * 2] = 0;
-    Vx[0+(NY) * 3] = 0;
-    Vx[0+(NY) * 4] = 0;
-    Vx[0+(NY) * 5] = 0;
     Vx[1+(NY) * 0] = 0;
     Vx[1+(NY) * 1] = 1;
-    Vx[1+(NY) * 2] = 0;
-    Vx[1+(NY) * 3] = 0;
-    Vx[1+(NY) * 4] = 0;
-    Vx[1+(NY) * 5] = 0;
     Vx[2+(NY) * 0] = 0;
     Vx[2+(NY) * 1] = 0;
-    Vx[2+(NY) * 2] = 1;
-    Vx[2+(NY) * 3] = 0;
-    Vx[2+(NY) * 4] = 0;
-    Vx[2+(NY) * 5] = 0;
-    Vx[3+(NY) * 0] = 0;
-    Vx[3+(NY) * 1] = 0;
-    Vx[3+(NY) * 2] = 0;
-    Vx[3+(NY) * 3] = 1;
-    Vx[3+(NY) * 4] = 0;
-    Vx[3+(NY) * 5] = 0;
-    Vx[4+(NY) * 0] = 0;
-    Vx[4+(NY) * 1] = 0;
-    Vx[4+(NY) * 2] = 0;
-    Vx[4+(NY) * 3] = 0;
-    Vx[4+(NY) * 4] = 1;
-    Vx[4+(NY) * 5] = 0;
-    Vx[5+(NY) * 0] = 0;
-    Vx[5+(NY) * 1] = 0;
-    Vx[5+(NY) * 2] = 0;
-    Vx[5+(NY) * 3] = 0;
-    Vx[5+(NY) * 4] = 0;
-    Vx[5+(NY) * 5] = 1;
-    Vx[6+(NY) * 0] = 0;
-    Vx[6+(NY) * 1] = 0;
-    Vx[6+(NY) * 2] = 0;
-    Vx[6+(NY) * 3] = 0;
-    Vx[6+(NY) * 4] = 0;
-    Vx[6+(NY) * 5] = 0;
-    Vx[7+(NY) * 0] = 0;
-    Vx[7+(NY) * 1] = 0;
-    Vx[7+(NY) * 2] = 0;
-    Vx[7+(NY) * 3] = 0;
-    Vx[7+(NY) * 4] = 0;
-    Vx[7+(NY) * 5] = 0;
-    Vx[8+(NY) * 0] = 0;
-    Vx[8+(NY) * 1] = 0;
-    Vx[8+(NY) * 2] = 0;
-    Vx[8+(NY) * 3] = 0;
-    Vx[8+(NY) * 4] = 0;
-    Vx[8+(NY) * 5] = 0;
-    Vx[9+(NY) * 0] = 0;
-    Vx[9+(NY) * 1] = 0;
-    Vx[9+(NY) * 2] = 0;
-    Vx[9+(NY) * 3] = 0;
-    Vx[9+(NY) * 4] = 0;
-    Vx[9+(NY) * 5] = 0;
-    Vx[10+(NY) * 0] = 0;
-    Vx[10+(NY) * 1] = 0;
-    Vx[10+(NY) * 2] = 0;
-    Vx[10+(NY) * 3] = 0;
-    Vx[10+(NY) * 4] = 0;
-    Vx[10+(NY) * 5] = 0;
     for (int i = 1; i < N; i++)
     {
         ocp_nlp_cost_model_set(nlp_config, nlp_dims, nlp_in, i, "Vx", Vx);
@@ -800,60 +383,8 @@ int Translational_drone_acados_create(nlp_solver_capsule * capsule)
     double Vu[NY*NU];
     
     Vu[0+(NY) * 0] = 0;
-    Vu[0+(NY) * 1] = 0;
-    Vu[0+(NY) * 2] = 0;
-    Vu[0+(NY) * 3] = 0;
-    Vu[0+(NY) * 4] = 0;
     Vu[1+(NY) * 0] = 0;
-    Vu[1+(NY) * 1] = 0;
-    Vu[1+(NY) * 2] = 0;
-    Vu[1+(NY) * 3] = 0;
-    Vu[1+(NY) * 4] = 0;
-    Vu[2+(NY) * 0] = 0;
-    Vu[2+(NY) * 1] = 0;
-    Vu[2+(NY) * 2] = 0;
-    Vu[2+(NY) * 3] = 0;
-    Vu[2+(NY) * 4] = 0;
-    Vu[3+(NY) * 0] = 0;
-    Vu[3+(NY) * 1] = 0;
-    Vu[3+(NY) * 2] = 0;
-    Vu[3+(NY) * 3] = 0;
-    Vu[3+(NY) * 4] = 0;
-    Vu[4+(NY) * 0] = 0;
-    Vu[4+(NY) * 1] = 0;
-    Vu[4+(NY) * 2] = 0;
-    Vu[4+(NY) * 3] = 0;
-    Vu[4+(NY) * 4] = 0;
-    Vu[5+(NY) * 0] = 0;
-    Vu[5+(NY) * 1] = 0;
-    Vu[5+(NY) * 2] = 0;
-    Vu[5+(NY) * 3] = 0;
-    Vu[5+(NY) * 4] = 0;
-    Vu[6+(NY) * 0] = 1;
-    Vu[6+(NY) * 1] = 0;
-    Vu[6+(NY) * 2] = 0;
-    Vu[6+(NY) * 3] = 0;
-    Vu[6+(NY) * 4] = 0;
-    Vu[7+(NY) * 0] = 0;
-    Vu[7+(NY) * 1] = 1;
-    Vu[7+(NY) * 2] = 0;
-    Vu[7+(NY) * 3] = 0;
-    Vu[7+(NY) * 4] = 0;
-    Vu[8+(NY) * 0] = 0;
-    Vu[8+(NY) * 1] = 0;
-    Vu[8+(NY) * 2] = 1;
-    Vu[8+(NY) * 3] = 0;
-    Vu[8+(NY) * 4] = 0;
-    Vu[9+(NY) * 0] = 0;
-    Vu[9+(NY) * 1] = 0;
-    Vu[9+(NY) * 2] = 0;
-    Vu[9+(NY) * 3] = 1;
-    Vu[9+(NY) * 4] = 0;
-    Vu[10+(NY) * 0] = 0;
-    Vu[10+(NY) * 1] = 0;
-    Vu[10+(NY) * 2] = 0;
-    Vu[10+(NY) * 3] = 0;
-    Vu[10+(NY) * 4] = 1;
+    Vu[2+(NY) * 0] = 1;
 
     for (int i = 1; i < N; i++)
     {
@@ -872,90 +403,22 @@ int Translational_drone_acados_create(nlp_solver_capsule * capsule)
     double yref_e[NYN];
     
     yref_e[0] = 1;
-    yref_e[1] = 1;
-    yref_e[2] = 2;
-    yref_e[3] = 0;
-    yref_e[4] = 0;
-    yref_e[5] = 0;
+    yref_e[1] = 0;
     ocp_nlp_cost_model_set(nlp_config, nlp_dims, nlp_in, N, "yref", yref_e);
 
     double W_e[NYN*NYN];
     
-    W_e[0+(NYN) * 0] = 10;
+    W_e[0+(NYN) * 0] = 1;
     W_e[0+(NYN) * 1] = 0;
-    W_e[0+(NYN) * 2] = 0;
-    W_e[0+(NYN) * 3] = 0;
-    W_e[0+(NYN) * 4] = 0;
-    W_e[0+(NYN) * 5] = 0;
     W_e[1+(NYN) * 0] = 0;
-    W_e[1+(NYN) * 1] = 10;
-    W_e[1+(NYN) * 2] = 0;
-    W_e[1+(NYN) * 3] = 0;
-    W_e[1+(NYN) * 4] = 0;
-    W_e[1+(NYN) * 5] = 0;
-    W_e[2+(NYN) * 0] = 0;
-    W_e[2+(NYN) * 1] = 0;
-    W_e[2+(NYN) * 2] = 10;
-    W_e[2+(NYN) * 3] = 0;
-    W_e[2+(NYN) * 4] = 0;
-    W_e[2+(NYN) * 5] = 0;
-    W_e[3+(NYN) * 0] = 0;
-    W_e[3+(NYN) * 1] = 0;
-    W_e[3+(NYN) * 2] = 0;
-    W_e[3+(NYN) * 3] = 2;
-    W_e[3+(NYN) * 4] = 0;
-    W_e[3+(NYN) * 5] = 0;
-    W_e[4+(NYN) * 0] = 0;
-    W_e[4+(NYN) * 1] = 0;
-    W_e[4+(NYN) * 2] = 0;
-    W_e[4+(NYN) * 3] = 0;
-    W_e[4+(NYN) * 4] = 2;
-    W_e[4+(NYN) * 5] = 0;
-    W_e[5+(NYN) * 0] = 0;
-    W_e[5+(NYN) * 1] = 0;
-    W_e[5+(NYN) * 2] = 0;
-    W_e[5+(NYN) * 3] = 0;
-    W_e[5+(NYN) * 4] = 0;
-    W_e[5+(NYN) * 5] = 2;
+    W_e[1+(NYN) * 1] = 0.1;
     ocp_nlp_cost_model_set(nlp_config, nlp_dims, nlp_in, N, "W", W_e);
     double Vx_e[NYN*NX];
     
     Vx_e[0+(NYN) * 0] = 1;
     Vx_e[0+(NYN) * 1] = 0;
-    Vx_e[0+(NYN) * 2] = 0;
-    Vx_e[0+(NYN) * 3] = 0;
-    Vx_e[0+(NYN) * 4] = 0;
-    Vx_e[0+(NYN) * 5] = 0;
     Vx_e[1+(NYN) * 0] = 0;
     Vx_e[1+(NYN) * 1] = 1;
-    Vx_e[1+(NYN) * 2] = 0;
-    Vx_e[1+(NYN) * 3] = 0;
-    Vx_e[1+(NYN) * 4] = 0;
-    Vx_e[1+(NYN) * 5] = 0;
-    Vx_e[2+(NYN) * 0] = 0;
-    Vx_e[2+(NYN) * 1] = 0;
-    Vx_e[2+(NYN) * 2] = 1;
-    Vx_e[2+(NYN) * 3] = 0;
-    Vx_e[2+(NYN) * 4] = 0;
-    Vx_e[2+(NYN) * 5] = 0;
-    Vx_e[3+(NYN) * 0] = 0;
-    Vx_e[3+(NYN) * 1] = 0;
-    Vx_e[3+(NYN) * 2] = 0;
-    Vx_e[3+(NYN) * 3] = 1;
-    Vx_e[3+(NYN) * 4] = 0;
-    Vx_e[3+(NYN) * 5] = 0;
-    Vx_e[4+(NYN) * 0] = 0;
-    Vx_e[4+(NYN) * 1] = 0;
-    Vx_e[4+(NYN) * 2] = 0;
-    Vx_e[4+(NYN) * 3] = 0;
-    Vx_e[4+(NYN) * 4] = 1;
-    Vx_e[4+(NYN) * 5] = 0;
-    Vx_e[5+(NYN) * 0] = 0;
-    Vx_e[5+(NYN) * 1] = 0;
-    Vx_e[5+(NYN) * 2] = 0;
-    Vx_e[5+(NYN) * 3] = 0;
-    Vx_e[5+(NYN) * 4] = 0;
-    Vx_e[5+(NYN) * 5] = 1;
     ocp_nlp_cost_model_set(nlp_config, nlp_dims, nlp_in, N, "Vx", Vx_e);
 
 
@@ -965,30 +428,18 @@ int Translational_drone_acados_create(nlp_solver_capsule * capsule)
     // bounds for initial stage
 
     // x0
-    int idxbx0[6];
+    int idxbx0[2];
     
     idxbx0[0] = 0;
     idxbx0[1] = 1;
-    idxbx0[2] = 2;
-    idxbx0[3] = 3;
-    idxbx0[4] = 4;
-    idxbx0[5] = 5;
 
-    double lbx0[6];
-    double ubx0[6];
+    double lbx0[2];
+    double ubx0[2];
     
-    lbx0[0] = 0;
-    ubx0[0] = 0;
+    lbx0[0] = 0.3;
+    ubx0[0] = 0.3;
     lbx0[1] = 0;
     ubx0[1] = 0;
-    lbx0[2] = 0.3;
-    ubx0[2] = 0.3;
-    lbx0[3] = 0;
-    ubx0[3] = 0;
-    lbx0[4] = 0;
-    ubx0[4] = 0;
-    lbx0[5] = 0;
-    ubx0[5] = 0;
 
     ocp_nlp_constraints_model_set(nlp_config, nlp_dims, nlp_in, 0, "idxbx", idxbx0);
     ocp_nlp_constraints_model_set(nlp_config, nlp_dims, nlp_in, 0, "lbx", lbx0);
@@ -996,14 +447,10 @@ int Translational_drone_acados_create(nlp_solver_capsule * capsule)
 
 
     // idxbxe_0
-    int idxbxe_0[6];
+    int idxbxe_0[2];
     
     idxbxe_0[0] = 0;
     idxbxe_0[1] = 1;
-    idxbxe_0[2] = 2;
-    idxbxe_0[3] = 3;
-    idxbxe_0[4] = 4;
-    idxbxe_0[5] = 5;
     ocp_nlp_constraints_model_set(nlp_config, nlp_dims, nlp_in, 0, "idxbxe", idxbxe_0);
 
 
@@ -1037,38 +484,6 @@ int Translational_drone_acados_create(nlp_solver_capsule * capsule)
 
 
 
-
-    // x
-    int idxbx[NBX];
-    
-    idxbx[0] = 0;
-    idxbx[1] = 1;
-    idxbx[2] = 2;
-    idxbx[3] = 3;
-    idxbx[4] = 4;
-    idxbx[5] = 5;
-    double lbx[NBX];
-    double ubx[NBX];
-    
-    lbx[0] = -5;
-    ubx[0] = 5;
-    lbx[1] = -5;
-    ubx[1] = 5;
-    lbx[2] = 0;
-    ubx[2] = 5;
-    lbx[3] = -15;
-    ubx[3] = 15;
-    lbx[4] = -15;
-    ubx[4] = 15;
-    lbx[5] = -15;
-    ubx[5] = 15;
-
-    for (int i = 1; i < N; i++)
-    {
-        ocp_nlp_constraints_model_set(nlp_config, nlp_dims, nlp_in, i, "idxbx", idxbx);
-        ocp_nlp_constraints_model_set(nlp_config, nlp_dims, nlp_in, i, "lbx", lbx);
-        ocp_nlp_constraints_model_set(nlp_config, nlp_dims, nlp_in, i, "ubx", ubx);
-    }
 
 
 
@@ -1147,25 +562,17 @@ int Translational_drone_acados_create(nlp_solver_capsule * capsule)
     capsule->nlp_out = nlp_out;
 
     // initialize primal solution
-    double x0[6];
+    double x0[2];
 
     // initialize with x0
     
-    x0[0] = 0;
+    x0[0] = 0.3;
     x0[1] = 0;
-    x0[2] = 0.3;
-    x0[3] = 0;
-    x0[4] = 0;
-    x0[5] = 0;
 
 
     double u0[NU];
     
     u0[0] = 0.0;
-    u0[1] = 0.0;
-    u0[2] = 0.0;
-    u0[3] = 0.0;
-    u0[4] = 0.0;
 
     for (int i = 0; i < N; i++)
     {
@@ -1231,7 +638,7 @@ int Translational_drone_acados_free(nlp_solver_capsule * capsule)
 
     /* free external function */
     // dynamics
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < 5; i++)
     {
         external_function_param_casadi_free(&capsule->forw_vde_casadi[i]);
         external_function_param_casadi_free(&capsule->expl_ode_fun[i]);

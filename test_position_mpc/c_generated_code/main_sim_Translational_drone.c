@@ -54,25 +54,20 @@ int main()
     }
 
     // initial condition
-    double x_current[6];
+    double x_current[2];
     x_current[0] = 0.0;
     x_current[1] = 0.0;
-    x_current[2] = 0.0;
-    x_current[3] = 0.0;
-    x_current[4] = 0.0;
-    x_current[5] = 0.0;
 
   
-    printf("main_sim: initial state not defined, should be in lbx_0, using zero vector.");
+    x_current[0] = 0.3;
+    x_current[1] = 0;
+    
+  
 
 
     // initial value for control input
-    double u0[5];
+    double u0[1];
     u0[0] = 0.0;
-    u0[1] = 0.0;
-    u0[2] = 0.0;
-    u0[3] = 0.0;
-    u0[4] = 0.0;
 
     int n_sim_steps = 3;
     // solve ocp in loop
@@ -91,7 +86,7 @@ int main()
                Translational_drone_sim_out, "x", x_current);
         
         printf("\nx_current, %d\n", ii);
-        for (int jj = 0; jj < 6; jj++)
+        for (int jj = 0; jj < 2; jj++)
         {
             printf("%e\n", x_current[jj]);
         }

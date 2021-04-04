@@ -58,58 +58,47 @@ sim_opts    * Translational_drone_sim_opts;
 sim_solver  * Translational_drone_sim_solver;
 
 
-external_function_param_casadi * sim_impl_dae_fun;
-external_function_param_casadi * sim_impl_dae_fun_jac_x_xdot_z;
-external_function_param_casadi * sim_impl_dae_jac_x_xdot_u_z;
+external_function_param_casadi * sim_forw_vde_casadi;
+external_function_param_casadi * sim_expl_ode_fun_casadi;
 
 
 
 int Translational_drone_acados_sim_create()
 {
     // initialize
-    int nx = 6;
-    int nu = 5;
+    int nx = 2;
+    int nu = 1;
     int nz = 0;
 
     
     double Tsim = 0.2;
 
     
-    sim_impl_dae_fun = (external_function_param_casadi *) malloc(sizeof(external_function_param_casadi));
-    sim_impl_dae_fun_jac_x_xdot_z = (external_function_param_casadi *) malloc(sizeof(external_function_param_casadi));
-    sim_impl_dae_jac_x_xdot_u_z = (external_function_param_casadi *) malloc(sizeof(external_function_param_casadi));
+    // explicit ode
+    sim_forw_vde_casadi = (external_function_param_casadi *) malloc(sizeof(external_function_param_casadi));
+    sim_expl_ode_fun_casadi = (external_function_param_casadi *) malloc(sizeof(external_function_param_casadi));
 
-    // external functions (implicit model)
-    sim_impl_dae_fun->casadi_fun  = &Translational_drone_impl_dae_fun;
-    sim_impl_dae_fun->casadi_work = &Translational_drone_impl_dae_fun_work;
-    sim_impl_dae_fun->casadi_sparsity_in = &Translational_drone_impl_dae_fun_sparsity_in;
-    sim_impl_dae_fun->casadi_sparsity_out = &Translational_drone_impl_dae_fun_sparsity_out;
-    sim_impl_dae_fun->casadi_n_in = &Translational_drone_impl_dae_fun_n_in;
-    sim_impl_dae_fun->casadi_n_out = &Translational_drone_impl_dae_fun_n_out;
-    external_function_param_casadi_create(sim_impl_dae_fun, 0);
+    sim_forw_vde_casadi->casadi_fun = &Translational_drone_expl_vde_forw;
+    sim_forw_vde_casadi->casadi_n_in = &Translational_drone_expl_vde_forw_n_in;
+    sim_forw_vde_casadi->casadi_n_out = &Translational_drone_expl_vde_forw_n_out;
+    sim_forw_vde_casadi->casadi_sparsity_in = &Translational_drone_expl_vde_forw_sparsity_in;
+    sim_forw_vde_casadi->casadi_sparsity_out = &Translational_drone_expl_vde_forw_sparsity_out;
+    sim_forw_vde_casadi->casadi_work = &Translational_drone_expl_vde_forw_work;
+    external_function_param_casadi_create(sim_forw_vde_casadi, 0);
 
-    sim_impl_dae_fun_jac_x_xdot_z->casadi_fun = &Translational_drone_impl_dae_fun_jac_x_xdot_z;
-    sim_impl_dae_fun_jac_x_xdot_z->casadi_work = &Translational_drone_impl_dae_fun_jac_x_xdot_z_work;
-    sim_impl_dae_fun_jac_x_xdot_z->casadi_sparsity_in = &Translational_drone_impl_dae_fun_jac_x_xdot_z_sparsity_in;
-    sim_impl_dae_fun_jac_x_xdot_z->casadi_sparsity_out = &Translational_drone_impl_dae_fun_jac_x_xdot_z_sparsity_out;
-    sim_impl_dae_fun_jac_x_xdot_z->casadi_n_in = &Translational_drone_impl_dae_fun_jac_x_xdot_z_n_in;
-    sim_impl_dae_fun_jac_x_xdot_z->casadi_n_out = &Translational_drone_impl_dae_fun_jac_x_xdot_z_n_out;
-    external_function_param_casadi_create(sim_impl_dae_fun_jac_x_xdot_z, 0);
-
-    // external_function_param_casadi impl_dae_jac_x_xdot_u_z;
-    sim_impl_dae_jac_x_xdot_u_z->casadi_fun = &Translational_drone_impl_dae_jac_x_xdot_u_z;
-    sim_impl_dae_jac_x_xdot_u_z->casadi_work = &Translational_drone_impl_dae_jac_x_xdot_u_z_work;
-    sim_impl_dae_jac_x_xdot_u_z->casadi_sparsity_in = &Translational_drone_impl_dae_jac_x_xdot_u_z_sparsity_in;
-    sim_impl_dae_jac_x_xdot_u_z->casadi_sparsity_out = &Translational_drone_impl_dae_jac_x_xdot_u_z_sparsity_out;
-    sim_impl_dae_jac_x_xdot_u_z->casadi_n_in = &Translational_drone_impl_dae_jac_x_xdot_u_z_n_in;
-    sim_impl_dae_jac_x_xdot_u_z->casadi_n_out = &Translational_drone_impl_dae_jac_x_xdot_u_z_n_out;
-    external_function_param_casadi_create(sim_impl_dae_jac_x_xdot_u_z, 0);
+    sim_expl_ode_fun_casadi->casadi_fun = &Translational_drone_expl_ode_fun;
+    sim_expl_ode_fun_casadi->casadi_n_in = &Translational_drone_expl_ode_fun_n_in;
+    sim_expl_ode_fun_casadi->casadi_n_out = &Translational_drone_expl_ode_fun_n_out;
+    sim_expl_ode_fun_casadi->casadi_sparsity_in = &Translational_drone_expl_ode_fun_sparsity_in;
+    sim_expl_ode_fun_casadi->casadi_sparsity_out = &Translational_drone_expl_ode_fun_sparsity_out;
+    sim_expl_ode_fun_casadi->casadi_work = &Translational_drone_expl_ode_fun_work;
+    external_function_param_casadi_create(sim_expl_ode_fun_casadi, 0);
 
     
 
     // sim plan & config
     sim_solver_plan plan;
-    plan.sim_solver = IRK;
+    plan.sim_solver = ERK;
 
     // create correct config based on plan
     Translational_drone_sim_config = sim_config_create(plan);
@@ -133,19 +122,6 @@ int Translational_drone_acados_sim_create()
     sim_opts_set(Translational_drone_sim_config, Translational_drone_sim_opts, "jac_reuse", &tmp_bool);
 
 
-    // options that are not available to AcadosOcpSolver
-    //  (in OCP they will be determined by other options, like exact_hessian)
-    tmp_bool = true;
-    sim_opts_set(Translational_drone_sim_config, Translational_drone_sim_opts, "sens_forw", &tmp_bool);
-    tmp_bool = false;
-    sim_opts_set(Translational_drone_sim_config, Translational_drone_sim_opts, "sens_adj", &tmp_bool);
-    tmp_bool = false;
-    sim_opts_set(Translational_drone_sim_config, Translational_drone_sim_opts, "sens_algebraic", &tmp_bool);
-    tmp_bool = false;
-    sim_opts_set(Translational_drone_sim_config, Translational_drone_sim_opts, "sens_hess", &tmp_bool);
-    tmp_bool = false;
-    sim_opts_set(Translational_drone_sim_config, Translational_drone_sim_opts, "output_z", &tmp_bool);
-
 
     // sim in / out
     Translational_drone_sim_in  = sim_in_create(Translational_drone_sim_config, Translational_drone_sim_dims);
@@ -155,11 +131,9 @@ int Translational_drone_acados_sim_create()
 
     // model functions
     Translational_drone_sim_config->model_set(Translational_drone_sim_in->model,
-                 "impl_ode_fun", sim_impl_dae_fun);
+                 "expl_vde_for", sim_forw_vde_casadi);
     Translational_drone_sim_config->model_set(Translational_drone_sim_in->model,
-                 "impl_ode_fun_jac_x_xdot", sim_impl_dae_fun_jac_x_xdot_z);
-    Translational_drone_sim_config->model_set(Translational_drone_sim_in->model,
-                 "impl_ode_jac_x_xdot_u", sim_impl_dae_jac_x_xdot_u_z);
+                 "expl_ode_fun", sim_expl_ode_fun_casadi);
 
     // sim solver
     Translational_drone_sim_solver = sim_solver_create(Translational_drone_sim_config,
@@ -170,8 +144,8 @@ int Translational_drone_acados_sim_create()
 
     /* initialize input */
     // x
-    double x0[6];
-    for (int ii = 0; ii < 6; ii++)
+    double x0[2];
+    for (int ii = 0; ii < 2; ii++)
         x0[ii] = 0.0;
 
     sim_in_set(Translational_drone_sim_config, Translational_drone_sim_dims,
@@ -179,19 +153,19 @@ int Translational_drone_acados_sim_create()
 
 
     // u
-    double u0[5];
-    for (int ii = 0; ii < 5; ii++)
+    double u0[1];
+    for (int ii = 0; ii < 1; ii++)
         u0[ii] = 0.0;
 
     sim_in_set(Translational_drone_sim_config, Translational_drone_sim_dims,
                Translational_drone_sim_in, "u", u0);
 
     // S_forw
-    double S_forw[66];
-    for (int ii = 0; ii < 66; ii++)
-        S_forw[ii] = 0.0;
+    double S_forw[6];
     for (int ii = 0; ii < 6; ii++)
-        S_forw[ii + ii * 6 ] = 1.0;
+        S_forw[ii] = 0.0;
+    for (int ii = 0; ii < 2; ii++)
+        S_forw[ii + ii * 2 ] = 1.0;
 
 
     sim_in_set(Translational_drone_sim_config, Translational_drone_sim_dims,
@@ -226,9 +200,8 @@ int Translational_drone_acados_sim_free()
     sim_config_destroy(Translational_drone_sim_config);
 
     // free external function
-    external_function_param_casadi_free(sim_impl_dae_fun);
-    external_function_param_casadi_free(sim_impl_dae_fun_jac_x_xdot_z);
-    external_function_param_casadi_free(sim_impl_dae_jac_x_xdot_u_z);
+    external_function_param_casadi_free(sim_forw_vde_casadi);
+    external_function_param_casadi_free(sim_expl_ode_fun_casadi);
 
     return 0;
 }
@@ -244,9 +217,8 @@ int Translational_drone_acados_sim_update_params(double *p, int np)
             " External function has %i parameters. Exiting.\n", np, casadi_np);
         exit(1);
     }
-    sim_impl_dae_fun[0].set_param(sim_impl_dae_fun, p);
-    sim_impl_dae_fun_jac_x_xdot_z[0].set_param(sim_impl_dae_fun_jac_x_xdot_z, p);
-    sim_impl_dae_jac_x_xdot_u_z[0].set_param(sim_impl_dae_jac_x_xdot_u_z, p);
+    sim_forw_vde_casadi[0].set_param(sim_forw_vde_casadi, p);
+    sim_expl_ode_fun_casadi[0].set_param(sim_expl_ode_fun_casadi, p);
 
     return status;
 }

@@ -6,14 +6,17 @@ import numpy as np
 import matplotlib.pyplot as plt
 from plotFnc import *
 from utils import *
+from trajectory import *
 
 
-Tf = 2  # prediction horizon
-N = 5  # number of discretization steps
-T = 10.00  # simulation time[s]
+Tf = 1  # prediction horizon
+N = 20  # number of discretization steps
+T = 20.00  # simulation time[s]
+Ts = Tf / N  # sampling time[s]
 
-# load model
-model, acados_solver = acados_settings(Tf, N)
+# load model and acados_solver
+model, acados_solver, acados_integrator = acados_settings(Ts, Tf, N)
+
 
 # dimensions
 nx = model.x.size()[0]
@@ -22,69 +25,69 @@ ny = nx + nu
 Nsim = int(T * N / Tf)
 
 # initialize data structs
-simX = np.ndarray((Nsim, nx))
+predX = np.ndarray((Nsim+1, nx))
+simX = np.ndarray((Nsim+1, nx))
 simU = np.ndarray((Nsim, nu))
-tcomp_sum = 0
+tot_comp_sum = 0
 tcomp_max = 0
 
-#y_ref = np.array([1.0, 1.0, 2.0, 0.0, 0.0, 0.0, 9.81, 1.0, 0.0, 0.0, 0.0])
+# creating a reference trajectory
+traj = 1 # traj = 0: circular trajectory, traj = 1: spiral trajectory
+show_ref_traj = False
+N_steps, x, y, z = trajectory_generator(T, Nsim, traj, show_ref_traj)
+ref_traj = np.stack((x,y,z),1)
 
-# simulate
+# set initial condition for acados integrator
+xcurrent = model.x0.reshape((nx,))
+simX[0,:] = xcurrent
+predX[0,:] = xcurrent
+
+# closed loop
 for i in range(Nsim):
 
-    '''
-    if i < 10: # stay at current position for 1 second
-        for j in range(N):
-            yref = np.array([-0.3, 0, 9.81])
-            acados_solver.set(j, "yref", yref)
-        yref_N = np.array([-0.3,0])
-        acados_solver.set(N,"yref", yref_N)
-    elif i >= 10 and i < 30:
-        for j in range(N): # 
-            yref = np.array([-1, 0, 9.81])
-            acados_solver.set(j, "yref", yref)
-        yref_N = np.array([-1,0])
-        acados_solver.set(N,"yref", yref_N)
-    elif i >= 30 and i < 60:
-        for j in range(N): # 
-            yref = np.array([-0.5, 0, 9.81])
-            acados_solver.set(j, "yref", yref)
-        yref_N = np.array([-0.5,0])
-        acados_solver.set(N,"yref", yref_N)
-    else:
-        for j in range(N): # 
-            yref = np.array([-2.0, 0, 9.81])
-            acados_solver.set(j, "yref", yref)
-        yref_N = np.array([-2.0,0])
-        acados_solver.set(N,"yref", yref_N)
-    '''
+    for j in range(N):
+        yref = np.array([x[i], y[i], z[i], 0.0, 0.0,
+                         0.0, 9.81, 1.0, 0.0, 0.0, 0.0])
+        acados_solver.set(j, "yref", yref)
+    yref_N = np.array([x[i], y[i], z[i], 0.0, 0.0, 0.0])
+    acados_solver.set(N, "yref", yref_N)
 
     # solve ocp for a fixed reference
-    t = time.time()
-
+    acados_solver.set(0, "lbx", xcurrent)
+    acados_solver.set(0, "ubx", xcurrent)
+    comp_time = time.time()
     status = acados_solver.solve()
     if status != 0:
         print("acados returned status {} in closed loop iteration {}.".format(status, i))
 
-    elapsed = time.time() - t
+    elapsed = time.time() - comp_time
 
     # manage timings
-    tcomp_sum += elapsed
+    tot_comp_sum += elapsed
     if elapsed > tcomp_max:
         tcomp_max = elapsed
 
-    # get solution
-    x0 = acados_solver.get(0, "x")
+    # get solution from acados_solver
+    xcurrent_pred = acados_solver.get(1, "x")
     u0 = acados_solver.get(0, "u")
-    for j in range(nx):
-        simX[i, j] = x0[j]
-    for j in range(nu):
-        simU[i, j] = u0[j]
+    predX[i+1,:] = xcurrent_pred
+    simU[i,:] = u0
 
-    # update initial condition
-    x0 = acados_solver.get(1, "x")
-    acados_solver.set(0, "lbx", x0)
-    acados_solver.set(0, "ubx", x0)
+    # simulate the system
+    acados_integrator.set("x", xcurrent)
+    acados_integrator.set("u", u0)
+    # add disturbance to the system (will be done later)
+    '''
+    pertubation = sampleFromEllipsoid(np.zeros((nparam,)), W)
+    acados_integrator.set("p", pertubation)
+    '''
+    status = acados_integrator.solve()
+    if status != 0:
+        raise Exception('acados integrator returned status {}. Exiting.'.format(status))
+    # update state
+    xcurrent = acados_integrator.get("x")
+    simX[i+1,:] = xcurrent
+
 
 
 simU_euler = np.zeros((simU.shape[0], 3))
@@ -95,6 +98,11 @@ for i in range(simU.shape[0]):
 simU_euler = R2D(simU_euler)
 
 # Plot Results
-t = np.linspace(0.0, Nsim * Tf / N, Nsim)
-plotRes3D(simX, simU, simU_euler, t)
+
+t = np.linspace(0,T, Nsim)
+plotSim_pos(simX, predX, ref_traj)
+plotSim_vel(simX, predX)
+plotThrustInputs(t, simU)
+plotAngleInputs(t,simU, simU_euler)
+
 plt.show()
