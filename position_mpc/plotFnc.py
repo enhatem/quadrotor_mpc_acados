@@ -213,22 +213,27 @@ def plotAngleInputs(t,simU,eulerAngles):
     
     plt.tight_layout()
 
+def plotSim3D(simX, predX, ref_traj):
+    # 3D plot of the simulation
+        # plotting the prediction trajectory done by the drone
+    plt.figure()
+    ax = plt.axes(projection = "3d")
+    plt.title('3D trajectories')
+    ax.plot3D(simX[:,0], simX[:,1], simX[:,2], label='sim')
+    ax.plot3D(predX[:,0], predX[:,1], predX[:,2], '--', label='pred')
+    ax.plot3D(ref_traj[:,0], ref_traj[:,1], ref_traj[:,2], '--', label='ref')
+    
+    ax.legend()
+    ax.set_xlabel('x[m]')
+    ax.set_ylabel('[m]')
+    ax.set_zlabel('z[m]')
+
+    plt.tight_layout()
 
 
 def plotRes3D(predX, simX, simU, simU_euler, t):
     # plot results
-    
-    '''
-    plt.figure()
-    plt.subplot(2, 1, 1)
-    plt.step(t, simU[:,0], color='r')
-    # plt.step(t, simU[:,1], color='g')
-    plt.title('closed-loop simulation')
-    plt.legend(['T'])
-    plt.ylabel('u [N]')
-    plt.xlabel('t [s]')
-    plt.grid(True)
-    '''
+
     # plotting the states
     plt.figure()
     plt.title('closed-loop simulation: States')
@@ -330,3 +335,4 @@ def plotRes3D(predX, simX, simU, simU_euler, t):
     y = simX[:,1]
     z = simX[:,2]
     ax4.plot3D(x, y, z)
+

@@ -35,15 +35,29 @@ def acados_settings(Ts, Tf, N):
     ocp.dims.N = N
 
     # set cost 
-    Q = np.diag([1e1, 1e1, 1e1, 2e0, 2e0, 2e0])
+    Q = np.eye(nx)
+    Q[0][0] = 5e0  # weight of px
+    Q[1][1] = 5e0  # weight of py
+    Q[2][2] = 5e0  # weight of pz
+    Q[3][3] = 1e0  # weight of vx
+    Q[4][4] = 1e0  # weight of vy
+    Q[5][5] = 1e0  # weight of vz
+
     R = np.eye(nu)
-    R[1][1] = 5e0 # weight of qw
-    R[2][2] = 5e0 # weight of qx
-    R[3][3] = 5e0 # weight of qy
-    R[4][4] = 5e0 # weight of qz
+    R[0][0] = 1e0 # weight of Thrust
+    R[1][1] = 4e0 # weight of qw
+    R[2][2] = 4e0 # weight of qx
+    R[3][3] = 4e0 # weight of qy
+    R[4][4] = 4e0 # weight of qz
     
 
-    Qe = Q
+    Qe = np.eye(nx)
+    Q[0][0] = 10e0  # terminal weight of px
+    Q[1][1] = 10e0  # terminal weight of py
+    Q[2][2] = 10e0  # terminal weight of pz
+    Q[3][3] = 1e0  # terminal weight of vx
+    Q[4][4] = 1e0  # terminal weight of vy
+    Q[5][5] = 1e0  # terminal weight of vz
 
     ocp.cost.cost_type   = "LINEAR_LS"
     ocp.cost.cost_type_e = "LINEAR_LS"

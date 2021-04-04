@@ -10,7 +10,7 @@ from trajectory import *
 
 
 Tf = 1  # prediction horizon
-N = 20  # number of discretization steps
+N = 100  # number of discretization steps
 T = 20.00  # simulation time[s]
 Ts = Tf / N  # sampling time[s]
 
@@ -32,7 +32,7 @@ tot_comp_sum = 0
 tcomp_max = 0
 
 # creating a reference trajectory
-traj = 1 # traj = 0: circular trajectory, traj = 1: spiral trajectory
+traj = 0 # traj = 0: circular trajectory, traj = 1: spiral trajectory
 show_ref_traj = False
 N_steps, x, y, z = trajectory_generator(T, Nsim, traj, show_ref_traj)
 ref_traj = np.stack((x,y,z),1)
@@ -88,6 +88,9 @@ for i in range(Nsim):
     xcurrent = acados_integrator.get("x")
     simX[i+1,:] = xcurrent
 
+# print the computation times
+print("Average computation time: {}".format(tot_comp_sum / Nsim))
+print("Maximum computation time: {}".format(tcomp_max))
 
 
 simU_euler = np.zeros((simU.shape[0], 3))
@@ -104,5 +107,6 @@ plotSim_pos(simX, predX, ref_traj)
 plotSim_vel(simX, predX)
 plotThrustInputs(t, simU)
 plotAngleInputs(t,simU, simU_euler)
+plotSim3D(simX, predX, ref_traj)
 
 plt.show()
