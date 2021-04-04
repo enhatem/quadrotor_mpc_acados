@@ -104,24 +104,24 @@ def plotPred(predX,ref_traj):
     plt.show()
 
 
-def plotSim_pos(simX, predX,ref_traj):
+def plotSim_pos(t, simX, predX,ref_traj):
     # figure: container holding the plots (can have multiple plots)
     # axes: actual plots
     plt.style.use('seaborn')
     fig, (ax1, ax2, ax3) = plt.subplots(nrows=3, ncols=1, sharex=True)
 
     
-    ax1.plot(simX[:,0], label='x_sim')
-    ax1.plot(predX[:,0], '--', label='x_pred')
-    ax1.plot(ref_traj[:,0], '--', label='x_ref')
+    ax1.plot(t, simX[1:,0], label='x_sim')
+    ax1.plot(t, predX[1:,0], '--', label='x_pred')
+    ax1.plot(t, ref_traj[:,0], '--', label='x_ref')
     #ax1.plot(t, x_ref, '--', label ='x_ref')
-    ax2.plot(simX[:,1], label='y_sim')
-    ax2.plot(predX[:,1], '--', label='y_pred')
-    ax2.plot(ref_traj[:,1], '--', label='y_ref')
+    ax2.plot(t, simX[1:,1], label='y_sim')
+    ax2.plot(t, predX[1:,1], '--', label='y_pred')
+    ax2.plot(t, ref_traj[:,1], '--', label='y_ref')
     #ax2.plot(t, y_ref, '--', label='x_ref')
-    ax3.plot(simX[:,2], label='z_sim')
-    ax3.plot(predX[:,2], '--', label='z_pred')
-    ax3.plot(ref_traj[:,2], '--', label='z_ref')
+    ax3.plot(t, simX[1:,2], label='z_sim')
+    ax3.plot(t, predX[1:,2], '--', label='z_pred')
+    ax3.plot(t, ref_traj[:,2], '--', label='z_ref')
     #ax3.plot(t, z_ref, '--', label='z_ref')
     
     ax1.legend()
@@ -134,7 +134,7 @@ def plotSim_pos(simX, predX,ref_traj):
     ax2.set_ylabel('py[m]')
 
     ax3.legend()
-    ax3.set_xlabel('N')
+    ax3.set_xlabel('t[s]')
     ax3.set_ylabel('pz[m]')
     
     plt.tight_layout()
@@ -144,29 +144,29 @@ def plotSim_pos(simX, predX,ref_traj):
         fig.savefig('figures/states.png')
     '''
 
-def plotSim_vel(simX, predX):
+def plotSim_vel(t, simX, predX):
     # figure: container holding the plots (can have multiple plots)
     # axes: actual plots
     plt.style.use('seaborn')
     fig, (ax1, ax2, ax3) = plt.subplots(nrows=3, ncols=1, sharex=True)
 
     
-    ax1.plot(simX[:,3], label='x_sim')
-    ax1.plot(predX[:,3], '--', label='x_pred')
-    ax2.plot(simX[:,4], label='y_sim')
-    ax2.plot(predX[:,4], '--', label='y_pred')
-    ax3.plot(simX[:,5], label='z_sim')
-    ax3.plot(predX[:,5], '--', label='z_pred')
+    ax1.plot(t, simX[1:,3], label='x_sim')
+    ax1.plot(t, predX[1:,3], '--', label='x_pred')
+    ax2.plot(t, simX[1:,4], label='y_sim')
+    ax2.plot(t, predX[1:,4], '--', label='y_pred')
+    ax3.plot(t, simX[1:,5], label='z_sim')
+    ax3.plot(t, predX[1:,5], '--', label='z_pred')
     
     ax1.legend()
-    ax1.set_title('velocities along each axis')
+    ax1.set_title('Velocities along each axis')
     ax1.set_ylabel('vx[m/s]')
 
     ax2.legend()
     ax2.set_ylabel('vy[m]')
 
     ax3.legend()
-    ax3.set_xlabel('N')
+    ax3.set_xlabel('t[s]')
     ax3.set_ylabel('vz[m/s]')
     
     plt.tight_layout()
@@ -225,7 +225,7 @@ def plotSim3D(simX, predX, ref_traj):
     
     ax.legend()
     ax.set_xlabel('x[m]')
-    ax.set_ylabel('[m]')
+    ax.set_ylabel('y[m]')
     ax.set_zlabel('z[m]')
 
     plt.tight_layout()

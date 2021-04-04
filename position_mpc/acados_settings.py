@@ -45,16 +45,16 @@ def acados_settings(Ts, Tf, N):
 
     R = np.eye(nu)
     R[0][0] = 1e0 # weight of Thrust
-    R[1][1] = 4e0 # weight of qw
-    R[2][2] = 4e0 # weight of qx
-    R[3][3] = 4e0 # weight of qy
-    R[4][4] = 4e0 # weight of qz
+    R[1][1] = 3e0 # weight of qw
+    R[2][2] = 3e0 # weight of qx
+    R[3][3] = 3e0 # weight of qy
+    R[4][4] = 3e0 # weight of qz
     
 
     Qe = np.eye(nx)
-    Q[0][0] = 10e0  # terminal weight of px
-    Q[1][1] = 10e0  # terminal weight of py
-    Q[2][2] = 10e0  # terminal weight of pz
+    Q[0][0] = 5e1  # terminal weight of px
+    Q[1][1] = 5e1  # terminal weight of py
+    Q[2][2] = 5e1  # terminal weight of pz
     Q[3][3] = 1e0  # terminal weight of vx
     Q[4][4] = 1e0  # terminal weight of vy
     Q[5][5] = 1e0  # terminal weight of vz

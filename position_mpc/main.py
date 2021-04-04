@@ -14,6 +14,9 @@ N = 100  # number of discretization steps
 T = 20.00  # simulation time[s]
 Ts = Tf / N  # sampling time[s]
 
+# noise bool
+noisy_input = True
+
 # load model and acados_solver
 model, acados_solver, acados_integrator = acados_settings(Ts, Tf, N)
 
@@ -32,7 +35,7 @@ tot_comp_sum = 0
 tcomp_max = 0
 
 # creating a reference trajectory
-traj = 0 # traj = 0: circular trajectory, traj = 1: spiral trajectory
+traj = 1 # traj = 0: circular trajectory, traj = 1: spiral trajectory
 show_ref_traj = False
 N_steps, x, y, z = trajectory_generator(T, Nsim, traj, show_ref_traj)
 ref_traj = np.stack((x,y,z),1)
@@ -70,6 +73,10 @@ for i in range(Nsim):
     # get solution from acados_solver
     xcurrent_pred = acados_solver.get(1, "x")
     u0 = acados_solver.get(0, "u")
+
+    if noisy_input == True:
+        u0 = add_input_noise(u0, model)
+
     predX[i+1,:] = xcurrent_pred
     simU[i,:] = u0
 
@@ -103,8 +110,8 @@ simU_euler = R2D(simU_euler)
 # Plot Results
 
 t = np.linspace(0,T, Nsim)
-plotSim_pos(simX, predX, ref_traj)
-plotSim_vel(simX, predX)
+plotSim_pos(t, simX, predX, ref_traj)
+plotSim_vel(t, simX, predX)
 plotThrustInputs(t, simU)
 plotAngleInputs(t,simU, simU_euler)
 plotSim3D(simX, predX, ref_traj)
