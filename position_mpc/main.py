@@ -95,9 +95,15 @@ for i in range(Nsim):
     xcurrent = acados_integrator.get("x")
     simX[i+1,:] = xcurrent
 
+# RMSE
+rmse_x, rmse_y, rmse_z = rmseX(simX, ref_traj)
+
 # print the computation times
 print("Average computation time: {}".format(tot_comp_sum / Nsim))
 print("Maximum computation time: {}".format(tcomp_max))
+print("RMSE on x: {}".format(rmse_x))
+print("RMSE on y: {}".format(rmse_y))
+print("RMSE on z: {}".format(rmse_z))
 
 
 simU_euler = np.zeros((simU.shape[0], 3))
@@ -106,6 +112,8 @@ for i in range(simU.shape[0]):
     simU_euler[i, :] = quaternion_to_euler(simU[i, 1:])
 
 simU_euler = R2D(simU_euler)
+
+
 
 # Plot Results
 

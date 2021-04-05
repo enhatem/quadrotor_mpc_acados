@@ -1,6 +1,8 @@
 import numpy as np
 import pyquaternion
 import casadi as cs
+from sklearn.metrics import mean_squared_error
+
 
 def quaternion_to_euler(q):
     q = pyquaternion.Quaternion(w=q[0], x=q[1], y=q[2], z=q[3])
@@ -65,3 +67,10 @@ def add_input_noise(u0,model):
     u_noisy = np.append(T_noisy,q_noisy)
 
     return u_noisy
+
+def rmseX(simX, refX):
+    rmse_x = mean_squared_error(refX[:,0], simX[1:,0], squared=False)
+    rmse_y = mean_squared_error(refX[:,1], simX[1:,1], squared=False)
+    rmse_z = mean_squared_error(refX[:,2], simX[1:,2], squared=False)
+
+    return rmse_x, rmse_y, rmse_z
