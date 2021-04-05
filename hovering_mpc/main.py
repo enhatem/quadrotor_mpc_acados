@@ -31,27 +31,27 @@ for i in range(Nsim):
     
     if i < 10: # stay at current position for 1 second
         for j in range(N):
-            yref = np.array([-0.3, 0, 9.81])
+            yref = np.array([0.3, 0, 9.81])
             acados_solver.set(j, "yref", yref)
-        yref_N = np.array([-0.3,0])
+        yref_N = np.array([0.3,0])
         acados_solver.set(N,"yref", yref_N)
     elif i >= 10 and i < 30:
         for j in range(N): # 
-            yref = np.array([-1, 0, 9.81])
+            yref = np.array([1, 0, 9.81])
             acados_solver.set(j, "yref", yref)
-        yref_N = np.array([-1,0])
+        yref_N = np.array([1,0])
         acados_solver.set(N,"yref", yref_N)
     elif i >= 30 and i < 60:
         for j in range(N): # 
-            yref = np.array([-0.5, 0, 9.81])
+            yref = np.array([0.5, 0, 9.81])
             acados_solver.set(j, "yref", yref)
-        yref_N = np.array([-0.5,0])
+        yref_N = np.array([0.5,0])
         acados_solver.set(N,"yref", yref_N)
     else:
         for j in range(N): # 
-            yref = np.array([-2.0, 0, 9.81])
+            yref = np.array([2.0, 0, 9.81])
             acados_solver.set(j, "yref", yref)
-        yref_N = np.array([-2.0,0])
+        yref_N = np.array([2.0,0])
         acados_solver.set(N,"yref", yref_N)
 
 

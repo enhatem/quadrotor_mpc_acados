@@ -40,52 +40,72 @@
 #include "acados/utils/math.h"
 #include "acados_c/ocp_nlp_interface.h"
 #include "acados_c/external_function_interface.h"
-#include "acados_solver_Hovering_drone.h"
+#include "acados_solver_Translational_drone.h"
 
 
 int main()
 {
 
-    nlp_solver_capsule *acados_ocp_capsule = Hovering_drone_acados_create_capsule();
-    int status = Hovering_drone_acados_create(acados_ocp_capsule);
+    nlp_solver_capsule *acados_ocp_capsule = Translational_drone_acados_create_capsule();
+    int status = Translational_drone_acados_create(acados_ocp_capsule);
 
     if (status)
     {
-        printf("Hovering_drone_acados_create() returned status %d. Exiting.\n", status);
+        printf("Translational_drone_acados_create() returned status %d. Exiting.\n", status);
         exit(1);
     }
 
-    ocp_nlp_config *nlp_config = Hovering_drone_acados_get_nlp_config(acados_ocp_capsule);
-    ocp_nlp_dims *nlp_dims = Hovering_drone_acados_get_nlp_dims(acados_ocp_capsule);
-    ocp_nlp_in *nlp_in = Hovering_drone_acados_get_nlp_in(acados_ocp_capsule);
-    ocp_nlp_out *nlp_out = Hovering_drone_acados_get_nlp_out(acados_ocp_capsule);
-    ocp_nlp_solver *nlp_solver = Hovering_drone_acados_get_nlp_solver(acados_ocp_capsule);
-    void *nlp_opts = Hovering_drone_acados_get_nlp_opts(acados_ocp_capsule);
+    ocp_nlp_config *nlp_config = Translational_drone_acados_get_nlp_config(acados_ocp_capsule);
+    ocp_nlp_dims *nlp_dims = Translational_drone_acados_get_nlp_dims(acados_ocp_capsule);
+    ocp_nlp_in *nlp_in = Translational_drone_acados_get_nlp_in(acados_ocp_capsule);
+    ocp_nlp_out *nlp_out = Translational_drone_acados_get_nlp_out(acados_ocp_capsule);
+    ocp_nlp_solver *nlp_solver = Translational_drone_acados_get_nlp_solver(acados_ocp_capsule);
+    void *nlp_opts = Translational_drone_acados_get_nlp_opts(acados_ocp_capsule);
 
     // initial condition
-    int idxbx0[2];
+    int idxbx0[6];
     idxbx0[0] = 0;
     idxbx0[1] = 1;
+    idxbx0[2] = 2;
+    idxbx0[3] = 3;
+    idxbx0[4] = 4;
+    idxbx0[5] = 5;
 
-    double lbx0[2];
-    double ubx0[2];
-    lbx0[0] = 0.3;
-    ubx0[0] = 0.3;
+    double lbx0[6];
+    double ubx0[6];
+    lbx0[0] = 1;
+    ubx0[0] = 1;
     lbx0[1] = 0;
     ubx0[1] = 0;
+    lbx0[2] = 1;
+    ubx0[2] = 1;
+    lbx0[3] = 0;
+    ubx0[3] = 0;
+    lbx0[4] = 0;
+    ubx0[4] = 0;
+    lbx0[5] = 0;
+    ubx0[5] = 0;
 
     ocp_nlp_constraints_model_set(nlp_config, nlp_dims, nlp_in, 0, "idxbx", idxbx0);
     ocp_nlp_constraints_model_set(nlp_config, nlp_dims, nlp_in, 0, "lbx", lbx0);
     ocp_nlp_constraints_model_set(nlp_config, nlp_dims, nlp_in, 0, "ubx", ubx0);
 
     // initialization for state values
-    double x_init[2];
+    double x_init[6];
     x_init[0] = 0.0;
     x_init[1] = 0.0;
+    x_init[2] = 0.0;
+    x_init[3] = 0.0;
+    x_init[4] = 0.0;
+    x_init[5] = 0.0;
 
     // initial value for control input
-    double u0[1];
+    double u0[5];
     u0[0] = 0.0;
+    u0[1] = 0.0;
+    u0[2] = 0.0;
+    u0[3] = 0.0;
+    u0[4] = 0.0;
 
     // prepare evaluation
     int NTIMINGS = 1;
@@ -94,8 +114,8 @@ int main()
     double elapsed_time;
     int sqp_iter;
 
-    double xtraj[2 * (10+1)];
-    double utraj[1 * (10)];
+    double xtraj[6 * (100+1)];
+    double utraj[5 * (100)];
 
 
     // solve ocp in loop
@@ -110,53 +130,53 @@ int main()
             ocp_nlp_out_set(nlp_config, nlp_dims, nlp_out, i, "u", u0);
         }
         ocp_nlp_solver_opts_set(nlp_config, nlp_opts, "rti_phase", &rti_phase);
-        status = Hovering_drone_acados_solve(acados_ocp_capsule);
+        status = Translational_drone_acados_solve(acados_ocp_capsule);
         ocp_nlp_get(nlp_config, nlp_solver, "time_tot", &elapsed_time);
         min_time = MIN(elapsed_time, min_time);
     }
 
     /* print solution and statistics */
     for (int ii = 0; ii <= nlp_dims->N; ii++)
-        ocp_nlp_out_get(nlp_config, nlp_dims, nlp_out, ii, "x", &xtraj[ii*2]);
+        ocp_nlp_out_get(nlp_config, nlp_dims, nlp_out, ii, "x", &xtraj[ii*6]);
     for (int ii = 0; ii < nlp_dims->N; ii++)
-        ocp_nlp_out_get(nlp_config, nlp_dims, nlp_out, ii, "u", &utraj[ii*1]);
+        ocp_nlp_out_get(nlp_config, nlp_dims, nlp_out, ii, "u", &utraj[ii*5]);
 
     printf("\n--- xtraj ---\n");
-    d_print_exp_tran_mat( 2, 10+1, xtraj, 2 );
+    d_print_exp_tran_mat( 6, 100+1, xtraj, 6 );
     printf("\n--- utraj ---\n");
-    d_print_exp_tran_mat( 1, 10, utraj, 1 );
+    d_print_exp_tran_mat( 5, 100, utraj, 5 );
     // ocp_nlp_out_print(nlp_solver->dims, nlp_out);
 
     printf("\nsolved ocp %d times, solution printed above\n\n", NTIMINGS);
 
     if (status == ACADOS_SUCCESS)
     {
-        printf("Hovering_drone_acados_solve(): SUCCESS!\n");
+        printf("Translational_drone_acados_solve(): SUCCESS!\n");
     }
     else
     {
-        printf("Hovering_drone_acados_solve() failed with status %d.\n", status);
+        printf("Translational_drone_acados_solve() failed with status %d.\n", status);
     }
 
     // get solution
     ocp_nlp_out_get(nlp_config, nlp_dims, nlp_out, 0, "kkt_norm_inf", &kkt_norm_inf);
     ocp_nlp_get(nlp_config, nlp_solver, "sqp_iter", &sqp_iter);
 
-    Hovering_drone_acados_print_stats(acados_ocp_capsule);
+    Translational_drone_acados_print_stats(acados_ocp_capsule);
 
     printf("\nSolver info:\n");
     printf(" SQP iterations %2d\n minimum time for %d solve %f [ms]\n KKT %e\n",
            sqp_iter, NTIMINGS, min_time*1000, kkt_norm_inf);
 
     // free solver
-    status = Hovering_drone_acados_free(acados_ocp_capsule);
+    status = Translational_drone_acados_free(acados_ocp_capsule);
     if (status) {
-        printf("Hovering_drone_acados_free() returned status %d. \n", status);
+        printf("Translational_drone_acados_free() returned status %d. \n", status);
     }
     // free solver capsule
-    status = Hovering_drone_acados_free_capsule(acados_ocp_capsule);
+    status = Translational_drone_acados_free_capsule(acados_ocp_capsule);
     if (status) {
-        printf("Hovering_drone_acados_free_capsule() returned status %d. \n", status);
+        printf("Translational_drone_acados_free_capsule() returned status %d. \n", status);
     }
 
     return status;

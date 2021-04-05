@@ -320,7 +320,7 @@ int Hovering_drone_acados_create(nlp_solver_capsule * capsule)
 
     double yref_0[NY0];
     
-    yref_0[0] = -1;
+    yref_0[0] = 1;
     yref_0[1] = 0;
     yref_0[2] = 9.81;
     ocp_nlp_cost_model_set(nlp_config, nlp_dims, nlp_in, 0, "yref", yref_0);
@@ -341,7 +341,7 @@ int Hovering_drone_acados_create(nlp_solver_capsule * capsule)
 
     double yref[NY];
     
-    yref[0] = -1;
+    yref[0] = 1;
     yref[1] = 0;
     yref[2] = 9.81;
 
@@ -407,7 +407,7 @@ int Hovering_drone_acados_create(nlp_solver_capsule * capsule)
 
     double yref_e[NYN];
     
-    yref_e[0] = -1;
+    yref_e[0] = 1;
     yref_e[1] = 0;
     ocp_nlp_cost_model_set(nlp_config, nlp_dims, nlp_in, N, "yref", yref_e);
 
@@ -441,8 +441,8 @@ int Hovering_drone_acados_create(nlp_solver_capsule * capsule)
     double lbx0[2];
     double ubx0[2];
     
-    lbx0[0] = -0.3;
-    ubx0[0] = -0.3;
+    lbx0[0] = 0.3;
+    ubx0[0] = 0.3;
     lbx0[1] = 0;
     ubx0[1] = 0;
 
@@ -571,7 +571,7 @@ int Hovering_drone_acados_create(nlp_solver_capsule * capsule)
 
     // initialize with x0
     
-    x0[0] = -0.3;
+    x0[0] = 0.3;
     x0[1] = 0;
 
 

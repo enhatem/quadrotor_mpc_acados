@@ -1,9 +1,11 @@
 from acados_template import AcadosModel, AcadosOcp, AcadosOcpSolver
 from drone_model import drone_model
+from acados_integrator import export_drone_integrator
+
 import scipy.linalg
 import numpy as np
 
-def acados_settings(Tf, N):
+def acados_settings(Ts, Tf, N):
 
     # create OCP object to formulate the optimization
     ocp = AcadosOcp()
@@ -33,17 +35,33 @@ def acados_settings(Tf, N):
     ocp.dims.N = N
 
     # set cost 
-    Q = np.diag([5, 1e-1])
-    R = np.eye(nu)
+    Q = np.eye(nx)
+    Q[0][0] = 1e1  # weight of px
+    Q[1][1] = 1e1  # weight of py
+    Q[2][2] = 1e1  # weight of pz
+    Q[3][3] = 1e-1  # weight of vx
+    Q[4][4] = 1e-1  # weight of vy
+    Q[5][5] = 1e-1  # weight of vz
 
-    Qe = Q
+    R = np.eye(nu)
+    R[0][0] = 1e0 # weight of Thrust
+    R[1][1] = 3e0 # weight of qw
+    R[2][2] = 3e0 # weight of qx
+    R[3][3] = 3e0 # weight of qy
+    R[4][4] = 3e0 # weight of qz
+    
+
+    Qe = np.eye(nx)
+    Qe[0][0] = 5e1  # terminal weight of px
+    Qe[1][1] = 5e1  # terminal weight of py
+    Qe[2][2] = 5e1  # terminal weight of pz
+    Qe[3][3] = 1e-1  # terminal weight of vx
+    Qe[4][4] = 1e-1  # terminal weight of vy
+    Qe[5][5] = 1e-1  # terminal weight of vz
+
 
     ocp.cost.cost_type   = "LINEAR_LS"
     ocp.cost.cost_type_e = "LINEAR_LS"
-
-    # unscale = N / Tf
-    # ocp.cost.W   = unscale * scipy.linalg.block_diag(Q,R)
-    # ocp.cost.W_e = Qe / unscale
     
     ocp.cost.W   = scipy.linalg.block_diag(Q,R)
     ocp.cost.W_e = Qe
@@ -53,7 +71,7 @@ def acados_settings(Tf, N):
     ocp.cost.Vx = Vx
 
     Vu = np.zeros((ny, nu))
-    Vu[2,0] = 1.0
+    Vu[-5:,-5:] = np.eye(nu)
     ocp.cost.Vu = Vu
 
     Vx_e = np.zeros((ny_e, nx))
@@ -61,14 +79,20 @@ def acados_settings(Tf, N):
     ocp.cost.Vx_e = Vx_e
     
     # Initial reference trajectory (can be overwritten during the simulation if required)
-    x_ref = np.array([1, 0])
-    ocp.cost.yref   = np.concatenate((x_ref, np.array([9.81])))
+    x_ref = np.array([1.0, 1.0, 2.0, 0.0, 0.0, 0.0])
+    ocp.cost.yref   = np.concatenate((x_ref, np.array([9.81, 1.0, 0.0, 0.0, 0.0])))
+
     ocp.cost.yref_e = x_ref
 
     # set constraints
     ocp.constraints.lbu   = np.array([model.throttle_min])
     ocp.constraints.ubu   = np.array([model.throttle_max])
     ocp.constraints.idxbu = np.array([0])
+
+    ocp.constraints.lbx = np.array([-15.0, -15.0, -15.0]) # lower bounds on the velocity states
+    ocp.constraints.ubx = np.array([15.0,  15.0,  15.0]) # upper bounds on the velocity states
+    ocp.constraints.idxbx = np.array([3, 4, 5])
+
 
     # set initial condition
     ocp.constraints.x0 = model.x0
@@ -88,5 +112,7 @@ def acados_settings(Tf, N):
     acados_solver = AcadosOcpSolver(ocp, json_file=(model_ac.name + "_" + "acados_ocp.json"))
 
 
+    acados_integrator = export_drone_integrator(Ts, model_ac)
 
-    return model, acados_solver
+
+    return model, acados_solver, acados_integrator

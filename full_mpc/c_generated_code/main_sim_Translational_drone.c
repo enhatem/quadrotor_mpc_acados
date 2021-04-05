@@ -39,13 +39,13 @@
 #include "acados/utils/print.h"
 #include "acados/utils/math.h"
 #include "acados_c/sim_interface.h"
-#include "acados_sim_solver_Hovering_drone.h"
+#include "acados_sim_solver_Translational_drone.h"
 
 
 int main()
 {
     int status = 0;
-    status = Hovering_drone_acados_sim_create();
+    status = Translational_drone_acados_sim_create();
 
     if (status)
     {
@@ -54,39 +54,44 @@ int main()
     }
 
     // initial condition
-    double x_current[2];
+    double x_current[6];
     x_current[0] = 0.0;
     x_current[1] = 0.0;
+    x_current[2] = 0.0;
+    x_current[3] = 0.0;
+    x_current[4] = 0.0;
+    x_current[5] = 0.0;
 
   
-    x_current[0] = 0.3;
-    x_current[1] = 0;
-    
-  
+    printf("main_sim: initial state not defined, should be in lbx_0, using zero vector.");
 
 
     // initial value for control input
-    double u0[1];
+    double u0[5];
     u0[0] = 0.0;
+    u0[1] = 0.0;
+    u0[2] = 0.0;
+    u0[3] = 0.0;
+    u0[4] = 0.0;
 
     int n_sim_steps = 3;
     // solve ocp in loop
     for (int ii = 0; ii < n_sim_steps; ii++)
     {
-        sim_in_set(Hovering_drone_sim_config, Hovering_drone_sim_dims,
-            Hovering_drone_sim_in, "x", x_current);
-        status = Hovering_drone_acados_sim_solve();
+        sim_in_set(Translational_drone_sim_config, Translational_drone_sim_dims,
+            Translational_drone_sim_in, "x", x_current);
+        status = Translational_drone_acados_sim_solve();
 
         if (status != ACADOS_SUCCESS)
         {
             printf("acados_solve() failed with status %d.\n", status);
         }
 
-        sim_out_get(Hovering_drone_sim_config, Hovering_drone_sim_dims,
-               Hovering_drone_sim_out, "x", x_current);
+        sim_out_get(Translational_drone_sim_config, Translational_drone_sim_dims,
+               Translational_drone_sim_out, "x", x_current);
         
         printf("\nx_current, %d\n", ii);
-        for (int jj = 0; jj < 2; jj++)
+        for (int jj = 0; jj < 6; jj++)
         {
             printf("%e\n", x_current[jj]);
         }
@@ -95,9 +100,9 @@ int main()
     printf("\nPerformed %d simulation steps with acados integrator successfully.\n\n", n_sim_steps);
 
     // free solver
-    status = Hovering_drone_acados_sim_free();
+    status = Translational_drone_acados_sim_free();
     if (status) {
-        printf("Hovering_drone_acados_sim_free() returned status %d. \n", status);
+        printf("Translational_drone_acados_sim_free() returned status %d. \n", status);
     }
 
     return status;

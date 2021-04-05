@@ -55,10 +55,10 @@ static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* iw,
   w0 = arg[0] ? arg[0][1] : 0;
   /* #1: output[0][0] = @0 */
   if (res[0]) res[0][0] = w0;
-  /* #2: @0 = 9.81 */
-  w0 = 9.8100000000000005e+00;
-  /* #3: @1 = input[1][0] */
-  w1 = arg[1] ? arg[1][0] : 0;
+  /* #2: @0 = input[1][0] */
+  w0 = arg[1] ? arg[1][0] : 0;
+  /* #3: @1 = 9.81 */
+  w1 = 9.8100000000000005e+00;
   /* #4: @0 = (@0-@1) */
   w0 -= w1;
   /* #5: output[0][1] = @0 */

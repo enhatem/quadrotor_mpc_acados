@@ -31,74 +31,44 @@
  * POSSIBILITY OF SUCH DAMAGE.;
  */
 
+#ifndef ACADOS_SIM_Translational_drone_H_
+#define ACADOS_SIM_Translational_drone_H_
 
-// standard
-#include <stdio.h>
-#include <stdlib.h>
-// acados
-#include "acados/utils/print.h"
-#include "acados/utils/math.h"
 #include "acados_c/sim_interface.h"
-#include "acados_sim_solver_Hovering_drone.h"
+#include "acados_c/external_function_interface.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-int main()
-{
-    int status = 0;
-    status = Hovering_drone_acados_sim_create();
+int Translational_drone_acados_sim_create();
+int Translational_drone_acados_sim_solve();
+int Translational_drone_acados_sim_free();
+int Translational_drone_acados_sim_update_params(double *value, int np);
 
-    if (status)
-    {
-        printf("acados_create() returned status %d. Exiting.\n", status);
-        exit(1);
-    }
+sim_config  * Translational_drone_acados_get_sim_config();
+sim_in      * Translational_drone_acados_get_sim_in();
+sim_out     * Translational_drone_acados_get_sim_out();
+void        * Translational_drone_acados_get_sim_dims();
+sim_opts    * Translational_drone_acados_get_sim_opts();
+sim_solver  * Translational_drone_acados_get_sim_solver();
 
-    // initial condition
-    double x_current[2];
-    x_current[0] = 0.0;
-    x_current[1] = 0.0;
+// ** global data **
+extern sim_config  * Translational_drone_sim_config;
+extern sim_in      * Translational_drone_sim_in;
+extern sim_out     * Translational_drone_sim_out;
+extern void        * Translational_drone_sim_dims;
+extern sim_opts    * Translational_drone_sim_opts;
+extern sim_solver  * Translational_drone_sim_solver;
 
-  
-    x_current[0] = 0.3;
-    x_current[1] = 0;
-    
-  
-
-
-    // initial value for control input
-    double u0[1];
-    u0[0] = 0.0;
-
-    int n_sim_steps = 3;
-    // solve ocp in loop
-    for (int ii = 0; ii < n_sim_steps; ii++)
-    {
-        sim_in_set(Hovering_drone_sim_config, Hovering_drone_sim_dims,
-            Hovering_drone_sim_in, "x", x_current);
-        status = Hovering_drone_acados_sim_solve();
-
-        if (status != ACADOS_SUCCESS)
-        {
-            printf("acados_solve() failed with status %d.\n", status);
-        }
-
-        sim_out_get(Hovering_drone_sim_config, Hovering_drone_sim_dims,
-               Hovering_drone_sim_out, "x", x_current);
-        
-        printf("\nx_current, %d\n", ii);
-        for (int jj = 0; jj < 2; jj++)
-        {
-            printf("%e\n", x_current[jj]);
-        }
-    }
-
-    printf("\nPerformed %d simulation steps with acados integrator successfully.\n\n", n_sim_steps);
-
-    // free solver
-    status = Hovering_drone_acados_sim_free();
-    if (status) {
-        printf("Hovering_drone_acados_sim_free() returned status %d. \n", status);
-    }
-
-    return status;
+#ifdef __cplusplus
 }
+#endif
+
+
+extern external_function_param_casadi * sim_impl_dae_fun;
+extern external_function_param_casadi * sim_impl_dae_fun_jac_x_xdot_z;
+extern external_function_param_casadi * sim_impl_dae_jac_x_xdot_u_z;
+
+
+#endif  // ACADOS_SIM_Translational_drone_H_

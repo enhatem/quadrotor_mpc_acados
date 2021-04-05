@@ -3,18 +3,21 @@ import numpy as np
 
 def plotRes(simX,simU,t):
     # plot results
-    plt.figure()
-    plt.subplot(2, 1, 1)
-    plt.step(t, simU[:,0], color='r')
-    # plt.step(t, simU[:,1], color='g')
-    plt.title('closed-loop simulation')
-    plt.legend(['T'])
-    plt.ylabel('u [N]')
-    plt.xlabel('t [s]')
-    plt.grid(True)
-    plt.subplot(2, 1, 2)
-    plt.plot(t, simX[:,:])
-    plt.ylabel('x')
-    plt.xlabel('t [s]')
-    plt.legend(['pz','vz'])
-    plt.grid(True)
+
+    plt.style.use('seaborn')
+    fig, (ax1,ax2,ax3) = plt.subplots(nrows=3, ncols=1, sharex=True)
+
+    ax1.step(t, simU[:,0], label = 'T')
+    ax2.plot(t, simX[:,0], label='pz')
+    ax3.plot(t, simX[:,1], label='vz')
+
+    ax1.set_title('closed-loop simulation')
+    ax1.set_ylabel('T [N]')
+    ax1.legend()
+
+    ax2.set_ylabel('pz[m]')
+    ax2.legend()
+
+    ax3.set_ylabel('vz[m]')
+    ax3.set_xlabel('t[s]')
+    ax3.legend()
