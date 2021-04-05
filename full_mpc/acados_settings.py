@@ -36,28 +36,35 @@ def acados_settings(Ts, Tf, N):
 
     # set cost 
     Q = np.eye(nx)
-    Q[0][0] = 1e1  # weight of px
-    Q[1][1] = 1e1  # weight of py
-    Q[2][2] = 1e1  # weight of pz
-    Q[3][3] = 1e-1  # weight of vx
-    Q[4][4] = 1e-1  # weight of vy
-    Q[5][5] = 1e-1  # weight of vz
+    Q[0][0] = 1e1   # weight of px
+    Q[1][1] = 1e1   # weight of py
+    Q[2][2] = 1e1   # weight of pz
+    Q[3][3] = 1e-1  # weight of qw
+    Q[4][4] = 1e-1  # weight of qx
+    Q[5][5] = 1e-1  # weight of qy
+    Q[6][6] = 1e-1  # weight of qz
+    Q[7][7] = 1e-2  # weight of vx
+    Q[8][8] = 1e-2  # weight of vy
+    Q[9][9] = 1e-2  # weight of vz
 
     R = np.eye(nu)
-    R[0][0] = 1e0 # weight of Thrust
-    R[1][1] = 3e0 # weight of qw
-    R[2][2] = 3e0 # weight of qx
-    R[3][3] = 3e0 # weight of qy
-    R[4][4] = 3e0 # weight of qz
+    R[0][0] = 1e0  # weight of Thrust
+    R[1][1] = 1e-2 # weight of wx
+    R[2][2] = 1e-2 # weight of wy
+    R[3][3] = 1e-2 # weight of wz
     
 
     Qe = np.eye(nx)
-    Qe[0][0] = 5e1  # terminal weight of px
-    Qe[1][1] = 5e1  # terminal weight of py
-    Qe[2][2] = 5e1  # terminal weight of pz
-    Qe[3][3] = 1e-1  # terminal weight of vx
-    Qe[4][4] = 1e-1  # terminal weight of vy
-    Qe[5][5] = 1e-1  # terminal weight of vz
+    Qe[0][0] = 5e1   # terminal weight of px
+    Qe[1][1] = 5e1   # terminal weight of py
+    Qe[2][2] = 5e1   # terminal weight of pz
+    Qe[3][3] = 1e-1  # terminal weight of qw
+    Qe[4][4] = 1e-1  # terminal weight of qx
+    Qe[5][5] = 1e-1  # terminal weight of qy
+    Qe[6][6] = 1e-1  # terminal weight of qz
+    Qe[7][7] = 1e-2  # terminal weight of vx
+    Qe[8][8] = 1e-2  # terminal weight of vy
+    Qe[9][9] = 1e-2  # terminal weight of vz
 
 
     ocp.cost.cost_type   = "LINEAR_LS"
@@ -71,7 +78,7 @@ def acados_settings(Ts, Tf, N):
     ocp.cost.Vx = Vx
 
     Vu = np.zeros((ny, nu))
-    Vu[-5:,-5:] = np.eye(nu)
+    Vu[-4:,-4:] = np.eye(nu)
     ocp.cost.Vu = Vu
 
     Vx_e = np.zeros((ny_e, nx))
@@ -79,8 +86,8 @@ def acados_settings(Ts, Tf, N):
     ocp.cost.Vx_e = Vx_e
     
     # Initial reference trajectory (can be overwritten during the simulation if required)
-    x_ref = np.array([1.0, 1.0, 2.0, 0.0, 0.0, 0.0])
-    ocp.cost.yref   = np.concatenate((x_ref, np.array([9.81, 1.0, 0.0, 0.0, 0.0])))
+    x_ref = np.array([1.0, 0.0, 0.8, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+    ocp.cost.yref   = np.concatenate((x_ref, np.array([9.81, 0.0, 0.0, 0.0])))
 
     ocp.cost.yref_e = x_ref
 
@@ -89,10 +96,11 @@ def acados_settings(Ts, Tf, N):
     ocp.constraints.ubu   = np.array([model.throttle_max])
     ocp.constraints.idxbu = np.array([0])
 
+    '''
     ocp.constraints.lbx = np.array([-15.0, -15.0, -15.0]) # lower bounds on the velocity states
-    ocp.constraints.ubx = np.array([15.0,  15.0,  15.0]) # upper bounds on the velocity states
+    ocp.constraints.ubx = np.array([ 15.0,  15.0,  15.0]) # upper bounds on the velocity states
     ocp.constraints.idxbx = np.array([3, 4, 5])
-
+    '''
 
     # set initial condition
     ocp.constraints.x0 = model.x0

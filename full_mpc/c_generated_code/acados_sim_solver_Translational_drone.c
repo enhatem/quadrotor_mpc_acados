@@ -67,8 +67,8 @@ external_function_param_casadi * sim_impl_dae_jac_x_xdot_u_z;
 int Translational_drone_acados_sim_create()
 {
     // initialize
-    int nx = 6;
-    int nu = 5;
+    int nx = 10;
+    int nu = 4;
     int nz = 0;
 
     
@@ -170,8 +170,8 @@ int Translational_drone_acados_sim_create()
 
     /* initialize input */
     // x
-    double x0[6];
-    for (int ii = 0; ii < 6; ii++)
+    double x0[10];
+    for (int ii = 0; ii < 10; ii++)
         x0[ii] = 0.0;
 
     sim_in_set(Translational_drone_sim_config, Translational_drone_sim_dims,
@@ -179,19 +179,19 @@ int Translational_drone_acados_sim_create()
 
 
     // u
-    double u0[5];
-    for (int ii = 0; ii < 5; ii++)
+    double u0[4];
+    for (int ii = 0; ii < 4; ii++)
         u0[ii] = 0.0;
 
     sim_in_set(Translational_drone_sim_config, Translational_drone_sim_dims,
                Translational_drone_sim_in, "u", u0);
 
     // S_forw
-    double S_forw[66];
-    for (int ii = 0; ii < 66; ii++)
+    double S_forw[140];
+    for (int ii = 0; ii < 140; ii++)
         S_forw[ii] = 0.0;
-    for (int ii = 0; ii < 6; ii++)
-        S_forw[ii + ii * 6 ] = 1.0;
+    for (int ii = 0; ii < 10; ii++)
+        S_forw[ii + ii * 10 ] = 1.0;
 
 
     sim_in_set(Translational_drone_sim_config, Translational_drone_sim_dims,

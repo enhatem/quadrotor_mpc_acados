@@ -40,16 +40,17 @@ def R2D(rad):
 def add_input_noise(u0,model):
     # Apply noise to inputs (uniformly distributed noise with standard deviation proportional to input magnitude)
     T = np.array([u0[0]])
-    q = u0[1:]
-    roll, pitch, yaw = quaternion_to_euler(q)
+    w = u0[1:]
+
     mean = 0
     std_T = 0.01
-    std_Angles = 0.01
+    std_w = np.std(w)
     
     # std_q = np.std(q)
     T_noisy = T + np.random.normal(mean, std_T)
     T_noisy = max(min(T_noisy ,model.throttle_max), model.throttle_min)
 
+    '''
     roll_noisy = roll + np.random.normal(mean, std_Angles)
     pitch_noisy = pitch + np.random.normal(mean, std_Angles)
     yaw_noisy = yaw + np.random.normal(mean, std_Angles)
@@ -58,13 +59,13 @@ def add_input_noise(u0,model):
 
     # ensure that q_noisy is of unit modulus 
     q_noisy = unit_quat(q_noisy)
-
-
-    #for i, ui in enumerate(q):
-    #    q[i] = ui + np.random.normal(mean, std_q)
+    '''
+    w_noisy = np.zeros_like(w)
+    for i, ui in enumerate(w):
+        w_noisy[i] = ui + np.random.normal(mean, std_w)
     
     # create new noisy input vector
-    u_noisy = np.append(T_noisy,q_noisy)
+    u_noisy = np.append(T_noisy,w_noisy)
 
     return u_noisy
 

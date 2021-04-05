@@ -4,8 +4,8 @@
     "code_export_directory": "c_generated_code",
     "dims": {
         "np": 0,
-        "nu": 5,
-        "nx": 6,
+        "nu": 4,
+        "nx": 10,
         "nz": 0
     },
     "model": {

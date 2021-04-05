@@ -68,21 +68,17 @@ fprintf('\n\nNote: Usage of Sfunction is as follows:\n')
 input_note = 'Inputs are:\n';
 i_in = 1;
 input_note = strcat(input_note, num2str(i_in), ') lbx_0 - lower bound on x for stage 0,',...
-                    ' size [6]\n ');
+                    ' size [10]\n ');
 i_in = i_in + 1;
 input_note = strcat(input_note, num2str(i_in), ') ubx_0 - upper bound on x for stage 0,',...
-                    ' size [6]\n ');
+                    ' size [10]\n ');
 i_in = i_in + 1;
-input_note = strcat(input_note, num2str(i_in), ') y_ref_0, size [11]\n ');
+input_note = strcat(input_note, num2str(i_in), ') y_ref_0, size [14]\n ');
 i_in = i_in + 1;
 input_note = strcat(input_note, num2str(i_in), ') y_ref - concatenated for shooting nodes 1 to N-1,',...
-                    ' size [1089]\n ');
+                    ' size [1386]\n ');
 i_in = i_in + 1;
-input_note = strcat(input_note, num2str(i_in), ') y_ref_e, size [6]\n ');
-i_in = i_in + 1;
-input_note = strcat(input_note, num2str(i_in), ') lbx for shooting nodes 1 to N-1, size [297]\n ');
-i_in = i_in + 1;
-input_note = strcat(input_note, num2str(i_in), ') ubx for shooting nodes 1 to N-1, size [297]\n ');
+input_note = strcat(input_note, num2str(i_in), ') y_ref_e, size [10]\n ');
 i_in = i_in + 1;
 input_note = strcat(input_note, num2str(i_in), ') lbu for shooting nodes 0 to N-1, size [100]\n ');
 i_in = i_in + 1;
@@ -96,7 +92,7 @@ disp(' ')
 output_note = 'Outputs are:\n';
 i_out = 0;
 i_out = i_out + 1;
-output_note = strcat(output_note, num2str(i_out), ') u0, control input at node 0, size [5]\n ');
+output_note = strcat(output_note, num2str(i_out), ') u0, control input at node 0, size [4]\n ');
 i_out = i_out + 1;
 output_note = strcat(output_note, num2str(i_out), ') acados solver status (0 = SUCCESS)\n ');
 i_out = i_out + 1;
