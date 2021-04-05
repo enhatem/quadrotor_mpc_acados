@@ -151,7 +151,7 @@ def plotSim_Angles(t, simX, simEuler, save=True):
     ax2.plot(t,simEuler[1:,2], label='psi')
 
     ax1.set_title('States: Angles')
-    ax1.set_ylabel('q')
+    ax1.set_ylabel('quaternions')
     ax1.legend()
 
     ax2.set_ylabel('Euler angles [deg]')
@@ -172,7 +172,7 @@ def plotSim_vel(t, simX, save=False):
     ax3.plot(t, simX[1:,9], label='vz')
     
     ax1.legend()
-    ax1.set_title('States: linear velocities')
+    ax1.set_title('States: Linear velocities')
     ax1.set_ylabel('vx[m/s]')
 
     ax2.legend()
@@ -258,9 +258,9 @@ def plotSim3D(simX, ref_traj, save=False):
         # plotting the prediction trajectory done by the drone
     fig = plt.figure()
     ax = plt.axes(projection = "3d")
-    plt.title('3D trajectories')
+    plt.title('3D trajectory')
     ax.plot3D(simX[:,0], simX[:,1], simX[:,2], label='sim')
-    ax.plot3D(ref_traj[:,0], ref_traj[:,1], ref_traj[:,2], '--', label='ref')
+    ax.plot3D(ref_traj[:,0], ref_traj[:,1], ref_traj[:,2], 'r--', label='ref')
     
     ax.legend()
     ax.set_xlabel('x[m]')

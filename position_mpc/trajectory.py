@@ -26,7 +26,7 @@ def trajectory_generator(T_final, N, traj=0, show_traj=False):
             ax.set_zlabel("z[m]")
             plt.show()    
 
-    ## spiral trajectory
+    ## hellical trajectory
     if traj ==1: 
         t = np.linspace(0,T_final,N)
         x = r * np.cos(th) + c_x

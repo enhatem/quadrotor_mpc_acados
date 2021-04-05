@@ -14,6 +14,11 @@ def drone_model():
     # Length of motor to CoG segment
     length = 0.47 / 2  # m
 
+    # crazyflie 2.0 parameters
+    # m = 0.027 # m=27g
+    # J = np.array([1.657171e-05, 1.657171e-05, 2.9261652e-05])
+    # length = 0.046
+
     # constants
     g = 9.81 # m/s^2
 
@@ -73,10 +78,11 @@ def drone_model():
 
     # input bounds
     model.throttle_min = 0
-    model.throttle_max = 2*g
+    # model.throttle_max = 57e-3 * g # max_thrust = 57g
+    model.throttle_max = 2*g 
 
     # define initial condition
-    model.x0 = np.array([1.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+    model.x0 = np.array([0.8, 0.8, 0.3, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
 
     # define model struct
     params = types.SimpleNamespace()

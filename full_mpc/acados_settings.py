@@ -13,6 +13,9 @@ def acados_settings(Ts, Tf, N):
     # export model
     model = drone_model()
 
+    # constants
+    g = 9.81 # m/s^2
+
     # define acados ODE 
     model_ac = AcadosModel()
     model_ac.f_impl_expr = model.f_impl_expr
@@ -36,23 +39,22 @@ def acados_settings(Ts, Tf, N):
 
     # set cost 
     Q = np.eye(nx)
-    Q[0][0] = 1e1   # weight of px
-    Q[1][1] = 1e1   # weight of py
-    Q[2][2] = 1e1   # weight of pz
-    Q[3][3] = 1e-1  # weight of qw
-    Q[4][4] = 1e-1  # weight of qx
-    Q[5][5] = 1e-1  # weight of qy
+    Q[0][0] = 5e0   # weight of px
+    Q[1][1] = 5e0   # weight of py
+    Q[2][2] = 5e0   # weight of pz
+    Q[3][3] = 1e-2  # weight of qw
+    Q[4][4] = 1e-2  # weight of qx
+    Q[5][5] = 1e-2  # weight of qy
     Q[6][6] = 1e-1  # weight of qz
     Q[7][7] = 1e-2  # weight of vx
     Q[8][8] = 1e-2  # weight of vy
     Q[9][9] = 1e-2  # weight of vz
 
     R = np.eye(nu)
-    R[0][0] = 1e0  # weight of Thrust
+    R[0][0] = 1e-2  # weight of Thrust
     R[1][1] = 1e-2 # weight of wx
     R[2][2] = 1e-2 # weight of wy
     R[3][3] = 1e-2 # weight of wz
-    
 
     Qe = np.eye(nx)
     Qe[0][0] = 5e1   # terminal weight of px
@@ -62,9 +64,9 @@ def acados_settings(Ts, Tf, N):
     Qe[4][4] = 1e-1  # terminal weight of qx
     Qe[5][5] = 1e-1  # terminal weight of qy
     Qe[6][6] = 1e-1  # terminal weight of qz
-    Qe[7][7] = 1e-2  # terminal weight of vx
-    Qe[8][8] = 1e-2  # terminal weight of vy
-    Qe[9][9] = 1e-2  # terminal weight of vz
+    Qe[7][7] = 1e-1  # terminal weight of vx
+    Qe[8][8] = 1e-1  # terminal weight of vy
+    Qe[9][9] = 1e-1  # terminal weight of vz
 
 
     ocp.cost.cost_type   = "LINEAR_LS"
@@ -85,9 +87,9 @@ def acados_settings(Ts, Tf, N):
     Vx_e[:nx, :nx] = np.eye(nx)
     ocp.cost.Vx_e = Vx_e
     
-    # Initial reference trajectory (can be overwritten during the simulation if required)
-    x_ref = np.array([1.0, 0.0, 0.8, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
-    ocp.cost.yref   = np.concatenate((x_ref, np.array([9.81, 0.0, 0.0, 0.0])))
+    # Initial reference trajectory (will be overwritten during the simulation)
+    x_ref = np.array([1.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+    ocp.cost.yref   = np.concatenate((x_ref, np.array([model.params.m * g, 0.0, 0.0, 0.0])))
 
     ocp.cost.yref_e = x_ref
 

@@ -8,13 +8,17 @@ from utils import *
 from trajectory import *
 
 
-Tf = 1  # prediction horizon
-N = 100  # number of discretization steps
-T = 20.00  # simulation time[s]
+# mpc and simulation parameters
+Tf = 1       # prediction horizon
+N = 100      # number of discretization steps
+T = 30.00    # simulation time[s]
 Ts = Tf / N  # sampling time[s]
 
+# constants
+g = 9.81     # m/s^2
+
 # noise bool
-noisy_input = True
+noisy_input = False
 
 # load model and acados_solver
 model, acados_solver, acados_integrator = acados_settings(Ts, Tf, N)
@@ -34,7 +38,7 @@ tot_comp_sum = 0
 tcomp_max = 0
 
 # creating a reference trajectory
-traj = 2  # traj = 0: circular trajectory, traj = 1: spiral trajectory
+traj = 1  # traj = 0: circular trajectory, traj = 1: hellical trajectory
 show_ref_traj = False
 N_steps, x, y, z = trajectory_generator(T, Nsim, traj, show_ref_traj)
 ref_traj = np.stack((x, y, z), 1)
@@ -50,7 +54,7 @@ for i in range(Nsim):
     # updating references
     for j in range(N):
         yref = np.array([x[i], y[i], z[i], 1.0, 0.0, 0.0, 0.0,
-                         0.0, 0.0, 0.0, 9.81, 0.0, 0.0, 0.0])
+                         0.0, 0.0, 0.0, model.params.m * g, 0.0, 0.0, 0.0])
         acados_solver.set(j, "yref", yref)
     yref_N = np.array([x[i], y[i], z[i], 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
     acados_solver.set(N, "yref", yref_N)
@@ -63,9 +67,8 @@ for i in range(Nsim):
     if status != 0:
         print("acados returned status {} in closed loop iteration {}.".format(status, i))
 
-    elapsed = time.time() - comp_time
-
     # manage timings
+    elapsed = time.time() - comp_time
     tot_comp_sum += elapsed
     if elapsed > tcomp_max:
         tcomp_max = elapsed
@@ -73,10 +76,12 @@ for i in range(Nsim):
     # get solution from acados_solver
     xcurrent_pred = acados_solver.get(1, "x")
     u0 = acados_solver.get(0, "u")
-
+    
+    # add noise to inputs
     if noisy_input == True:
         u0 = add_input_noise(u0, model)
 
+    # storing results from acados solver
     predX[i+1, :] = xcurrent_pred
     simU[i, :] = u0
 
@@ -87,6 +92,7 @@ for i in range(Nsim):
     if status != 0:
         raise Exception(
             'acados integrator returned status {}. Exiting.'.format(status))
+    
     # update state
     xcurrent = acados_integrator.get("x")
     simX[i+1, :] = xcurrent
