@@ -104,7 +104,7 @@ def plotPred(predX,ref_traj):
     plt.show()
 
 
-def plotSim_pos(t, simX, predX,ref_traj):
+def plotSim_pos(t, simX, predX, ref_traj, save=False):
     # figure: container holding the plots (can have multiple plots)
     # axes: actual plots
     plt.style.use('seaborn')
@@ -139,12 +139,11 @@ def plotSim_pos(t, simX, predX,ref_traj):
     
     plt.tight_layout()
 
-    '''
     if save ==True:
-        fig.savefig('figures/states.png')
-    '''
+        fig.savefig('figures/posStates.png')
+    
 
-def plotSim_vel(t, simX, predX):
+def plotSim_vel(t, simX, predX, save=False):
     # figure: container holding the plots (can have multiple plots)
     # axes: actual plots
     plt.style.use('seaborn')
@@ -171,13 +170,11 @@ def plotSim_vel(t, simX, predX):
     
     plt.tight_layout()
 
-    '''
     if save ==True:
-        fig.savefig('figures/states.png')
-    '''
+        fig.savefig('figures/velStates.png')
 
 
-def plotThrustInputs(t,simU):
+def plotThrustInput(t,simU,save=False):
     
     plt.style.use('seaborn')
     fig, ax1 = plt.subplots()
@@ -190,7 +187,10 @@ def plotThrustInputs(t,simU):
 
     plt.tight_layout()
 
-def plotAngleInputs(t,simU,eulerAngles):
+    if save ==True:
+        fig.savefig('figures/thrustInput.png')
+
+def plotAngleInputs(t,simU,eulerAngles,save=False):
 
     fig, (ax1, ax2) = plt.subplots(nrows=2, ncols=1, sharex=True)    
 
@@ -213,10 +213,13 @@ def plotAngleInputs(t,simU,eulerAngles):
     
     plt.tight_layout()
 
-def plotSim3D(simX, predX, ref_traj):
+    if save ==True:
+        fig.savefig('figures/thrustInputs.png')
+
+def plotSim3D(simX, predX, ref_traj, save=False):
     # 3D plot of the simulation
         # plotting the prediction trajectory done by the drone
-    plt.figure()
+    fig = plt.figure()
     ax = plt.axes(projection = "3d")
     plt.title('3D trajectories')
     ax.plot3D(simX[:,0], simX[:,1], simX[:,2], label='sim')
@@ -229,6 +232,9 @@ def plotSim3D(simX, predX, ref_traj):
     ax.set_zlabel('z[m]')
 
     plt.tight_layout()
+
+    if save ==True:
+        fig.savefig('figures/sim3D.png')
 
 
 def plotRes3D(predX, simX, simU, simU_euler, t):

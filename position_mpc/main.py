@@ -1,4 +1,3 @@
-from functools import update_wrapper
 from acados_settings import acados_settings
 import time
 import os
@@ -101,6 +100,8 @@ rmse_x, rmse_y, rmse_z = rmseX(simX, ref_traj)
 # print the computation times
 print("Average computation time: {}".format(tot_comp_sum / Nsim))
 print("Maximum computation time: {}".format(tcomp_max))
+
+# print the RMSE on each axis
 print("RMSE on x: {}".format(rmse_x))
 print("RMSE on y: {}".format(rmse_y))
 print("RMSE on z: {}".format(rmse_z))
@@ -118,10 +119,10 @@ simU_euler = R2D(simU_euler)
 # Plot Results
 
 t = np.linspace(0,T, Nsim)
-plotSim_pos(t, simX, predX, ref_traj)
-plotSim_vel(t, simX, predX)
-plotThrustInputs(t, simU)
-plotAngleInputs(t,simU, simU_euler)
-plotSim3D(simX, predX, ref_traj)
+plotSim_pos(t, simX, predX, ref_traj, save=True)
+plotSim_vel(t, simX, predX, save=True)
+plotThrustInput(t, simU,save=True)
+plotAngleInputs(t,simU, simU_euler, save=True)
+plotSim3D(simX, predX, ref_traj, save=True)
 
 plt.show()
