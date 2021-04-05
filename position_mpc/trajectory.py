@@ -7,7 +7,7 @@ def trajectory_generator(T_final, N, traj=0, show_traj=False):
     Generates a circular trajectory given a final time and a sampling time 
     '''
     r = 1 # radius
-    th = np.linspace(0,2*np.pi,N)
+    th = np.linspace(0,6*np.pi,N)
     c_x, c_y = [0,0] # center coordinates 
     ## circular trajectory
     if traj ==0: 
@@ -21,6 +21,9 @@ def trajectory_generator(T_final, N, traj=0, show_traj=False):
             ax = plt.axes(projection = "3d")
             plt.title('Reference trajectory')
             ax.plot3D(x, y, z)
+            ax.set_xlabel("x[m]")
+            ax.set_ylabel("y[m]")
+            ax.set_zlabel("z[m]")
             plt.show()    
 
     ## spiral trajectory

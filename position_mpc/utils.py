@@ -1,5 +1,6 @@
 import numpy as np
 import pyquaternion
+import casadi as cs
 
 def quaternion_to_euler(q):
     q = pyquaternion.Quaternion(w=q[0], x=q[1], y=q[2], z=q[3])
@@ -13,6 +14,23 @@ def euler_to_quaternion(roll, pitch, yaw):
     qw = np.cos(roll / 2) * np.cos(pitch / 2) * np.cos(yaw / 2) + np.sin(roll / 2) * np.sin(pitch / 2) * np.sin(yaw / 2)
 
     return np.array([qw, qx, qy, qz])
+
+
+def unit_quat(q):
+    """
+    Normalizes a quaternion to be unit modulus.
+    :param q: 4-dimensional numpy array or CasADi object
+    :return: the unit quaternion in the same data format as the original one
+    """
+
+    if isinstance(q, np.ndarray):
+        # if (q == np.zeros(4)).all():
+        #     q = np.array([1, 0, 0, 0])
+        q_norm = np.sqrt(np.sum(q ** 2))
+    else:
+        q_norm = cs.sqrt(cs.sumsqr(q))
+    return 1 / q_norm * q
+
 
 def R2D(rad):
     return rad*180 / np.pi
@@ -35,6 +53,9 @@ def add_input_noise(u0,model):
     yaw_noisy = yaw + np.random.normal(mean, std_Angles)
 
     q_noisy = euler_to_quaternion(roll_noisy, pitch_noisy, yaw_noisy)
+
+    # ensure that q_noisy is of unit modulus 
+    q_noisy = unit_quat(q_noisy)
 
 
     #for i, ui in enumerate(q):

@@ -36,12 +36,12 @@ def acados_settings(Ts, Tf, N):
 
     # set cost 
     Q = np.eye(nx)
-    Q[0][0] = 5e0  # weight of px
-    Q[1][1] = 5e0  # weight of py
-    Q[2][2] = 5e0  # weight of pz
-    Q[3][3] = 1e0  # weight of vx
-    Q[4][4] = 1e0  # weight of vy
-    Q[5][5] = 1e0  # weight of vz
+    Q[0][0] = 1e1  # weight of px
+    Q[1][1] = 1e1  # weight of py
+    Q[2][2] = 1e1  # weight of pz
+    Q[3][3] = 1e-1  # weight of vx
+    Q[4][4] = 1e-1  # weight of vy
+    Q[5][5] = 1e-1  # weight of vz
 
     R = np.eye(nu)
     R[0][0] = 1e0 # weight of Thrust
@@ -52,12 +52,13 @@ def acados_settings(Ts, Tf, N):
     
 
     Qe = np.eye(nx)
-    Q[0][0] = 5e1  # terminal weight of px
-    Q[1][1] = 5e1  # terminal weight of py
-    Q[2][2] = 5e1  # terminal weight of pz
-    Q[3][3] = 1e0  # terminal weight of vx
-    Q[4][4] = 1e0  # terminal weight of vy
-    Q[5][5] = 1e0  # terminal weight of vz
+    Qe[0][0] = 5e1  # terminal weight of px
+    Qe[1][1] = 5e1  # terminal weight of py
+    Qe[2][2] = 5e1  # terminal weight of pz
+    Qe[3][3] = 1e-1  # terminal weight of vx
+    Qe[4][4] = 1e-1  # terminal weight of vy
+    Qe[5][5] = 1e-1  # terminal weight of vz
+
 
     ocp.cost.cost_type   = "LINEAR_LS"
     ocp.cost.cost_type_e = "LINEAR_LS"
@@ -88,9 +89,9 @@ def acados_settings(Ts, Tf, N):
     ocp.constraints.ubu   = np.array([model.throttle_max])
     ocp.constraints.idxbu = np.array([0])
 
-    ocp.constraints.lbx = np.array([-5.0, -5.0, 0.0, -15.0, -15.0, -15.0]) # bounds on minimum states
-    ocp.constraints.ubx = np.array([5.0, 5.0, 5.0, 15.0,  15.0,  15.0]) # bounds on maximum states
-    ocp.constraints.idxbx = np.array([0, 1, 2, 3, 4, 5])
+    ocp.constraints.lbx = np.array([-15.0, -15.0, -15.0]) # lower bounds on the velocity states
+    ocp.constraints.ubx = np.array([15.0,  15.0,  15.0]) # upper bounds on the velocity states
+    ocp.constraints.idxbx = np.array([3, 4, 5])
 
 
     # set initial condition
