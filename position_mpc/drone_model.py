@@ -57,7 +57,7 @@ def drone_model():
         vz,
         2 * ( qw * qy + qx * qz ) * T,
         2 * ( qy * qz - qw * qx ) * T,
-        ( 1 - 2 * qx * qx - 2 * qy * qy ) * T - g,
+        ( 1 - 2 * qx * qx - 2 * qy * qy ) * T - g
     )
 
     # input bounds

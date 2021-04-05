@@ -22,27 +22,34 @@ def drone_model():
     px = MX.sym("px")
     py = MX.sym("py")
     pz = MX.sym("pz")
-    vx = MX.sym("vx")
-    vy = MX.sym("vy")
-    vz = MX.sym("vz")
-    x  = vertcat(px, py, pz, vx, vy, vz)
-
-    # controls
-    T  = MX.sym("T")
     qw = MX.sym("qw")
     qx = MX.sym("qx")
     qy = MX.sym("qy")
     qz = MX.sym("qz")
-    u = vertcat(T, qw, qx, qy, qz)
+    vx = MX.sym("vx")
+    vy = MX.sym("vy")
+    vz = MX.sym("vz")
+    x  = vertcat(px, py, pz, qw, qx, qy, qz, vx, vy, vz)
+
+    # controls
+    T  = MX.sym("T")
+    wx = MX.sym("qw")
+    wy = MX.sym("qx")
+    wz = MX.sym("qy")
+    u = vertcat(T, wx, wy, wz)
 
     # xdot
     pxdot = MX.sym("pxdot")
     pydot = MX.sym("pydot")
     pzdot = MX.sym("pzdot")
+    qwdot = MX.sym("qwdot")
+    qxdot = MX.sym("qxdot")
+    qydot = MX.sym("qydot")
+    qzdot = MX.sym("qzdot")
     vxdot = MX.sym("vxdot")
     vydot = MX.sym("vydot")
     vzdot = MX.sym("vzdot")
-    xdot  = vertcat(pxdot, pydot, pzdot, vxdot, vydot, vzdot)
+    xdot  = vertcat(pxdot, pydot, pzdot, qwdot, qxdot, qydot, qzdot, vxdot, vydot, vzdot)
 
     # algebraic variables 
     z = vertcat([])
@@ -55,9 +62,13 @@ def drone_model():
         vx,
         vy,
         vz,
+        0.5 * ( - wx * qx - wy * qy - wz * qz),
+        0.5 * (   wx * qw + wz * qy - wy * qz),
+        0.5 * (   wy * qw - wz * qx + wx * qz),
+        0.5 * (   wz * qw + wy * qx - wx * qy),
         2 * ( qw * qy + qx * qz ) * T,
         2 * ( qy * qz - qw * qx ) * T,
-        ( 1 - 2 * qx * qx - 2 * qy * qy ) * T - g,
+        ( 1 - 2 * qx * qx - 2 * qy * qy ) * T - g
     )
 
     # input bounds
@@ -65,7 +76,7 @@ def drone_model():
     model.throttle_max = 2*g
 
     # define initial condition
-    model.x0 = np.array([1.0, 0.0, 1.0, 0.0, 0.0, 0.0])
+    model.x0 = np.array([1.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
 
     # define model struct
     params = types.SimpleNamespace()
