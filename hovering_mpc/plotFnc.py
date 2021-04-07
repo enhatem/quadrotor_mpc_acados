@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-def plotRes(simX,simU,t):
+def plotRes(simX,simU,t, save=False):
     # plot results
 
     plt.style.use('seaborn')
@@ -21,3 +21,6 @@ def plotRes(simX,simU,t):
     ax3.set_ylabel('vz[m]')
     ax3.set_xlabel('t[s]')
     ax3.legend()
+
+    if save==True:
+        fig.savefig('figures/statesAndInputs.png', dpi=300)

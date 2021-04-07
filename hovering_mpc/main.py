@@ -8,7 +8,7 @@ from plotFnc import *
 
 Tf = 1 # prediction horizon
 N = 10 # number of discretization steps 
-T = 10.00 # simulation time[s]
+T = 20.00 # simulation time[s]
 
 # load model
 model, acados_solver = acados_settings(Tf, N)
@@ -29,19 +29,19 @@ tcomp_max = 0
 for i in range(Nsim):
 
     
-    if i < 10: # stay at current position for 1 second
+    if i < 20: # stay at current position for 1 second
         for j in range(N):
             yref = np.array([0.3, 0, 9.81])
             acados_solver.set(j, "yref", yref)
         yref_N = np.array([0.3,0])
         acados_solver.set(N,"yref", yref_N)
-    elif i >= 10 and i < 30:
+    elif i >= 20 and i < 80:
         for j in range(N): # 
             yref = np.array([1, 0, 9.81])
             acados_solver.set(j, "yref", yref)
         yref_N = np.array([1,0])
         acados_solver.set(N,"yref", yref_N)
-    elif i >= 30 and i < 60:
+    elif i >= 80 and i < 140:
         for j in range(N): # 
             yref = np.array([0.5, 0, 9.81])
             acados_solver.set(j, "yref", yref)
@@ -88,5 +88,5 @@ print("Maximum computation time: {}".format(tcomp_max))
 
 # Plot Results
 t = np.linspace(0.0, Nsim * Tf / N, Nsim)
-plotRes(simX, simU, t)
+plotRes(simX, simU, t, save=True)
 plt.show()

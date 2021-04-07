@@ -104,7 +104,7 @@ def plotPred(predX,ref_traj):
     plt.show()
 
 
-def plotSim_pos(t, simX, predX, ref_traj, save=False):
+def plotSim_pos(t, simX, ref_traj, save=False):
     # figure: container holding the plots (can have multiple plots)
     # axes: actual plots
     plt.style.use('seaborn')
@@ -112,15 +112,12 @@ def plotSim_pos(t, simX, predX, ref_traj, save=False):
 
     
     ax1.plot(t, simX[1:,0], label='x_sim')
-    ax1.plot(t, predX[1:,0], '--', label='x_pred')
     ax1.plot(t, ref_traj[:,0], '--', label='x_ref')
     #ax1.plot(t, x_ref, '--', label ='x_ref')
     ax2.plot(t, simX[1:,1], label='y_sim')
-    ax2.plot(t, predX[1:,1], '--', label='y_pred')
     ax2.plot(t, ref_traj[:,1], '--', label='y_ref')
     #ax2.plot(t, y_ref, '--', label='x_ref')
     ax3.plot(t, simX[1:,2], label='z_sim')
-    ax3.plot(t, predX[1:,2], '--', label='z_pred')
     ax3.plot(t, ref_traj[:,2], '--', label='z_ref')
     #ax3.plot(t, z_ref, '--', label='z_ref')
     
@@ -140,10 +137,10 @@ def plotSim_pos(t, simX, predX, ref_traj, save=False):
     plt.tight_layout()
 
     if save ==True:
-        fig.savefig('figures/posStates.png')
+        fig.savefig('figures/posStates.png', dpi=300)
     
 
-def plotSim_vel(t, simX, predX, save=False):
+def plotSim_vel(t, simX, save=False):
     # figure: container holding the plots (can have multiple plots)
     # axes: actual plots
     plt.style.use('seaborn')
@@ -151,18 +148,15 @@ def plotSim_vel(t, simX, predX, save=False):
 
     
     ax1.plot(t, simX[1:,3], label='x_sim')
-    ax1.plot(t, predX[1:,3], '--', label='x_pred')
     ax2.plot(t, simX[1:,4], label='y_sim')
-    ax2.plot(t, predX[1:,4], '--', label='y_pred')
     ax3.plot(t, simX[1:,5], label='z_sim')
-    ax3.plot(t, predX[1:,5], '--', label='z_pred')
     
     ax1.legend()
     ax1.set_title('Velocities along each axis')
     ax1.set_ylabel('vx[m/s]')
 
     ax2.legend()
-    ax2.set_ylabel('vy[m]')
+    ax2.set_ylabel('vy[m/s]')
 
     ax3.legend()
     ax3.set_xlabel('t[s]')
@@ -171,7 +165,7 @@ def plotSim_vel(t, simX, predX, save=False):
     plt.tight_layout()
 
     if save ==True:
-        fig.savefig('figures/velStates.png')
+        fig.savefig('figures/velStates.png', dpi=300)
 
 
 def plotThrustInput(t,simU,save=False):
@@ -188,7 +182,7 @@ def plotThrustInput(t,simU,save=False):
     plt.tight_layout()
 
     if save ==True:
-        fig.savefig('figures/thrustInput.png')
+        fig.savefig('figures/thrustInput.png', dpi=300)
 
 def plotAngleInputs(t,simU,eulerAngles,save=False):
 
@@ -214,16 +208,15 @@ def plotAngleInputs(t,simU,eulerAngles,save=False):
     plt.tight_layout()
 
     if save ==True:
-        fig.savefig('figures/thrustInputs.png')
+        fig.savefig('figures/angularInputs.png', dpi=300)
 
-def plotSim3D(simX, predX, ref_traj, save=False):
+def plotSim3D(simX, ref_traj, save=False):
     # 3D plot of the simulation
         # plotting the prediction trajectory done by the drone
     fig = plt.figure()
     ax = plt.axes(projection = "3d")
     plt.title('3D trajectories')
     ax.plot3D(simX[:,0], simX[:,1], simX[:,2], label='sim')
-    ax.plot3D(predX[:,0], predX[:,1], predX[:,2], '--', label='pred')
     ax.plot3D(ref_traj[:,0], ref_traj[:,1], ref_traj[:,2], '--', label='ref')
     
     ax.legend()
@@ -234,7 +227,7 @@ def plotSim3D(simX, predX, ref_traj, save=False):
     plt.tight_layout()
 
     if save ==True:
-        fig.savefig('figures/sim3D.png')
+        fig.savefig('figures/sim3D.png', dpi=300)
 
 
 def plotRes3D(predX, simX, simU, simU_euler, t):

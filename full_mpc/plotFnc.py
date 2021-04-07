@@ -159,7 +159,7 @@ def plotSim_Angles(t, simX, simEuler, save=True):
     ax2.legend()
 
     if save ==True:
-        fig.savefig('figures/anguleStates.png')
+        fig.savefig('figures/angleStates.png')
 
 def plotSim_vel(t, simX, save=False):
     # figure: container holding the plots (can have multiple plots)
@@ -176,7 +176,7 @@ def plotSim_vel(t, simX, save=False):
     ax1.set_ylabel('vx[m/s]')
 
     ax2.legend()
-    ax2.set_ylabel('vy[m]')
+    ax2.set_ylabel('vy[m/s]')
 
     ax3.legend()
     ax3.set_xlabel('t[s]')
@@ -251,7 +251,7 @@ def plotAngleInputs(t,simU,eulerAngles,save=False):
     plt.tight_layout()
 
     if save ==True:
-        fig.savefig('figures/thrustInputs.png')
+        fig.savefig('figures/angleInputs.png')
 
 def plotSim3D(simX, ref_traj, save=False):
     # 3D plot of the simulation
@@ -260,7 +260,7 @@ def plotSim3D(simX, ref_traj, save=False):
     ax = plt.axes(projection = "3d")
     plt.title('3D trajectory')
     ax.plot3D(simX[:,0], simX[:,1], simX[:,2], label='sim')
-    ax.plot3D(ref_traj[:,0], ref_traj[:,1], ref_traj[:,2], 'r--', label='ref')
+    ax.plot3D(ref_traj[:,0], ref_traj[:,1], ref_traj[:,2], '--', label='ref')
     
     ax.legend()
     ax.set_xlabel('x[m]')

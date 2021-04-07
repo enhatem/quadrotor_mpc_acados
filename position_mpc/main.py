@@ -10,11 +10,11 @@ from trajectory import *
 
 Tf = 1  # prediction horizon
 N = 100  # number of discretization steps
-T = 40.00  # simulation time[s]
+T = 20.00  # simulation time[s]
 Ts = Tf / N  # sampling time[s]
 
 # noise bool
-noisy_input = True
+noisy_input = False
 
 # load model and acados_solver
 model, acados_solver, acados_integrator = acados_settings(Ts, Tf, N)
@@ -119,10 +119,10 @@ simU_euler = R2D(simU_euler)
 # Plot Results
 
 t = np.linspace(0,T, Nsim)
-plotSim_pos(t, simX, predX, ref_traj, save=True)
-plotSim_vel(t, simX, predX, save=True)
+plotSim_pos(t, simX, ref_traj, save=True)
+plotSim_vel(t, simX, save=True)
 plotThrustInput(t, simU,save=True)
 plotAngleInputs(t,simU, simU_euler, save=True)
-plotSim3D(simX, predX, ref_traj, save=True)
+plotSim3D(simX, ref_traj, save=True)
 
 plt.show()

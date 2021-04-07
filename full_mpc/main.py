@@ -11,7 +11,7 @@ from trajectory import *
 # mpc and simulation parameters
 Tf = 1       # prediction horizon
 N = 100      # number of discretization steps
-T = 30.00    # simulation time[s]
+T = 20.00    # simulation time[s]
 Ts = Tf / N  # sampling time[s]
 
 # constants
@@ -38,7 +38,7 @@ tot_comp_sum = 0
 tcomp_max = 0
 
 # creating a reference trajectory
-traj = 1  # traj = 0: circular trajectory, traj = 1: hellical trajectory
+traj = 0 # traj = 0: circular trajectory, traj = 1: hellical trajectory
 show_ref_traj = False
 N_steps, x, y, z = trajectory_generator(T, Nsim, traj, show_ref_traj)
 ref_traj = np.stack((x, y, z), 1)
