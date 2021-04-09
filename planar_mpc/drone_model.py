@@ -64,12 +64,13 @@ def drone_model():
 
     # input bounds
     model.throttle_min = 0
-    model.throttle_max = 57e-3 * g # max_thrust = 57g
+    model.throttle_max = 0.9 * (57e-3 * g) # max_thrust = 57g
 
     model.torque_max = 1 / 4 * model.throttle_max * length
+    model.torque_max = 0.1 * model.torque_max # 10% margin for steering torque
 
     # define initial condition
-    model.x0 = np.array([5, 5, 0, 0, 0, 0]) # hovering at y=1, z=1 
+    model.x0 = np.array([5, 5, 0, 0, 0, 0]) # hovering at y=5, z=5 
 
     # define model struct
     params = types.SimpleNamespace()

@@ -140,13 +140,15 @@ def plotSim(simX, ref_traj, save=False):
     if save == True:
         fig.savefig('figures/sim.png', dpi=300)
 
-def plotPos(t, simX, save=False):
+def plotPos(t, simX, ref_traj, save=False):
     plt.style.use('seaborn')
 
     fig, (ax1, ax2, ax3) = plt.subplots(nrows= 3, ncols = 1)
 
     ax1.plot(t, simX[1:,0], label='y')
+    ax1.plot(t, ref_traj[:,0], '--', label='ref_y')
     ax2.plot(t, simX[1:,1], label='z')
+    ax2.plot(t, ref_traj[:,1], '--', label='ref_z')
     ax3.plot(t, R2D(simX[1:,2]), label='phi')
     
     ax1.legend()

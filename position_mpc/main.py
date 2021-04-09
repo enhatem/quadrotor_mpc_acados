@@ -79,7 +79,7 @@ for i in range(Nsim):
     quaternion = u0[1:]
 
     # making sure that q is normalized
-    quaternion = unit_quat(quaternion)
+    # quaternion = unit_quat(quaternion)
 
     # stacking u0 again
     u0 = np.append(Thrust,quaternion)

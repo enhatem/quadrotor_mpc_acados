@@ -72,7 +72,7 @@ int Planar_drone_acados_sim_create()
     int nz = 0;
 
     
-    double Tsim = 0.02;
+    double Tsim = 0.01;
 
     
     sim_impl_dae_fun = (external_function_param_casadi *) malloc(sizeof(external_function_param_casadi));

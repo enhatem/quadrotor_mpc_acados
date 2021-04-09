@@ -73,8 +73,7 @@ def add_measurement_noise(xcurrent):
     return xcurrent_noisy
 
 def rmseX(simX, refX):
-    rmse_x = mean_squared_error(refX[:,0], simX[1:,0], squared=False)
-    rmse_y = mean_squared_error(refX[:,1], simX[1:,1], squared=False)
-    rmse_z = mean_squared_error(refX[:,2], simX[1:,2], squared=False)
+    rmse_y = mean_squared_error(refX[:,0], simX[1:,0], squared=False)
+    rmse_z = mean_squared_error(refX[:,1], simX[1:,1], squared=False)
 
-    return rmse_x, rmse_y, rmse_z
+    return rmse_y, rmse_z

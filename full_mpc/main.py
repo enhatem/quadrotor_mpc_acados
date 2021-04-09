@@ -18,7 +18,7 @@ Ts = Tf / N  # sampling time[s]
 g = 9.81     # m/s^2
 
 # noise bool
-noisy_input = False
+noisy_measurement = False
 
 # load model and acados_solver
 model, acados_solver, acados_integrator = acados_settings(Ts, Tf, N)
@@ -31,7 +31,7 @@ ny = nx + nu
 Nsim = int(T * N / Tf)
 
 # initialize data structs
-predX = np.ndarray((Nsim+1, nx))
+#predX = np.ndarray((Nsim+1, nx))
 simX = np.ndarray((Nsim+1, nx))
 simU = np.ndarray((Nsim, nu))
 tot_comp_sum = 0
@@ -46,7 +46,7 @@ ref_traj = np.stack((x, y, z), 1)
 # set initial condition for acados integrator
 xcurrent = model.x0.reshape((nx,))
 simX[0, :] = xcurrent
-predX[0, :] = xcurrent
+# predX[0, :] = xcurrent
 
 # closed loop
 for i in range(Nsim):
@@ -74,15 +74,15 @@ for i in range(Nsim):
         tcomp_max = elapsed
 
     # get solution from acados_solver
-    xcurrent_pred = acados_solver.get(1, "x")
+    # xcurrent_pred = acados_solver.get(1, "x")
     u0 = acados_solver.get(0, "u")
     
     # add noise to inputs
-    if noisy_input == True:
-        u0 = add_input_noise(u0, model)
+    if noisy_measurement == True:
+        xcurrent = add_measurement_noise(xcurrent)
 
     # storing results from acados solver
-    predX[i+1, :] = xcurrent_pred
+    # predX[i+1, :] = xcurrent_pred
     simU[i, :] = u0
 
     # simulate the system
@@ -93,8 +93,14 @@ for i in range(Nsim):
         raise Exception(
             'acados integrator returned status {}. Exiting.'.format(status))
     
-    # update state
+    # get state
     xcurrent = acados_integrator.get("x")
+
+    # add measurement noise
+    if noisy_measurement == True:
+        xcurrent = add_measurement_noise(xcurrent)
+
+    # store state
     simX[i+1, :] = xcurrent
 
 # root mean squared error on each axis

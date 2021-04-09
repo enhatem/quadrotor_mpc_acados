@@ -39,24 +39,24 @@ def acados_settings(Ts, Tf, N):
 
     # set cost 
     Q = np.eye(nx)
-    Q[0][0] = 5e0   # weight of py
-    Q[1][1] = 5e0   # weight of pz
-    Q[2][2] = 1e0   # weight of phi
-    Q[3][3] = 1e0   # weight of vy
-    Q[4][4] = 1e0   # weight of vz
-    Q[5][5] = 1e0   # weight of phidot
+    Q[0][0] = 5e1   # weight of py
+    Q[1][1] = 5e1   # weight of pz
+    Q[2][2] = 0e0   # weight of phi
+    Q[3][3] = 0e0   # weight of vy
+    Q[4][4] = 0e0   # weight of vz
+    Q[5][5] = 0e0   # weight of phidot
 
     R = np.eye(nu)
     R[0][0] = 1e0  # weight of Thrust
     R[1][1] = 1e0  # weight of Torque
 
     Qe = np.eye(nx)
-    Qe[0][0] = 5e0   # weight of py
-    Qe[1][1] = 5e0   # weight of pz
-    Qe[2][2] = 1e0   # weight of phi
-    Qe[3][3] = 1e0   # weight of vy
-    Qe[4][4] = 1e0   # weight of vz
-    Qe[5][5] = 1e0   # weight of phidot
+    Qe[0][0] = 5e1   # weight of py
+    Qe[1][1] = 5e1   # weight of pz
+    Qe[2][2] = 0e0   # weight of phi
+    Qe[3][3] = 0e0   # weight of vy
+    Qe[4][4] = 0e0   # weight of vz
+    Qe[5][5] = 0e0   # weight of phidot
 
 
     ocp.cost.cost_type   = "LINEAR_LS"
@@ -87,7 +87,6 @@ def acados_settings(Ts, Tf, N):
     ocp.constraints.lbu   = np.array([model.throttle_min, -model.torque_max])
     ocp.constraints.ubu   = np.array([model.throttle_max, model.torque_max])
     ocp.constraints.idxbu = np.array([0, 1])
-
     
 
     '''
@@ -108,7 +107,7 @@ def acados_settings(Ts, Tf, N):
     ocp.solver_options.sim_method_num_stages = 4
     ocp.solver_options.sim_method_num_steps = 3
     ocp.solver_options.nlp_solver_max_iter = 200
-    ocp.solver_options.tol = 1e-4
+    ocp.solver_options.tol = 1e-8
 
     # create ocp solver 
     acados_solver = AcadosOcpSolver(ocp, json_file=(model_ac.name + "_" + "acados_ocp.json"))

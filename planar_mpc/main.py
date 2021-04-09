@@ -18,7 +18,7 @@ Ts = Tf / N  # sampling time[s]
 g = 9.81     # m/s^2
 
 # noise bool
-noisy_measurement = False
+noisy_measurement = True
 
 # load model and acados_solver
 model, acados_solver, acados_integrator = acados_settings(Ts, Tf, N)
@@ -123,27 +123,27 @@ for i in range(Nsim):
                     #ref_reached = True
     '''
 
-'''
+
 # root mean squared error on each axis
-rmse_x, rmse_y, rmse_z = rmseX(simX, ref_traj)
-'''
+rmse_y, rmse_z = rmseX(simX, ref_traj)
+
 
 # print the computation times
 print("Average computation time: {}".format(tot_comp_sum / Nsim))
 print("Maximum computation time: {}".format(tcomp_max))
 
-'''
+
 # print the RMSE on each axis
-print("RMSE on x: {}".format(rmse_x))
+# print("RMSE on x: {}".format(rmse_x))
 print("RMSE on y: {}".format(rmse_y))
 print("RMSE on z: {}".format(rmse_z))
-'''
+
 
 
 # Plot Results
 t = np.linspace(0, T, Nsim)
 plotSim(simX, ref_traj, save=True)
-plotPos(t,simX,save=True)
+plotPos(t,simX, ref_traj, save=True)
 plotVel(t,simX,save=True)
 plotSimU(t,simU,save=True)
 plt.show()
