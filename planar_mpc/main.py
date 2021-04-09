@@ -46,7 +46,7 @@ ref_traj = np.stack((y, z), 1)
 # set initial condition for acados integrator
 xcurrent = model.x0.reshape((nx,))
 simX[0, :] = xcurrent
-predX[0, :] = xcurrent
+# predX[0, :] = xcurrent
 
 # create boolean to check if reference point is reached
 ref_reached = False
@@ -80,12 +80,12 @@ for i in range(Nsim):
         tcomp_max = elapsed
 
     # get solution from acados_solver
-    xcurrent_pred = acados_solver.get(1, "x")
+    # xcurrent_pred = acados_solver.get(1, "x")
     u0 = acados_solver.get(0, "u")
 
 
     # storing results from acados solver
-    predX[i+1, :] = xcurrent_pred
+    # predX[i+1, :] = xcurrent_pred
     simU[i, :] = u0
 
     # simulate the system
@@ -104,7 +104,7 @@ for i in range(Nsim):
     if noisy_measurement == True:
         xcurrent = add_measurement_noise(xcurrent)
 
-    # update state
+    # store state
     simX[i+1, :] = xcurrent
     
     '''

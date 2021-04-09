@@ -48,6 +48,7 @@ def add_measurement_noise(xcurrent):
     vz      = xcurrent[4]
     phidot = xcurrent[5]
 
+    # mean of the noise
     mean = 0
 
     # std of each state for a noiseless simulation

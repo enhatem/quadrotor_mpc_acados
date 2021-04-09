@@ -14,10 +14,13 @@ T = 20.00  # simulation time[s]
 Ts = Tf / N  # sampling time[s]
 
 # noise bool
-noisy_input = False
+noisy_measurement = False
 
 # load model and acados_solver
 model, acados_solver, acados_integrator = acados_settings(Ts, Tf, N)
+
+# constant 
+g = 9.81 # m/s^2
 
 
 # dimensions
@@ -34,7 +37,7 @@ tot_comp_sum = 0
 tcomp_max = 0
 
 # creating a reference trajectory
-traj = 1 # traj = 0: circular trajectory, traj = 1: spiral trajectory
+traj = 0 # traj = 0: circular trajectory, traj = 1: spiral trajectory
 show_ref_traj = False
 N_steps, x, y, z = trajectory_generator(T, Nsim, traj, show_ref_traj)
 ref_traj = np.stack((x,y,z),1)
@@ -42,14 +45,13 @@ ref_traj = np.stack((x,y,z),1)
 # set initial condition for acados integrator
 xcurrent = model.x0.reshape((nx,))
 simX[0,:] = xcurrent
-predX[0,:] = xcurrent
 
 # closed loop
 for i in range(Nsim):
 
     for j in range(N):
         yref = np.array([x[i], y[i], z[i], 0.0, 0.0,
-                         0.0, 9.81, 1.0, 0.0, 0.0, 0.0])
+                         0.0, model.params.m * g, 1.0, 0.0, 0.0, 0.0])
         acados_solver.set(j, "yref", yref)
     yref_N = np.array([x[i], y[i], z[i], 0.0, 0.0, 0.0])
     acados_solver.set(N, "yref", yref_N)
@@ -75,34 +77,32 @@ for i in range(Nsim):
 
     # computed inputs
     Thrust = u0[0]
-    quatrenion = u0[1:]
+    quaternion = u0[1:]
 
     # making sure that q is normalized
-    quatrenion = unit_quat(quatrenion)
+    quaternion = unit_quat(quaternion)
 
     # stacking u0 again
-    u0 = np.append(Thrust,quatrenion)
-       
-    # make sure that q is normalized
+    u0 = np.append(Thrust,quaternion)
 
-
-    '''
-    if noisy_input == True:
-        u0 = add_input_noise(u0, model)
-    '''
-
-    predX[i+1,:] = xcurrent_pred
+    # storing results from acados solver
     simU[i,:] = u0
 
     # simulate the system
     acados_integrator.set("x", xcurrent)
     acados_integrator.set("u", u0)
-
     status = acados_integrator.solve()
     if status != 0:
         raise Exception('acados integrator returned status {}. Exiting.'.format(status))
+    
     # update state
     xcurrent = acados_integrator.get("x")
+    
+    # add measurement noise
+    if noisy_measurement == True:
+        xcurrent = add_measurement_noise(xcurrent)
+    
+    # store state
     simX[i+1,:] = xcurrent
 
 # RMSE
@@ -128,7 +128,6 @@ simU_euler = R2D(simU_euler)
 
 
 # Plot Results
-
 t = np.linspace(0,T, Nsim)
 plotSim_pos(t, simX, ref_traj, save=True)
 plotSim_vel(t, simX, save=True)

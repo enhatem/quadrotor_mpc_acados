@@ -23,7 +23,6 @@ def drone_model():
 
     ## CasAdi Model
     # set up states and controls
-    #px = MX.sym("px")
     py      = MX.sym("py")
     pz      = MX.sym("pz")
     phi     = MX.sym("phi")

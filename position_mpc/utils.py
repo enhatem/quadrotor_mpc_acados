@@ -37,7 +37,47 @@ def unit_quat(q):
 def R2D(rad):
     return rad*180 / np.pi
 
-def add_input_noise(u0,model):
+
+def add_measurement_noise(xcurrent):
+    # Apply noise to inputs (uniformly distributed noise with standard deviation proportional to input magnitude)
+
+    x  = xcurrent[0]
+    y  = xcurrent[1]
+    z  = xcurrent[2]
+    vx = xcurrent[3]
+    vy = xcurrent[4]
+    vz = xcurrent[5]
+    
+    # mean of the noise
+    mean = 0
+
+    # std of each state for a noiseless simulation
+    std_x  = 0.01
+    std_y  = 0.01
+    std_z  = 0.01
+    std_vx = 0.01
+    std_vy = 0.01
+    std_vz = 0.01
+    
+    # create the noisy states
+    x_noisy  = x + np.random.normal(mean, std_x)
+    y_noisy  = y + np.random.normal(mean, std_y)
+    z_noisy  = z + np.random.normal(mean, std_z)
+    vx_noisy = vx + np.random.normal(mean, std_vx)
+    vy_noisy = vy + np.random.normal(mean, std_vy)
+    vz_noisy = vz + np.random.normal(mean, std_vz)
+    
+    # create new noisy measurement vector
+    xcurrent_noisy = np.array([x_noisy, y_noisy, z_noisy, vx_noisy, vy_noisy, vz_noisy])
+
+    return xcurrent_noisy
+
+
+
+
+
+
+def add_input_noise(xcurrrent):
     # Apply noise to inputs (uniformly distributed noise with standard deviation proportional to input magnitude)
     T = np.array([u0[0]])
     q = u0[1:]

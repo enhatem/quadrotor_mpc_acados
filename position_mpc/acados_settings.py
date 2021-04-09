@@ -13,6 +13,9 @@ def acados_settings(Ts, Tf, N):
     # export model
     model = drone_model()
 
+    # constants
+    g = 9.81 # m/s^2
+
     # define acados ODE 
     model_ac = AcadosModel()
     model_ac.f_impl_expr = model.f_impl_expr
@@ -36,19 +39,19 @@ def acados_settings(Ts, Tf, N):
 
     # set cost 
     Q = np.eye(nx)
-    Q[0][0] = 1e0  # weight of px
-    Q[1][1] = 1e0  # weight of py
-    Q[2][2] = 1e0  # weight of pz
+    Q[0][0] = 2e0  # weight of px
+    Q[1][1] = 2e0  # weight of py
+    Q[2][2] = 2e0  # weight of pz
     Q[3][3] = 1e0  # weight of vx
     Q[4][4] = 1e0  # weight of vy
     Q[5][5] = 1e0  # weight of vz
 
     R = np.eye(nu)
     R[0][0] = 1e0 # weight of Thrust
-    R[1][1] = 2e0 # weight of qw
-    R[2][2] = 2e0 # weight of qx
-    R[3][3] = 2e0 # weight of qy
-    R[4][4] = 2e0 # weight of qz
+    R[1][1] = 1e0 # weight of qw
+    R[2][2] = 1e0 # weight of qx
+    R[3][3] = 1e0 # weight of qy
+    R[4][4] = 1e0 # weight of qz
     
 
     Qe = np.eye(nx)
@@ -79,8 +82,8 @@ def acados_settings(Ts, Tf, N):
     ocp.cost.Vx_e = Vx_e
     
     # Initial reference trajectory (can be overwritten during the simulation if required)
-    x_ref = np.array([1.0, 1.0, 2.0, 0.0, 0.0, 0.0])
-    ocp.cost.yref   = np.concatenate((x_ref, np.array([9.81, 1.0, 0.0, 0.0, 0.0])))
+    x_ref = np.array([1.0, 0.0, 1.0, 0.0, 0.0, 0.0])
+    ocp.cost.yref   = np.concatenate((x_ref, np.array([model.params.m * g, 1.0, 0.0, 0.0, 0.0])))
 
     ocp.cost.yref_e = x_ref
 
@@ -90,9 +93,8 @@ def acados_settings(Ts, Tf, N):
     ocp.constraints.idxbu = np.array([0])
 
     ocp.constraints.lbx = np.array([-15.0, -15.0, -15.0]) # lower bounds on the velocity states
-    ocp.constraints.ubx = np.array([15.0,  15.0,  15.0]) # upper bounds on the velocity states
+    ocp.constraints.ubx = np.array([ 15.0,  15.0,  15.0]) # upper bounds on the velocity states
     ocp.constraints.idxbx = np.array([3, 4, 5])
-
 
     # set initial condition
     ocp.constraints.x0 = model.x0
