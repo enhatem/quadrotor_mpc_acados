@@ -64,10 +64,12 @@ def drone_model():
 
     # input bounds
     model.throttle_min = 0
-    model.throttle_max = 0.9 * (57e-3 * g) # max_thrust = 57g
+    model.throttle_max = 0.9 * (57e-3 * g) # 90 % of max_thrust (max_thrust = 57g)
 
-    model.torque_max = 1 / 4 * model.throttle_max * length
-    model.torque_max = 0.1 * model.torque_max # 10% margin for steering torque
+    model.torque_max = 1 / 4 * model.throttle_max * length 
+    model.torque_max = 0.1 * model.torque_max # keeping 10% margin for steering torque. This is done because the torque_max 
+                                              # is the maximum torque that can be given around any one axis. But, we are going to
+                                              # limit the throttle greatly.
 
     # define initial condition
     model.x0 = np.array([5, 5, 0, 0, 0, 0]) # hovering at y=5, z=5 
