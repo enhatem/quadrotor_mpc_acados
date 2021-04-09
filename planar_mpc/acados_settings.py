@@ -41,7 +41,7 @@ def acados_settings(Ts, Tf, N):
     Q = np.eye(nx)
     Q[0][0] = 5e0   # weight of py
     Q[1][1] = 5e0   # weight of pz
-    Q[2][2] = 1e-1   # weight of phi
+    Q[2][2] = 1e0   # weight of phi
     Q[3][3] = 1e0   # weight of vy
     Q[4][4] = 1e0   # weight of vz
     Q[5][5] = 1e0   # weight of phidot
@@ -53,7 +53,7 @@ def acados_settings(Ts, Tf, N):
     Qe = np.eye(nx)
     Qe[0][0] = 5e0   # weight of py
     Qe[1][1] = 5e0   # weight of pz
-    Qe[2][2] = 1e-1   # weight of phi
+    Qe[2][2] = 1e0   # weight of phi
     Qe[3][3] = 1e0   # weight of vy
     Qe[4][4] = 1e0   # weight of vz
     Qe[5][5] = 1e0   # weight of phidot
@@ -84,9 +84,11 @@ def acados_settings(Ts, Tf, N):
     ocp.cost.yref_e = x_ref
 
     # set constraints
-    ocp.constraints.lbu   = np.array([model.throttle_min])
-    ocp.constraints.ubu   = np.array([model.throttle_max])
-    ocp.constraints.idxbu = np.array([0])
+    ocp.constraints.lbu   = np.array([model.throttle_min, -model.torque_max])
+    ocp.constraints.ubu   = np.array([model.throttle_max, model.torque_max])
+    ocp.constraints.idxbu = np.array([0, 1])
+
+    
 
     '''
     ocp.constraints.lbx = np.array([-15.0, -15.0, -15.0]) # lower bounds on the velocity states

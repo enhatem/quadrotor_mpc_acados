@@ -18,7 +18,7 @@ Ts = Tf / N  # sampling time[s]
 g = 9.81     # m/s^2
 
 # noise bool
-noisy_input = False
+noisy_measurement = False
 
 # load model and acados_solver
 model, acados_solver, acados_integrator = acados_settings(Ts, Tf, N)
@@ -40,8 +40,8 @@ tcomp_max = 0
 # creating a reference trajectory
 traj = 0 # traj = 0: circular trajectory, traj = 1: hellical trajectory
 show_ref_traj = False
-N_steps, x, y, z = trajectory_generator(T, Nsim, traj, show_ref_traj)
-ref_traj = np.stack((x, y, z), 1)
+N_steps, y, z = trajectory_generator2D(T, Nsim, traj, show_ref_traj)
+ref_traj = np.stack((y, z), 1)
 
 # set initial condition for acados integrator
 xcurrent = model.x0.reshape((nx,))
@@ -50,19 +50,20 @@ predX[0, :] = xcurrent
 
 # create boolean to check if reference point is reached
 ref_reached = False
+ref_xy_reached = False
+ref_phi_reached = False
 
 # closed loop
 for i in range(Nsim):
 
-    '''
+    
     # updating references
     for j in range(N):
-        yref = np.array([x[i], y[i], z[i], 1.0, 0.0, 0.0, 0.0,
-                         0.0, 0.0, 0.0, model.params.m * g, 0.0, 0.0, 0.0])
+        yref = np.array([y[i], z[i], 0.0, 0.0, 0.0, 0.0, model.params.m * g, 0.0])
         acados_solver.set(j, "yref", yref)
-    yref_N = np.array([x[i], y[i], z[i], 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+    yref_N = np.array([y[i], z[i], 0.0, 0.0, 0.0, 0.0])
     acados_solver.set(N, "yref", yref_N)
-    '''
+    
 
     # solve ocp for a fixed reference
     acados_solver.set(0, "lbx", xcurrent)
@@ -81,10 +82,7 @@ for i in range(Nsim):
     # get solution from acados_solver
     xcurrent_pred = acados_solver.get(1, "x")
     u0 = acados_solver.get(0, "u")
-    
-    # add noise to inputs
-    # if noisy_input == True:
-    #     u0 = add_input_noise(u0, model)
+
 
     # storing results from acados solver
     predX[i+1, :] = xcurrent_pred
@@ -99,17 +97,31 @@ for i in range(Nsim):
             'acados integrator returned status {}. Exiting.'.format(status))
     
     
-    # update state
+    # get state
     xcurrent = acados_integrator.get("x")
-    simX[i+1, :] = xcurrent
 
-    # check if y and z were reached
+    # add measurement noise
+    if noisy_measurement == True:
+        xcurrent = add_measurement_noise(xcurrent)
+
+    # update state
+    simX[i+1, :] = xcurrent
+    
+    '''
+    # check if y and z were reached with hovering condition (phi between -0.01deg and 0.01deg)
     if ref_reached == False:
-        if (xcurrent[0] >= 1.99999 and xcurrent[0]<=2.00001) and (xcurrent[1] >= 3.99999 and xcurrent[1] <=4.00001):
-            print(f'Reference reached after {i} iterations')
-            print(f'Reference reached at simulation time of {i*Ts}s')
-            print(f'phi={R2D(xcurrent[2])}deg')
-            ref_reached = True
+        if (xcurrent[0] >= 1.99 and xcurrent[0]<=2.01) and (xcurrent[1] >= 3.99 and xcurrent[1] <=4.01):
+            if ref_xy_reached == False:
+                print(f'xy reference reached after {i} iterations')
+                print(f'xy reference reached at simulation time of {i*Ts}s')
+                # ref_xy_reached = True
+            if ref_phi_reached == False:
+                if (R2D(xcurrent[2]>=-0.01 and R2D(xcurrent[2]<=0.01))):
+                    print(f'phi reference reached after {i} iterations')
+                    print(f'phi reference reached at simulation time of {i*Ts}s')
+                    #ref_phi_reached = True
+                    #ref_reached = True
+    '''
 
 '''
 # root mean squared error on each axis
@@ -130,18 +142,31 @@ print("RMSE on z: {}".format(rmse_z))
 
 # Plot Results
 t = np.linspace(0, T, Nsim)
-plotSim(simX,save=True)
+plotSim(simX, ref_traj, save=True)
 plotPos(t,simX,save=True)
 plotVel(t,simX,save=True)
+plotSimU(t,simU,save=True)
 plt.show()
 
 
 '''
-plotSim_pos(t, simX, ref_traj, save=True)
-plotSim_Angles(t, simX, simX_euler, save=True)
-plotSim_vel(t, simX, save=True)
-plotThrustInput(t, simU, save=True)
-plotAngularRatesInputs(t, simU, save=True)
-plotSim3D(simX, ref_traj, save=True)
+## Live plot
+plt.style.use('fivethirtyeight')
+
+index = count()
+
+def animate(i):
+    y_vals = simX[:,0]
+    z_vals = simX[:,1]
+    
+    plt.cla() # to clear the axis
+    plt.plot(y_vals, z_vals)
+
+    plt.legend(loc='upper left')
+    plt.tight_layout()
+
+ani = FuncAnimation(plt.gcf(), animate, interval=5000)
+
+plt.tight_layout()
 plt.show()
 '''

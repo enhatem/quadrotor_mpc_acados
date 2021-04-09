@@ -73,8 +73,23 @@ for i in range(Nsim):
     xcurrent_pred = acados_solver.get(1, "x")
     u0 = acados_solver.get(0, "u")
 
+    # computed inputs
+    Thrust = u0[0]
+    quatrenion = u0[1:]
+
+    # making sure that q is normalized
+    quatrenion = unit_quat(quatrenion)
+
+    # stacking u0 again
+    u0 = np.append(Thrust,quatrenion)
+       
+    # make sure that q is normalized
+
+
+    '''
     if noisy_input == True:
         u0 = add_input_noise(u0, model)
+    '''
 
     predX[i+1,:] = xcurrent_pred
     simU[i,:] = u0
@@ -82,11 +97,7 @@ for i in range(Nsim):
     # simulate the system
     acados_integrator.set("x", xcurrent)
     acados_integrator.set("u", u0)
-    # add disturbance to the system (will be done later)
-    '''
-    pertubation = sampleFromEllipsoid(np.zeros((nparam,)), W)
-    acados_integrator.set("p", pertubation)
-    '''
+
     status = acados_integrator.solve()
     if status != 0:
         raise Exception('acados integrator returned status {}. Exiting.'.format(status))

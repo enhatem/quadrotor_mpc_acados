@@ -58,3 +58,48 @@ def trajectory_generator(T_final, N, traj=0, show_traj=False):
 
 
     return t,x,y,z
+
+def trajectory_generator2D(T_final, N, traj=0, show_traj=False):
+    '''
+    Generates a circular trajectory given a final time and a sampling time 
+    '''
+    r = 1 # radius
+    th = np.linspace(0,6*np.pi,N)
+    c_x, c_y = [4,5] # center coordinates 
+    ## circular trajectory
+    if traj ==0: 
+        t = np.linspace(0,T_final,N)
+        y = r * np.cos(th) + c_x
+        z = r * np.sin(th) + c_y
+        
+        if show_traj == True:
+            
+            #ax = plt.axes(projection = "3d")
+            fig, ax = plt.subplots()
+            plt.title('Reference trajectory')
+            ax.plot(y, z)
+            ax.set_xlabel("y[m]")
+            ax.set_ylabel("z[m]")
+            plt.show()    
+
+    '''
+    ## ellipsoid trajectory
+    if traj ==0: 
+        t = np.linspace(0,T_final,N)
+        y = r * np.cos(th) + c_x
+        z = r * np.sin(th) + c_y
+        
+        if show_traj == True:
+            
+            #ax = plt.axes(projection = "3d")
+            fig, ax = plt.subplots()
+            plt.title('Reference trajectory')
+            ax.plot(y, z)
+            ax.set_xlabel("y[m]")
+            ax.set_ylabel("z[m]")
+            plt.show()    
+    '''
+
+
+
+    return t,y,z

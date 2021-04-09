@@ -4,6 +4,7 @@ import casadi as cs
 from sklearn.metrics import mean_squared_error
 
 
+
 def quaternion_to_euler(q):
     q = pyquaternion.Quaternion(w=q[0], x=q[1], y=q[2], z=q[3])
     yaw, pitch, roll = q.yaw_pitch_roll
@@ -37,37 +38,38 @@ def unit_quat(q):
 def R2D(rad):
     return rad*180 / np.pi
 
-def add_input_noise(u0,model):
+def add_measurement_noise(xcurrent):
     # Apply noise to inputs (uniformly distributed noise with standard deviation proportional to input magnitude)
-    T = np.array([u0[0]])
-    w = u0[1:]
+
+    y       = xcurrent[0]
+    z       = xcurrent[1]
+    phi     = xcurrent[2]
+    vy      = xcurrent[3]
+    vz      = xcurrent[4]
+    phidot = xcurrent[5]
 
     mean = 0
-    std_T = 0.01
-    std_w = np.std(w)
+
+    # std of each state for a noiseless simulation
+    std_y      = 0.01
+    std_z      = 0.01
+    std_phi    = 0.01
+    std_vy     = 0.01
+    std_vz     = 0.01
+    std_phidot = 0.01
     
-    # std_q = np.std(q)
-    T_noisy = T + np.random.normal(mean, std_T)
-    T_noisy = max(min(T_noisy ,model.throttle_max), model.throttle_min)
+    # create the noisy states
+    y_noisy      = y + np.random.normal(mean, std_y)
+    z_noisy      = z + np.random.normal(mean, std_z)
+    phi_noisy    = phi + np.random.normal(mean, std_phi)
+    vy_noisy     = vy + np.random.normal(mean, std_vy)
+    vz_noisy     = vz + np.random.normal(mean, std_vz)
+    phidot_noisy = phidot + np.random.normal(mean, std_phidot)
 
-    '''
-    roll_noisy = roll + np.random.normal(mean, std_Angles)
-    pitch_noisy = pitch + np.random.normal(mean, std_Angles)
-    yaw_noisy = yaw + np.random.normal(mean, std_Angles)
+    # create new noisy measurement vector
+    xcurrent_noisy = np.array([y_noisy, z_noisy, phi_noisy, vy_noisy, vz_noisy, phidot_noisy])
 
-    q_noisy = euler_to_quaternion(roll_noisy, pitch_noisy, yaw_noisy)
-
-    # ensure that q_noisy is of unit modulus 
-    q_noisy = unit_quat(q_noisy)
-    '''
-    w_noisy = np.zeros_like(w)
-    for i, ui in enumerate(w):
-        w_noisy[i] = ui + np.random.normal(mean, std_w)
-    
-    # create new noisy input vector
-    u_noisy = np.append(T_noisy,w_noisy)
-
-    return u_noisy
+    return xcurrent_noisy
 
 def rmseX(simX, refX):
     rmse_x = mean_squared_error(refX[:,0], simX[1:,0], squared=False)

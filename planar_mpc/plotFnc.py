@@ -1,6 +1,10 @@
 import matplotlib.pyplot as plt
 from mpl_toolkits import mplot3d
 import numpy as np
+from utils import *
+from matplotlib.animation import FuncAnimation
+from itertools import count
+
 
 def plotRes(simX,simU,t):
     # plot results
@@ -104,20 +108,37 @@ def plotPred(predX,ref_traj):
     plt.show()
 
 
-def plotSim(simX, save=False):
+
+def livePlot(simX):
+    y = simX[:,0]
+    z = simX[:,1]
+
+    plt.style.use('fivethirtyeight')
+
+    plt.cla()
+    plt.plot(y, z, label='trajectory')
+
+    plt.legend(loc = 'upper left')
+    plt.tight_layout()
+    
+    index = count()
+    
+
+def plotSim(simX, ref_traj, save=False):
     plt.style.use('seaborn')
 
     fig, ax = plt.subplots()
 
-    ax.plot(simX[:,0], simX[:,1])
+    ax.plot(simX[:,0], simX[:,1], label='traj')
+    ax.plot(ref_traj[:,0], ref_traj[:,1], '--', label='ref_traj')
 
+    ax.legend()
     ax.set_title("Performed Trajectory")
     ax.set_xlabel("y[m]")
     ax.set_ylabel("z[m]")
 
     if save == True:
         fig.savefig('figures/sim.png', dpi=300)
-
 
 def plotPos(t, simX, save=False):
     plt.style.use('seaborn')
@@ -126,7 +147,7 @@ def plotPos(t, simX, save=False):
 
     ax1.plot(t, simX[1:,0], label='y')
     ax2.plot(t, simX[1:,1], label='z')
-    ax3.plot(t, simX[1:,2], label='phi')
+    ax3.plot(t, R2D(simX[1:,2]), label='phi')
     
     ax1.legend()
     ax1.set_title('States: Positions')
@@ -139,7 +160,7 @@ def plotPos(t, simX, save=False):
 
     ax3.legend()
     ax3.set_xlabel('t[s]')
-    ax3.set_ylabel('phi[rad]')
+    ax3.set_ylabel('phi[deg]')
 
     if save == True:
         fig.savefig('figures/posStates.png', dpi=300)
@@ -167,6 +188,24 @@ def plotVel(t, simX, save=False):
 
     if save == True:
         fig.savefig('figures/rateStates.png', dpi=300)
+
+def plotSimU(t,simU,save=False):
+    plt.style.use('seaborn')
+    fig, (ax1, ax2) = plt.subplots(nrows=2, ncols=1, sharex=True)
+
+    ax1.step(t, simU[:,0], label='T')
+    ax2.step(t, simU[:,1], label='Tau')
+
+    ax1.legend()
+    ax1.set_title('Control Inputs')
+    ax1.set_ylabel('T[N]')
+
+    ax2.legend()
+    ax2.set_xlabel('t[s]')
+    ax2.set_ylabel('Tau[N.m]')
+
+    if save == True:
+        fig.savefig('figures/controlInputs.png', dpi=300)
 
 def plotSim_pos(t, simX, ref_traj, save=False):
     # figure: container holding the plots (can have multiple plots)
