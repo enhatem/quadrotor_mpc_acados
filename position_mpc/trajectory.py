@@ -6,8 +6,8 @@ def trajectory_generator(T_final, N, traj=0, show_traj=False):
     '''
     Generates a circular trajectory given a final time and a sampling time 
     '''
-    r = 1 # radius
-    th = np.linspace(0,6*np.pi,N)
+    r = 0.5 # radius
+    th = np.linspace(0,2*np.pi,N)
     c_x, c_y = [0,0] # center coordinates 
     ## circular trajectory
     if traj ==0: 

@@ -68,7 +68,7 @@ def drone_model():
     model.throttle_max = 57e-3 * g 
     
     # define initial condition
-    model.x0 = np.array([1.0, 0.0, 1.0, 0.0, 0.0, 0.0])
+    model.x0 = np.array([0.5, 0.0, 1.0, 0.0, 0.0, 0.0])
 
     # define model struct
     params = types.SimpleNamespace()

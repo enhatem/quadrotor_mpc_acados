@@ -82,7 +82,7 @@ def acados_settings(Ts, Tf, N):
     ocp.cost.Vx_e = Vx_e
     
     # Initial reference trajectory (can be overwritten during the simulation if required)
-    x_ref = np.array([1.0, 0.0, 1.0, 0.0, 0.0, 0.0])
+    x_ref = np.array([0.5, 0.0, 1.0, 0.0, 0.0, 0.0])
     ocp.cost.yref   = np.concatenate((x_ref, np.array([model.params.m * g, 1.0, 0.0, 0.0, 0.0])))
 
     ocp.cost.yref_e = x_ref

@@ -77,7 +77,7 @@ def add_measurement_noise(xcurrent):
 
 
 
-def add_input_noise(xcurrrent):
+def add_input_noise(u0,model):
     # Apply noise to inputs (uniformly distributed noise with standard deviation proportional to input magnitude)
     T = np.array([u0[0]])
     q = u0[1:]

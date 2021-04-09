@@ -8,9 +8,9 @@ from utils import *
 from trajectory import *
 
 
-Tf = 1  # prediction horizon
-N = 100  # number of discretization steps
-T = 20.00  # simulation time[s]
+Tf = 1       # prediction horizon
+N = 100       # number of discretization steps
+T = 20.00    # simulation time[s]
 Ts = Tf / N  # sampling time[s]
 
 # noise bool
@@ -30,7 +30,6 @@ ny = nx + nu
 Nsim = int(T * N / Tf)
 
 # initialize data structs
-predX = np.ndarray((Nsim+1, nx))
 simX = np.ndarray((Nsim+1, nx))
 simU = np.ndarray((Nsim, nu))
 tot_comp_sum = 0
@@ -38,7 +37,7 @@ tcomp_max = 0
 
 # creating a reference trajectory
 traj = 0 # traj = 0: circular trajectory, traj = 1: spiral trajectory
-show_ref_traj = False
+show_ref_traj = True
 N_steps, x, y, z = trajectory_generator(T, Nsim, traj, show_ref_traj)
 ref_traj = np.stack((x,y,z),1)
 
@@ -85,7 +84,7 @@ for i in range(Nsim):
     # stacking u0 again
     u0 = np.append(Thrust,quaternion)
 
-    # storing results from acados solver
+    # storing inputs
     simU[i,:] = u0
 
     # simulate the system

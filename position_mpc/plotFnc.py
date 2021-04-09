@@ -199,6 +199,7 @@ def plotAngleInputs(t,simU,eulerAngles,save=False):
 
 
     ax1.legend()
+    ax1.set_title('Inputs: Angles')
     ax1.set_ylabel('q')
     
     ax2.legend()

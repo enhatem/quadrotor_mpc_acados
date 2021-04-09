@@ -522,7 +522,7 @@ int Translational_drone_acados_create(nlp_solver_capsule * capsule)
 
     double yref_0[NY0];
     
-    yref_0[0] = 1;
+    yref_0[0] = 0.5;
     yref_0[1] = 0;
     yref_0[2] = 1;
     yref_0[3] = 0;
@@ -663,7 +663,7 @@ int Translational_drone_acados_create(nlp_solver_capsule * capsule)
 
     double yref[NY];
     
-    yref[0] = 1;
+    yref[0] = 0.5;
     yref[1] = 0;
     yref[2] = 1;
     yref[3] = 0;
@@ -961,7 +961,7 @@ int Translational_drone_acados_create(nlp_solver_capsule * capsule)
 
     double yref_e[NYN];
     
-    yref_e[0] = 1;
+    yref_e[0] = 0.5;
     yref_e[1] = 0;
     yref_e[2] = 1;
     yref_e[3] = 0;
@@ -1067,8 +1067,8 @@ int Translational_drone_acados_create(nlp_solver_capsule * capsule)
     double lbx0[6];
     double ubx0[6];
     
-    lbx0[0] = 1;
-    ubx0[0] = 1;
+    lbx0[0] = 0.5;
+    ubx0[0] = 0.5;
     lbx0[1] = 0;
     ubx0[1] = 0;
     lbx0[2] = 1;
@@ -1232,7 +1232,7 @@ int Translational_drone_acados_create(nlp_solver_capsule * capsule)
 
     // initialize with x0
     
-    x0[0] = 1;
+    x0[0] = 0.5;
     x0[1] = 0;
     x0[2] = 1;
     x0[3] = 0;
