@@ -41,6 +41,8 @@ def R2D(rad):
 def add_measurement_noise(xcurrent):
     # Apply noise to inputs (uniformly distributed noise with standard deviation proportional to input magnitude)
 
+    np.random.seed(11)
+
     y       = xcurrent[0]
     z       = xcurrent[1]
     phi     = xcurrent[2]

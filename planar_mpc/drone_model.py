@@ -11,7 +11,7 @@ def drone_model():
     # Quadrotor intrinsic parameters
 
     # crazyflie 2.0 parameters
-    m = 0.027 # m=27g
+    m = 0.027 / 2 # m=27g
     Ixx = 1.657171e-05
     Iyy = 1.657171e-05
     Izz = 2.9261652e-05
@@ -64,9 +64,9 @@ def drone_model():
 
     # input bounds
     model.throttle_min = 0
-    model.throttle_max = 0.9 * (57e-3 * g) # 90 % of max_thrust (max_thrust = 57g)
+    model.throttle_max = 0.9 * ((57e-3 * g) / 2) # 90 % of max_thrust (max_thrust = 57g)
 
-    model.torque_max = 1 / 4 * model.throttle_max * length 
+    model.torque_max = 1 / 2 * model.throttle_max * length # divided by 2 since we only have 2 propellers in a planar quadrotor
     model.torque_max = 0.1 * model.torque_max # keeping 10% margin for steering torque. This is done because the torque_max 
                                               # is the maximum torque that can be given around any one axis. But, we are going to
                                               # limit the throttle greatly.

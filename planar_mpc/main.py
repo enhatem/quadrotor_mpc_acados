@@ -18,7 +18,7 @@ Ts = Tf / N  # sampling time[s]
 g = 9.81     # m/s^2
 
 # noise bool
-noisy_measurement = True
+noisy_measurement = False
 
 # load model and acados_solver
 model, acados_solver, acados_integrator = acados_settings(Ts, Tf, N)
@@ -88,8 +88,16 @@ for i in range(Nsim):
     # predX[i+1, :] = xcurrent_pred
     simU[i, :] = u0
 
+
+    # add measurement noise
+    if noisy_measurement == True:
+        xcurrent_sim = add_measurement_noise(xcurrent)
+    else:
+        xcurrent_sim = xcurrent
+
+
     # simulate the system
-    acados_integrator.set("x", xcurrent)
+    acados_integrator.set("x", xcurrent_sim)
     acados_integrator.set("u", u0)
     status = acados_integrator.solve()
     if status != 0:
@@ -100,9 +108,7 @@ for i in range(Nsim):
     # get state
     xcurrent = acados_integrator.get("x")
 
-    # add measurement noise
-    if noisy_measurement == True:
-        xcurrent = add_measurement_noise(xcurrent)
+    
 
     # store state
     simX[i+1, :] = xcurrent
