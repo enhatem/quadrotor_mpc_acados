@@ -11,7 +11,8 @@ def acados_settings(Ts, Tf, N):
     ocp = AcadosOcp()
 
     # export model
-    model = drone_model()
+    model, constraint = drone_model()
+    # model = drone_model()
 
     # constants
     g = 9.81 # m/s^2
@@ -28,6 +29,9 @@ def acados_settings(Ts, Tf, N):
     model_ac.name = model.name
     ocp.model = model_ac
 
+    # define constraint
+    model_ac.con_h_expr = constraint.expr
+
     # dimensions 
     nx = model.x.size()[0]
     nu = model.u.size()[0]
@@ -42,9 +46,9 @@ def acados_settings(Ts, Tf, N):
     Q[0][0] = 2e0  # weight of px
     Q[1][1] = 2e0  # weight of py
     Q[2][2] = 2e0  # weight of pz
-    Q[3][3] = 1e0  # weight of vx
-    Q[4][4] = 1e0  # weight of vy
-    Q[5][5] = 1e0  # weight of vz
+    Q[3][3] = 0e0  # weight of vx
+    Q[4][4] = 0e0  # weight of vy
+    Q[5][5] = 0e0  # weight of vz
 
     R = np.eye(nu)
     R[0][0] = 1e0 # weight of Thrust
@@ -58,9 +62,9 @@ def acados_settings(Ts, Tf, N):
     Qe[0][0] = 2e0  # terminal weight of px
     Qe[1][1] = 2e0  # terminal weight of py
     Qe[2][2] = 2e0  # terminal weight of pz
-    Qe[3][3] = 1e0  # terminal weight of vx
-    Qe[4][4] = 1e0  # terminal weight of vy
-    Qe[5][5] = 1e0  # terminal weight of vz
+    Qe[3][3] = 0e0  # terminal weight of vx
+    Qe[4][4] = 0e0  # terminal weight of vy
+    Qe[5][5] = 0e0  # terminal weight of vz
 
 
     ocp.cost.cost_type   = "LINEAR_LS"
@@ -96,8 +100,24 @@ def acados_settings(Ts, Tf, N):
     ocp.constraints.ubx = np.array([ 15.0,  15.0,  15.0]) # upper bounds on the velocity states
     ocp.constraints.idxbx = np.array([3, 4, 5])
 
+    
+    ocp.constraints.lh = np.array(
+        [
+            1
+        ]
+    )
+    ocp.constraints.uh = np.array(
+        [
+            1
+        ]
+    )
+    
+    # ocp.constraints.lh = 1
+    # ocp.constraints.uh = 1
+    
     # set initial condition
     ocp.constraints.x0 = model.x0
+
 
     # set QP solver and integration
     ocp.solver_options.tf = Tf

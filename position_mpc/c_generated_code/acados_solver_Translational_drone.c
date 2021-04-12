@@ -44,6 +44,8 @@
 
 
 
+#include "Translational_drone_constraints/Translational_drone_h_constraint.h"
+
 
 
 #include "acados_solver_Translational_drone.h"
@@ -73,7 +75,7 @@
 #define NY     11
 #define NYN    6
 #define N      100
-#define NH     0
+#define NH     1
 #define NPHI   0
 #define NHN    0
 #define NPHIN  0
@@ -233,6 +235,8 @@ int Translational_drone_acados_create(nlp_solver_capsule * capsule)
 
     for (int i = 0; i < N; i++)
     {
+        ocp_nlp_dims_set_constraints(nlp_config, nlp_dims, i, "nh", &nh[i]);
+        ocp_nlp_dims_set_constraints(nlp_config, nlp_dims, i, "nsh", &nsh[i]);
     }
     ocp_nlp_dims_set_constraints(nlp_config, nlp_dims, N, "nh", &nh[N]);
     ocp_nlp_dims_set_constraints(nlp_config, nlp_dims, N, "nsh", &nsh[N]);
@@ -243,6 +247,28 @@ int Translational_drone_acados_create(nlp_solver_capsule * capsule)
     /************************************************
     *  external functions
     ************************************************/
+    capsule->nl_constr_h_fun_jac = (external_function_param_casadi *) malloc(sizeof(external_function_param_casadi)*N);
+    for (int i = 0; i < N; i++) {
+        capsule->nl_constr_h_fun_jac[i].casadi_fun = &Translational_drone_constr_h_fun_jac_uxt_zt;
+        capsule->nl_constr_h_fun_jac[i].casadi_n_in = &Translational_drone_constr_h_fun_jac_uxt_zt_n_in;
+        capsule->nl_constr_h_fun_jac[i].casadi_n_out = &Translational_drone_constr_h_fun_jac_uxt_zt_n_out;
+        capsule->nl_constr_h_fun_jac[i].casadi_sparsity_in = &Translational_drone_constr_h_fun_jac_uxt_zt_sparsity_in;
+        capsule->nl_constr_h_fun_jac[i].casadi_sparsity_out = &Translational_drone_constr_h_fun_jac_uxt_zt_sparsity_out;
+        capsule->nl_constr_h_fun_jac[i].casadi_work = &Translational_drone_constr_h_fun_jac_uxt_zt_work;
+        external_function_param_casadi_create(&capsule->nl_constr_h_fun_jac[i], 0);
+    }
+    capsule->nl_constr_h_fun = (external_function_param_casadi *) malloc(sizeof(external_function_param_casadi)*N);
+    for (int i = 0; i < N; i++) {
+        capsule->nl_constr_h_fun[i].casadi_fun = &Translational_drone_constr_h_fun;
+        capsule->nl_constr_h_fun[i].casadi_n_in = &Translational_drone_constr_h_fun_n_in;
+        capsule->nl_constr_h_fun[i].casadi_n_out = &Translational_drone_constr_h_fun_n_out;
+        capsule->nl_constr_h_fun[i].casadi_sparsity_in = &Translational_drone_constr_h_fun_sparsity_in;
+        capsule->nl_constr_h_fun[i].casadi_sparsity_out = &Translational_drone_constr_h_fun_sparsity_out;
+        capsule->nl_constr_h_fun[i].casadi_work = &Translational_drone_constr_h_fun_work;
+        external_function_param_casadi_create(&capsule->nl_constr_h_fun[i], 0);
+    }
+    
+    
 
 
     // explicit ode
@@ -433,7 +459,7 @@ int Translational_drone_acados_create(nlp_solver_capsule * capsule)
     W_0[3+(NY0) * 0] = 0;
     W_0[3+(NY0) * 1] = 0;
     W_0[3+(NY0) * 2] = 0;
-    W_0[3+(NY0) * 3] = 1;
+    W_0[3+(NY0) * 3] = 0;
     W_0[3+(NY0) * 4] = 0;
     W_0[3+(NY0) * 5] = 0;
     W_0[3+(NY0) * 6] = 0;
@@ -445,7 +471,7 @@ int Translational_drone_acados_create(nlp_solver_capsule * capsule)
     W_0[4+(NY0) * 1] = 0;
     W_0[4+(NY0) * 2] = 0;
     W_0[4+(NY0) * 3] = 0;
-    W_0[4+(NY0) * 4] = 1;
+    W_0[4+(NY0) * 4] = 0;
     W_0[4+(NY0) * 5] = 0;
     W_0[4+(NY0) * 6] = 0;
     W_0[4+(NY0) * 7] = 0;
@@ -457,7 +483,7 @@ int Translational_drone_acados_create(nlp_solver_capsule * capsule)
     W_0[5+(NY0) * 2] = 0;
     W_0[5+(NY0) * 3] = 0;
     W_0[5+(NY0) * 4] = 0;
-    W_0[5+(NY0) * 5] = 1;
+    W_0[5+(NY0) * 5] = 0;
     W_0[5+(NY0) * 6] = 0;
     W_0[5+(NY0) * 7] = 0;
     W_0[5+(NY0) * 8] = 0;
@@ -575,7 +601,7 @@ int Translational_drone_acados_create(nlp_solver_capsule * capsule)
     W[3+(NY) * 0] = 0;
     W[3+(NY) * 1] = 0;
     W[3+(NY) * 2] = 0;
-    W[3+(NY) * 3] = 1;
+    W[3+(NY) * 3] = 0;
     W[3+(NY) * 4] = 0;
     W[3+(NY) * 5] = 0;
     W[3+(NY) * 6] = 0;
@@ -587,7 +613,7 @@ int Translational_drone_acados_create(nlp_solver_capsule * capsule)
     W[4+(NY) * 1] = 0;
     W[4+(NY) * 2] = 0;
     W[4+(NY) * 3] = 0;
-    W[4+(NY) * 4] = 1;
+    W[4+(NY) * 4] = 0;
     W[4+(NY) * 5] = 0;
     W[4+(NY) * 6] = 0;
     W[4+(NY) * 7] = 0;
@@ -599,7 +625,7 @@ int Translational_drone_acados_create(nlp_solver_capsule * capsule)
     W[5+(NY) * 2] = 0;
     W[5+(NY) * 3] = 0;
     W[5+(NY) * 4] = 0;
-    W[5+(NY) * 5] = 1;
+    W[5+(NY) * 5] = 0;
     W[5+(NY) * 6] = 0;
     W[5+(NY) * 7] = 0;
     W[5+(NY) * 8] = 0;
@@ -992,21 +1018,21 @@ int Translational_drone_acados_create(nlp_solver_capsule * capsule)
     W_e[3+(NYN) * 0] = 0;
     W_e[3+(NYN) * 1] = 0;
     W_e[3+(NYN) * 2] = 0;
-    W_e[3+(NYN) * 3] = 1;
+    W_e[3+(NYN) * 3] = 0;
     W_e[3+(NYN) * 4] = 0;
     W_e[3+(NYN) * 5] = 0;
     W_e[4+(NYN) * 0] = 0;
     W_e[4+(NYN) * 1] = 0;
     W_e[4+(NYN) * 2] = 0;
     W_e[4+(NYN) * 3] = 0;
-    W_e[4+(NYN) * 4] = 1;
+    W_e[4+(NYN) * 4] = 0;
     W_e[4+(NYN) * 5] = 0;
     W_e[5+(NYN) * 0] = 0;
     W_e[5+(NYN) * 1] = 0;
     W_e[5+(NYN) * 2] = 0;
     W_e[5+(NYN) * 3] = 0;
     W_e[5+(NYN) * 4] = 0;
-    W_e[5+(NYN) * 5] = 1;
+    W_e[5+(NYN) * 5] = 0;
     ocp_nlp_cost_model_set(nlp_config, nlp_dims, nlp_in, N, "W", W_e);
     double Vx_e[NYN*NX];
     
@@ -1154,6 +1180,28 @@ int Translational_drone_acados_create(nlp_solver_capsule * capsule)
 
 
 
+
+    // set up nonlinear constraints for stage 0 to N-1 
+    double lh[NH];
+    double uh[NH];
+
+    
+    lh[0] = 1;
+
+    
+    uh[0] = 1;
+    
+    for (int i = 0; i < N; i++)
+    {
+        // nonlinear constraints for stages 0 to N-1
+        ocp_nlp_constraints_model_set(nlp_config, nlp_dims, nlp_in, i, "nl_constr_h_fun_jac",
+                                      &capsule->nl_constr_h_fun_jac[i]);
+        ocp_nlp_constraints_model_set(nlp_config, nlp_dims, nlp_in, i, "nl_constr_h_fun",
+                                      &capsule->nl_constr_h_fun[i]);
+        
+        ocp_nlp_constraints_model_set(nlp_config, nlp_dims, nlp_in, i, "lh", lh);
+        ocp_nlp_constraints_model_set(nlp_config, nlp_dims, nlp_in, i, "uh", uh);
+    }
 
 
 
@@ -1323,6 +1371,13 @@ int Translational_drone_acados_free(nlp_solver_capsule * capsule)
     // cost
 
     // constraints
+    for (int i = 0; i < 100; i++)
+    {
+        external_function_param_casadi_free(&capsule->nl_constr_h_fun_jac[i]);
+        external_function_param_casadi_free(&capsule->nl_constr_h_fun[i]);
+    }
+    free(capsule->nl_constr_h_fun_jac);
+    free(capsule->nl_constr_h_fun);
 
     return 0;
 }

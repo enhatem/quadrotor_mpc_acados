@@ -1,3 +1,4 @@
+import numpy as np
 from casadi import *
 
 def drone_model():
@@ -63,10 +64,20 @@ def drone_model():
         ( 1 - 2 * qx * qx - 2 * qy * qy ) * T - g
     )
 
+    # constraint on quaternion
+    q_unit = np.sqrt(qw**2 + qx**2 + qy**2 + qz**2)
+
     # input bounds
     model.throttle_min = 0
-    model.throttle_max = 57e-3 * g 
+    model.throttle_max = 57e-3 * g
+
+    # nonlinear constraint for unit quaternion
+    constraint.q_unit_min = 1 
+    constraint.q_unit_max = 1 
+    constraint.expr = q_unit
     
+    
+
     # define initial condition
     model.x0 = np.array([0.5, 0.0, 1.0, 0.0, 0.0, 0.0])
 
@@ -85,4 +96,4 @@ def drone_model():
     model.name = model_name
     model.params = params
 
-    return model
+    return model , constraint
