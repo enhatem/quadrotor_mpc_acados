@@ -143,7 +143,7 @@ def plotSim(simX, ref_traj, save=False):
 def plotPos(t, simX, ref_traj, save=False):
     plt.style.use('seaborn')
 
-    fig, (ax1, ax2, ax3) = plt.subplots(nrows= 3, ncols = 1)
+    fig, (ax1, ax2, ax3) = plt.subplots(nrows= 3, ncols = 1, sharex=True)
 
     ax1.plot(t, simX[1:,0], label='y')
     ax1.plot(t, ref_traj[:,0], '--', label='ref_y')
@@ -153,11 +153,9 @@ def plotPos(t, simX, ref_traj, save=False):
     
     ax1.legend()
     ax1.set_title('States: Positions')
-    ax2.set_xlabel('t[s]')
     ax1.set_ylabel('py[m]')
 
     ax2.legend()
-    ax2.set_xlabel('t[s]')
     ax2.set_ylabel('pz[m]')
 
     ax3.legend()

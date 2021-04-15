@@ -10,7 +10,7 @@ from trajectory import *
 
 # mpc and simulation parameters
 Tf = 1       # prediction horizon
-N = 100      # number of discretization steps
+N = 25      # number of discretization steps
 T = 20.00    # simulation time[s]
 Ts = Tf / N  # sampling time[s]
 
@@ -18,7 +18,7 @@ Ts = Tf / N  # sampling time[s]
 g = 9.81     # m/s^2
 
 # noise bool
-noisy_measurement = False
+noisy_measurement = True
 
 # load model and acados_solver
 model, acados_solver, acados_integrator = acados_settings(Ts, Tf, N)
@@ -40,7 +40,14 @@ tcomp_max = 0
 # creating a reference trajectory
 traj = 0 # traj = 0: circular trajectory, traj = 1: hellical trajectory
 show_ref_traj = False
-N_steps, y, z = trajectory_generator2D(T, Nsim, traj, show_ref_traj)
+t, y, z = trajectory_generator2D(T, Nsim, traj, show_ref_traj)
+
+y_end = y[-1] * np.ones_like(np.ndarray((N, 1)))
+z_end = z[-1] * np.ones_like(np.ndarray((N, 1)))
+
+y = np.append(y,y_end)
+z = np.append(z,z_end)
+
 ref_traj = np.stack((y, z), 1)
 
 # set initial condition for acados integrator
@@ -56,12 +63,13 @@ ref_phi_reached = False
 # closed loop
 for i in range(Nsim):
 
-    
+#     if i == (Nsim-N+1):
+#         break
     # updating references
     for j in range(N):
-        yref = np.array([y[i], z[i], 0.0, 0.0, 0.0, 0.0, model.params.m * g, 0.0])
+        yref = np.array([y[i+j], z[i+j], 0.0, 0.0, 0.0, 0.0, model.params.m * g, 0.0])
         acados_solver.set(j, "yref", yref)
-    yref_N = np.array([y[i], z[i], 0.0, 0.0, 0.0, 0.0])
+    yref_N = np.array([y[i+N], z[i+N], 0.0, 0.0, 0.0, 0.0])
     acados_solver.set(N, "yref", yref_N)
     
 
@@ -130,11 +138,23 @@ for i in range(Nsim):
     '''
 
 
+
+
+
+
+# Plot Results
+# N_step = np.linspace(0, 19, Nsim-N)
+#simX = simX[0:Nsim-N+1,:]
+#simU = simU[0:Nsim-N,:]
+#ref_traj = ref_traj[0:Nsim-N,:]
+
+ref_traj = ref_traj[0:Nsim,:]
+
 # root mean squared error on each axis
 rmse_y, rmse_z = rmseX(simX, ref_traj)
 
-
 # print the computation times
+print("Total computation time: {}".format(tot_comp_sum))
 print("Average computation time: {}".format(tot_comp_sum / Nsim))
 print("Maximum computation time: {}".format(tcomp_max))
 
@@ -145,9 +165,6 @@ print("RMSE on y: {}".format(rmse_y))
 print("RMSE on z: {}".format(rmse_z))
 
 
-
-# Plot Results
-t = np.linspace(0, T, Nsim)
 plotSim(simX, ref_traj, save=True)
 plotPos(t,simX, ref_traj, save=True)
 plotVel(t,simX,save=True)
