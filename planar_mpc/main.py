@@ -20,6 +20,9 @@ g = 9.81     # m/s^2
 # noise bool
 noisy_measurement = True
 
+# bool to save measurements and inputs as .csv files
+save_data = True
+
 # load model and acados_solver
 model, acados_solver, acados_integrator = acados_settings(Ts, Tf, N)
 
@@ -141,8 +144,9 @@ for i in range(Nsim):
                     #ref_reached = True
     '''
 
-
-
+# save measurements and inputs as .csv files
+if save_data == True:
+    saveData(simX,simU)
 
 
 

@@ -1,7 +1,10 @@
 import numpy as np
 import pyquaternion
 import casadi as cs
+import pandas as pd
+
 from sklearn.metrics import mean_squared_error
+
 
 
 
@@ -79,3 +82,15 @@ def rmseX(simX, refX):
     rmse_z = mean_squared_error(refX[:,1], simX[1:,1], squared=False)
 
     return rmse_y, rmse_z
+
+def saveData(simX, simU):
+    
+    # create the data frames
+    datasetX = pd.DataFrame({'y': simX[:,0], 'z': simX[:,1], 'phi': simX[:,2], 'vy': simX[:,3], 'vz': simX[:,4], 'phi_dot': simX[:,5]})
+    datasetU = pd.DataFrame({'Thrust': simU[:,0], 'Torque': simU[:,1]})
+
+    # save data frames as .csv files
+    datasetX.to_csv('data/measX.csv')
+    datasetU.to_csv('data/simU.csv')
+
+    print(4)
