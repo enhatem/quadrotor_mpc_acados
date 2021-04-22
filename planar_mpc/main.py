@@ -44,9 +44,13 @@ t, y, z = trajectory_generator2D(T, Nsim, traj, show_ref_traj)
 
 y_end = y[-1] * np.ones_like(np.ndarray((N, 1)))
 z_end = z[-1] * np.ones_like(np.ndarray((N, 1)))
+# vy_end = vy[-1] * np.ones_like(np.ndarray((N, 1)))
+# vz_end = vz[-1] * np.ones_like(np.ndarray((N, 1)))
 
 y = np.append(y,y_end)
 z = np.append(z,z_end)
+# vy = np.append(vy,vy_end)
+# vz = np.append(vz,vz_end)
 
 ref_traj = np.stack((y, z), 1)
 

@@ -54,12 +54,12 @@ def add_measurement_noise(xcurrent):
     mean = 0
 
     # std of each state for a noiseless simulation
-    std_y      = 0.01
-    std_z      = 0.01
-    std_phi    = 0.01
-    std_vy     = 0.01
-    std_vz     = 0.01
-    std_phidot = 0.01
+    std_y      = 0.03
+    std_z      = 0.03
+    std_phi    = 0.005
+    std_vy     = 0.02
+    std_vz     = 0.02
+    std_phidot = 0.02
     
     # create the noisy states
     y_noisy      = y + np.random.normal(mean, std_y)

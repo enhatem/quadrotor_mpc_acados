@@ -64,13 +64,15 @@ def trajectory_generator2D(T_final, N, traj=0, show_traj=False):
     Generates a circular trajectory given a final time and a sampling time 
     '''
     r = 1 # radius
-    th = np.linspace(0,4*np.pi,N)
+    phi = np.linspace(0,4*np.pi,N)
     c_x, c_y = [4,5] # center coordinates 
     ## circular trajectory
     if traj ==0: 
-        t = np.linspace(0,T_final,N)
-        y = r * np.cos(th) + c_x
-        z = r * np.sin(th) + c_y
+        t  = np.linspace(0,T_final,N)
+        y  = r * np.cos(phi) + c_x
+        z  = r * np.sin(phi) + c_y
+        
+
         
         if show_traj == True:
             
