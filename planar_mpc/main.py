@@ -1,8 +1,8 @@
-from acados_settings import acados_settings
 import time
-import os
 import numpy as np
 import matplotlib.pyplot as plt
+
+from acados_settings import acados_settings
 from plotFnc import *
 from utils import *
 from trajectory import *
@@ -10,7 +10,7 @@ from trajectory import *
 
 # mpc and simulation parameters
 Tf = 1       # prediction horizon
-N = 25      # number of discretization steps
+N = 25       # number of discretization steps
 T = 20.00    # simulation time[s]
 Ts = Tf / N  # sampling time[s]
 
@@ -18,13 +18,20 @@ Ts = Tf / N  # sampling time[s]
 g = 9.81     # m/s^2
 
 # noise bool
-noisy_measurement = True
+noisy_measurement = False
+
+# use acados integrator:
+use_acados_integrator = False
 
 # bool to save measurements and inputs as .csv files
 save_data = True
 
 # load model and acados_solver
 model, acados_solver, acados_integrator = acados_settings(Ts, Tf, N)
+
+# quadrotor parameters
+m = model.params.m
+Ixx = model.params.J[0]
 
 
 # dimensions
@@ -104,45 +111,38 @@ for i in range(Nsim):
     simU[i, :] = u0
 
 
+
     # add measurement noise
     if noisy_measurement == True:
         xcurrent_sim = add_measurement_noise(xcurrent)
     else:
         xcurrent_sim = xcurrent
 
+    if use_acados_integrator == True:
+        # simulate the system
+        acados_integrator.set("x", xcurrent_sim)
+        acados_integrator.set("u", u0)
+        status = acados_integrator.solve()
+        if status != 0:
+            raise Exception(
+                'acados integrator returned status {}. Exiting.'.format(status))
+        
+        
+        # get state
+        xcurrent = acados_integrator.get("x")
+    else:
+        # integrate the accelerations
+        
+        delta_vel = integrateArray(getDynamics(m, Ixx,xcurrent_sim,u0), Ts)
 
-    # simulate the system
-    acados_integrator.set("x", xcurrent_sim)
-    acados_integrator.set("u", u0)
-    status = acados_integrator.solve()
-    if status != 0:
-        raise Exception(
-            'acados integrator returned status {}. Exiting.'.format(status))
-    
-    
-    # get state
-    xcurrent = acados_integrator.get("x")
+        # integrate the velocities
+        delta_X = integrateArray(delta_vel, Ts)
 
-    
+        # update the state
+        xcurrent = updateState(xcurrent_sim,delta_X, delta_vel)
 
     # store state
     simX[i+1, :] = xcurrent
-    
-    '''
-    # check if y and z were reached with hovering condition (phi between -0.01deg and 0.01deg)
-    if ref_reached == False:
-        if (xcurrent[0] >= 1.99 and xcurrent[0]<=2.01) and (xcurrent[1] >= 3.99 and xcurrent[1] <=4.01):
-            if ref_xy_reached == False:
-                print(f'xy reference reached after {i} iterations')
-                print(f'xy reference reached at simulation time of {i*Ts}s')
-                # ref_xy_reached = True
-            if ref_phi_reached == False:
-                if (R2D(xcurrent[2]>=-0.01 and R2D(xcurrent[2]<=0.01))):
-                    print(f'phi reference reached after {i} iterations')
-                    print(f'phi reference reached at simulation time of {i*Ts}s')
-                    #ref_phi_reached = True
-                    #ref_reached = True
-    '''
 
 # save measurements and inputs as .csv files
 if save_data == True:

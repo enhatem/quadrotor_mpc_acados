@@ -322,7 +322,7 @@ int Planar_drone_acados_create(nlp_solver_capsule * capsule)
 
     double W_0[NY0*NY0];
     
-    W_0[0+(NY0) * 0] = 25;
+    W_0[0+(NY0) * 0] = 2;
     W_0[0+(NY0) * 1] = 0;
     W_0[0+(NY0) * 2] = 0;
     W_0[0+(NY0) * 3] = 0;
@@ -331,7 +331,7 @@ int Planar_drone_acados_create(nlp_solver_capsule * capsule)
     W_0[0+(NY0) * 6] = 0;
     W_0[0+(NY0) * 7] = 0;
     W_0[1+(NY0) * 0] = 0;
-    W_0[1+(NY0) * 1] = 25;
+    W_0[1+(NY0) * 1] = 2;
     W_0[1+(NY0) * 2] = 0;
     W_0[1+(NY0) * 3] = 0;
     W_0[1+(NY0) * 4] = 0;
@@ -404,7 +404,7 @@ int Planar_drone_acados_create(nlp_solver_capsule * capsule)
 
     double W[NY*NY];
     
-    W[0+(NY) * 0] = 25;
+    W[0+(NY) * 0] = 2;
     W[0+(NY) * 1] = 0;
     W[0+(NY) * 2] = 0;
     W[0+(NY) * 3] = 0;
@@ -413,7 +413,7 @@ int Planar_drone_acados_create(nlp_solver_capsule * capsule)
     W[0+(NY) * 6] = 0;
     W[0+(NY) * 7] = 0;
     W[1+(NY) * 0] = 0;
-    W[1+(NY) * 1] = 25;
+    W[1+(NY) * 1] = 2;
     W[1+(NY) * 2] = 0;
     W[1+(NY) * 3] = 0;
     W[1+(NY) * 4] = 0;
@@ -662,14 +662,14 @@ int Planar_drone_acados_create(nlp_solver_capsule * capsule)
 
     double W_e[NYN*NYN];
     
-    W_e[0+(NYN) * 0] = 25;
+    W_e[0+(NYN) * 0] = 2;
     W_e[0+(NYN) * 1] = 0;
     W_e[0+(NYN) * 2] = 0;
     W_e[0+(NYN) * 3] = 0;
     W_e[0+(NYN) * 4] = 0;
     W_e[0+(NYN) * 5] = 0;
     W_e[1+(NYN) * 0] = 0;
-    W_e[1+(NYN) * 1] = 25;
+    W_e[1+(NYN) * 1] = 2;
     W_e[1+(NYN) * 2] = 0;
     W_e[1+(NYN) * 3] = 0;
     W_e[1+(NYN) * 4] = 0;

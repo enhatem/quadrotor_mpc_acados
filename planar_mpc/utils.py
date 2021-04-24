@@ -93,4 +93,44 @@ def saveData(simX, simU):
     datasetX.to_csv('data/measX.csv')
     datasetU.to_csv('data/simU.csv')
 
-    print(4)
+def getDynamics(m: float,
+                Ixx: float,
+                mean: np.array,   
+                U: np.array):
+
+    # constants
+    g = 9.81 # m/s^2
+
+    # state: X = [y, z, phi, vy, vz, phi_dot]
+    
+    # dynamic equations 
+    # y_dot    = mean[3]                                  # y_dot   = vy
+    # z_dot    = mean[4]                                  # z_dot   = vz
+    #phi_dot  = mean[5]                                  # phi_dot = phi_dot
+    vy_dot   = - ( U[0] / m ) * np.sin(mean[2])         # vy_dot = - u1/m * sin(phi)
+    vz_dot   = - g + ( U[0] / m ) * np.cos(mean[2])     # vz_dot = -g + u1/m * cos(phi)
+    phi_ddot = U[1] / Ixx                               # phi_ddot = u2 / Ixx
+
+    # return np.array([y_dot, z_dot, phi_dot, vy_dot, vz_dot, phi_ddot])
+    return np.array([vy_dot, vz_dot, phi_ddot])
+
+def integrateArray(     f: np.array,
+                        dt: float):
+    delta_1 = f[0] * dt # delta_vy or delta_y
+    delta_2 = f[1] * dt # delta_vz or delta_z
+    delta_3 = f[2] * dt # delta_phiDot or delta_phi
+
+    return np.array([delta_1, delta_2, delta_3])
+
+
+def updateState(    x0: np.array,
+                    delta_X: np.array, 
+                    delta_vel: np.array) -> np.array:
+    y       = x0[0] + delta_X[0]
+    z       = x0[1] + delta_X[1]
+    phi     = x0[2] + delta_X[2]
+    vy      = x0[3] + delta_vel[0]
+    vz      = x0[4] + delta_vel[1]
+    phiDot  = x0[5] + delta_vel[2]
+
+    return np.array([y, z, phi, vy, vz, phiDot])
