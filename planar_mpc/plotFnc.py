@@ -122,33 +122,15 @@ def livePlot(simX):
     plt.tight_layout()
     
     index = count()
-    
 
-def plotSim(simX, ref_traj, save=False):
-    plt.style.use('seaborn')
 
-    fig, ax = plt.subplots()
-
-    ax.plot(simX[:,0], simX[:,1], label='traj')
-    ax.plot(ref_traj[:,0], ref_traj[:,1], '--', label='ref_traj')
-
-    ax.legend()
-    ax.set_title("Performed Trajectory")
-    ax.set_xlabel("y[m]")
-    ax.set_ylabel("z[m]")
-
-    if save == True:
-        fig.savefig('figures/sim.png', dpi=300)
-
-def plotPos(t, simX, ref_traj, save=False):
+def plotPos_ref_point(t,simX, save=True):
     plt.style.use('seaborn')
 
     fig, (ax1, ax2, ax3) = plt.subplots(nrows= 3, ncols = 1, sharex=True)
 
     ax1.plot(t, simX[1:,0], label='y')
-    ax1.plot(t, ref_traj[:,0], '--', label='ref_y')
     ax2.plot(t, simX[1:,1], label='z')
-    ax2.plot(t, ref_traj[:,1], '--', label='ref_z')
     ax3.plot(t, R2D(simX[1:,2]), label='phi')
     
     ax1.legend()
@@ -165,11 +147,129 @@ def plotPos(t, simX, ref_traj, save=False):
     if save == True:
         fig.savefig('figures/posStates.png', dpi=300)
 
+def plotDrone(ax,X_0,phi):
+    
+    L= 0.046
+    l = 0.3 * L
 
-def plotVel(t, simX, save=False):
+    X1 = [X_0[0] + L*np.cos(phi),  X_0[1] + L*np.sin(phi)] # right arm of drone
+    X2 = [X_0[0] + L*np.cos(phi + np.pi), X_0[1] + L*np.sin(phi + np.pi)] # left arm of drone
+    X3 = [X1[0] +  l*np.cos(np.pi/2 + phi), X1[1] + l*np.sin(np.pi/2 + phi)] # upper right
+    X4 = [X2[0] +  l*np.cos(phi + np.pi/2), X2[1] + l*np.sin(phi + np.pi/2)] # upper right
+
+    # right arm
+    x_values_1 = [X_0[0], X1[0]]
+    y_values_1 = [X_0[1], X1[1]]
+
+    # left arm
+    x_values_2 = [X_0[0], X2[0]]
+    y_values_2 = [X_0[1], X2[1]]
+
+    # upper right arm
+    x_values_3 = [X1[0], X3[0]]
+    y_values_3 = [X1[1], X3[1]]
+
+    # upper left arm
+    x_values_4 = [X2[0], X4[0]]
+    y_values_4 = [X2[1], X4[1]]
+
+    ax.plot(x_values_1, y_values_1,'k')
+    ax.plot(x_values_2, y_values_2,'k')
+    ax.plot(x_values_3,y_values_3,'r')
+    ax.plot(x_values_4,y_values_4,'r')
+
+
+
+def plotSim_ref_point(simX, save=False):
+
+    
+    plt.style.use('seaborn')
+
+    fig, ax = plt.subplots()
+
+    ax.plot(simX[:,0], simX[:,1], label='traj')
+
+    NUM_STEPS = simX.shape[0]
+    MEAS_EVERY_STEPS = 15
+
+    for step in range(NUM_STEPS):
+        if step !=0 and step % MEAS_EVERY_STEPS ==0:
+            phi = simX[step,2]
+            X = [simX[step,0], simX[step,1]]
+            plotDrone(ax,X,phi)
+
+    ax.legend()
+    ax.set_title("Performed Trajectory")
+    ax.set_xlabel("y[m]")
+    ax.set_ylabel("z[m]")
+
+    if save == True:
+        fig.savefig('figures/sim.png', dpi=300)
+
+def plotSim(simX, ref_traj, Nsim, save=False):
+    plt.style.use('seaborn')
+
+    fig, ax = plt.subplots()
+
+    ax.plot(simX[:,0], simX[:,1], label='traj')
+    ax.plot(ref_traj[0:Nsim,0], ref_traj[0:Nsim,1], '--', label='ref_traj')
+
+    ax.legend()
+    ax.set_title("Performed Trajectory")
+    ax.set_xlabel("y[m]")
+    ax.set_ylabel("z[m]")
+
+    NUM_STEPS = simX.shape[0]
+    MEAS_EVERY_STEPS = 15
+
+    X0 = [simX[0,0], simX[0,1]]
+    phi_0 = simX[0,2]
+    plotDrone(ax,X0,phi_0)
+    
+    for step in range(NUM_STEPS):
+        if step !=0 and step % MEAS_EVERY_STEPS ==0:
+            phi = simX[step,2]
+            X = [simX[step,0], simX[step,1]]
+            plotDrone(ax,X,phi)
+
+    if save == True:
+        fig.savefig('figures/sim.png', dpi=300)
+
+def plotPos(t, simX, ref_traj, Nsim, save=False):
+    plt.style.use('seaborn')
+
+    fig, (ax1, ax2, ax3) = plt.subplots(nrows= 3, ncols = 1, sharex=True)
+
+    t = t[0:Nsim]
+
+    ax1.plot(t, simX[1:,0], label='y')
+    ax1.plot(t, ref_traj[0:Nsim,0], '--', label='y_ref')
+    ax2.plot(t, simX[1:,1], label='z')
+    ax2.plot(t, ref_traj[0:Nsim,1], '--', label='z_ref')
+    ax3.plot(t, R2D(simX[1:,2]), label='phi')
+    # ax3.plot(t, R2D(ref_traj[0:Nsim,2]), label='phi_ref')
+    
+    ax1.legend()
+    ax1.set_title('States: Positions')
+    ax1.set_ylabel('py[m]')
+
+    ax2.legend()
+    ax2.set_ylabel('pz[m]')
+
+    ax3.legend()
+    ax3.set_xlabel('t[s]')
+    ax3.set_ylabel('phi[deg]')
+
+    if save == True:
+        fig.savefig('figures/posStates.png', dpi=300)
+
+
+def plotVel(t, simX, Nsim, save=False):
     plt.style.use('seaborn')
 
     fig, (ax1, ax2, ax3) = plt.subplots(nrows=3, ncols=1, sharex=True)
+
+    t = t[0:Nsim]
 
     ax1.plot(t, simX[1:,3], label='vy')
     ax2.plot(t, simX[1:,4], label='vz')
@@ -189,9 +289,86 @@ def plotVel(t, simX, save=False):
     if save == True:
         fig.savefig('figures/rateStates.png', dpi=300)
 
-def plotSimU(t,simU,save=False):
+def plotVel_with_vy_vz_references(t,simX, ref_traj, Nsim, save=True):
+    plt.style.use('seaborn')
+
+    fig, (ax1, ax2, ax3) = plt.subplots(nrows=3, ncols=1, sharex=True)
+
+    t = t[0:Nsim]
+
+    ax1.plot(t, simX[1:,3], label='vy')
+    ax1.plot(t, ref_traj[0:Nsim,2], '--', label='ref_vy')
+    ax2.plot(t, simX[1:,4], label='vz')
+    ax2.plot(t, ref_traj[0:Nsim,3], '--', label='ref_vz')
+    ax3.plot(t, simX[1:,5], label='phi_dot')
+
+    ax1.legend()
+    ax1.set_title('States: Rates')
+    ax1.set_ylabel('vy[m/s]')
+
+    ax2.legend()
+    ax2.set_ylabel('vz[m/s]')
+
+    ax3.legend()
+    ax3.set_xlabel('t[s]')
+    ax3.set_ylabel('phi_dot[rad/s]')
+
+    if save == True:
+        fig.savefig('figures/rateStates.png', dpi=300)
+
+def plotVel_with_ref(t, simX, ref_traj, Nsim, save=False):
+    plt.style.use('seaborn')
+
+    fig, (ax1, ax2, ax3) = plt.subplots(nrows=3, ncols=1, sharex=True)
+
+    t = t[0:Nsim]
+
+    ax1.plot(t, simX[1:,3], label='vy')
+    ax1.plot(t, ref_traj[0:Nsim,3], '--', label='ref_vy')
+    ax2.plot(t, simX[1:,4], label='vz')
+    ax2.plot(t, ref_traj[0:Nsim,4], '--', label='ref_vz')
+    ax3.plot(t, simX[1:,5], label='phi_dot')
+    ax3.plot(t, ref_traj[0:Nsim,5], '--', label='ref_phi_dot')
+
+    ax1.legend()
+    ax1.set_title('States: Rates')
+    ax1.set_ylabel('vy[m/s]')
+
+    ax2.legend()
+    ax2.set_ylabel('vz[m/s]')
+
+    ax3.legend()
+    ax3.set_xlabel('t[s]')
+    ax3.set_ylabel('phi_dot[rad/s]')
+
+    if save == True:
+        fig.savefig('figures/rateStates.png', dpi=300)
+
+def plotSimU_with_ref(t,simU,ref_U, Nsim, save=False):
     plt.style.use('seaborn')
     fig, (ax1, ax2) = plt.subplots(nrows=2, ncols=1, sharex=True)
+
+    ax1.step(t, simU[:,0], label='T')
+    ax1.step(t, ref_U[0:Nsim,0], '--',label='T_ref')
+    ax2.step(t, simU[:,1], label='Tau')
+    ax2.step(t, ref_U[0:Nsim,1], '--', label='Tau_ref')
+
+    ax1.legend()
+    ax1.set_title('Control Inputs')
+    ax1.set_ylabel('T[N]')
+
+    ax2.legend()
+    ax2.set_xlabel('t[s]')
+    ax2.set_ylabel('Tau[N.m]')
+
+    if save == True:
+        fig.savefig('figures/controlInputs.png', dpi=300)
+
+def plotSimU(t, simU, Nsim, save=False):
+    plt.style.use('seaborn')
+    fig, (ax1, ax2) = plt.subplots(nrows=2, ncols=1, sharex=True)
+
+    t = t[0:Nsim]
 
     ax1.step(t, simU[:,0], label='T')
     ax2.step(t, simU[:,1], label='Tau')

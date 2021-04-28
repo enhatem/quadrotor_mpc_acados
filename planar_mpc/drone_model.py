@@ -62,6 +62,20 @@ def drone_model():
         u2 / Ixx
     )
 
+    # model bounds
+
+    model.y_min = 1
+    model.y_max = 5
+
+    model.z_min = 1
+    model.z_max = 5
+
+    model.v_min = -8
+    model.v_max =  8
+
+    model.phi_min = -80 * np.pi / 180
+    model.phi_max =  80 * np.pi / 180
+
     # input bounds
     model.throttle_min = 0
     model.throttle_max = 0.9 * ((57e-3 * g) / 2) # 90 % of max_thrust (max_thrust = 57g)
@@ -71,8 +85,9 @@ def drone_model():
                                               # is the maximum torque that can be given around any one axis. But, we are going to
                                               # limit the torque greatly.
 
+
     # define initial condition
-    model.x0 = np.array([5, 5, 0, 0, 0, 0]) # hovering at y=5, z=5 
+    model.x0 = np.array([1, 1, 0, 0, 0, 0]) # hovering at y=5, z=5 
 
     # define model struct
     params = types.SimpleNamespace()

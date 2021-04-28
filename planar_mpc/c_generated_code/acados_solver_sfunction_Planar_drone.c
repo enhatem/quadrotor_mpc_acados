@@ -47,14 +47,14 @@
 
 #include "simstruc.h"
 
-#define SAMPLINGTIME 0.04
+#define SAMPLINGTIME 0.01
 
 static void mdlInitializeSizes (SimStruct *S)
 {
     // specify the number of continuous and discrete states
     ssSetNumContStates(S, 0);
     ssSetNumDiscStates(S, 0);// specify the number of input ports
-    if ( !ssSetNumInputPorts(S, 7) )
+    if ( !ssSetNumInputPorts(S, 9) )
         return;
 
     // specify the number of output ports
@@ -69,13 +69,17 @@ static void mdlInitializeSizes (SimStruct *S)
     // y_ref_0
     ssSetInputPortVectorDimension(S, 2, 8);
     // y_ref
-    ssSetInputPortVectorDimension(S, 3, 192);
+    ssSetInputPortVectorDimension(S, 3, 792);
     // y_ref_e
     ssSetInputPortVectorDimension(S, 4, 6);
+    // lbx
+    ssSetInputPortVectorDimension(S, 5, 198);
+    // ubx
+    ssSetInputPortVectorDimension(S, 6, 198);
     // lbu
-    ssSetInputPortVectorDimension(S, 5, 50);
+    ssSetInputPortVectorDimension(S, 7, 200);
     // ubu
-    ssSetInputPortVectorDimension(S, 6, 50);/* specify dimension information for the OUTPUT ports */
+    ssSetInputPortVectorDimension(S, 8, 200);/* specify dimension information for the OUTPUT ports */
     ssSetOutputPortVectorDimension(S, 0, 2 );
     ssSetOutputPortVectorDimension(S, 1, 1 );
     ssSetOutputPortVectorDimension(S, 2, 1 );
@@ -92,6 +96,8 @@ static void mdlInitializeSizes (SimStruct *S)
     ssSetInputPortDirectFeedThrough(S, 4, 1);
     ssSetInputPortDirectFeedThrough(S, 5, 1);
     ssSetInputPortDirectFeedThrough(S, 6, 1);
+    ssSetInputPortDirectFeedThrough(S, 7, 1);
+    ssSetInputPortDirectFeedThrough(S, 8, 1);
 
     // one sample time
     ssSetNumSampleTimes(S, 1);
@@ -173,7 +179,7 @@ static void mdlOutputs(SimStruct *S, int_T tid)
     // y_ref - for stages 1 to N-1
     in_sign = ssGetInputPortRealSignalPtrs(S, 3);
 
-    for (int ii = 1; ii < 25; ii++)
+    for (int ii = 1; ii < 100; ii++)
     {
         for (int jj = 0; jj < 8; jj++)
             buffer[jj] = (double)(*in_sign[(ii-1)*8+jj]);
@@ -187,18 +193,34 @@ static void mdlOutputs(SimStruct *S, int_T tid)
     for (int i = 0; i < 6; i++)
         buffer[i] = (double)(*in_sign[i]);
 
-    ocp_nlp_cost_model_set(nlp_config, nlp_dims, nlp_in, 25, "yref", (void *) buffer);
-    // lbu
+    ocp_nlp_cost_model_set(nlp_config, nlp_dims, nlp_in, 100, "yref", (void *) buffer);
+    // lbx
     in_sign = ssGetInputPortRealSignalPtrs(S, 5);
-    for (int ii = 0; ii < 25; ii++)
+    for (int ii = 1; ii < 100; ii++)
+    {
+        for (int jj = 0; jj < 2; jj++)
+            buffer[jj] = (double)(*in_sign[(ii-1)*2+jj]);
+        ocp_nlp_constraints_model_set(nlp_config, nlp_dims, nlp_in, ii, "lbx", (void *) buffer);
+    }
+    // ubx
+    in_sign = ssGetInputPortRealSignalPtrs(S, 6);
+    for (int ii = 1; ii < 100; ii++)
+    {
+        for (int jj = 0; jj < 2; jj++)
+            buffer[jj] = (double)(*in_sign[(ii-1)*2+jj]);
+        ocp_nlp_constraints_model_set(nlp_config, nlp_dims, nlp_in, ii, "ubx", (void *) buffer);
+    }
+    // lbu
+    in_sign = ssGetInputPortRealSignalPtrs(S, 7);
+    for (int ii = 0; ii < 100; ii++)
     {
         for (int jj = 0; jj < 2; jj++)
             buffer[jj] = (double)(*in_sign[ii*2+jj]);
         ocp_nlp_constraints_model_set(nlp_config, nlp_dims, nlp_in, ii, "lbu", (void *) buffer);
     }
     // ubu
-    in_sign = ssGetInputPortRealSignalPtrs(S, 6);
-    for (int ii = 0; ii < 25; ii++)
+    in_sign = ssGetInputPortRealSignalPtrs(S, 8);
+    for (int ii = 0; ii < 100; ii++)
     {
         for (int jj = 0; jj < 2; jj++)
             buffer[jj] = (double)(*in_sign[ii*2+jj]);

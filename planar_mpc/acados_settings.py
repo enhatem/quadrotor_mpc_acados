@@ -5,7 +5,7 @@ from acados_integrator import export_drone_integrator
 import scipy.linalg
 import numpy as np
 
-def acados_settings(Ts, Tf, N):
+def acados_settings(Ts, Tf, N, bound_on_phi, bound_on_y_z):
 
     # create OCP object to formulate the optimization
     ocp = AcadosOcp()
@@ -39,9 +39,9 @@ def acados_settings(Ts, Tf, N):
 
     # set cost 
     Q = np.eye(nx)
-    Q[0][0] = 2e0   # weight of py
-    Q[1][1] = 2e0   # weight of pz
-    Q[2][2] = 0e0   # weight of phi
+    Q[0][0] = 0e0   # weight of py
+    Q[1][1] = 0e0   # weight of pz
+    Q[2][2] = 4e1   # weight of phi
     Q[3][3] = 0e0   # weight of vy
     Q[4][4] = 0e0   # weight of vz
     Q[5][5] = 0e0   # weight of phidot
@@ -51,9 +51,9 @@ def acados_settings(Ts, Tf, N):
     R[1][1] = 1e0  # weight of Torque
 
     Qe = np.eye(nx)
-    Qe[0][0] = 2e0   # weight of py
-    Qe[1][1] = 2e0   # weight of pz
-    Qe[2][2] = 0e0   # weight of phi
+    Qe[0][0] = 0e1   # weight of py
+    Qe[1][1] = 0e1   # weight of pz
+    Qe[2][2] = 6e1   # weight of phi
     Qe[3][3] = 0e0   # weight of vy
     Qe[4][4] = 0e0   # weight of vz
     Qe[5][5] = 0e0   # weight of phidot
@@ -84,16 +84,31 @@ def acados_settings(Ts, Tf, N):
     ocp.cost.yref_e = x_ref
 
     # set constraints
-    ocp.constraints.lbu   = np.array([model.throttle_min, -model.torque_max])
-    ocp.constraints.ubu   = np.array([model.throttle_max, model.torque_max])
-    ocp.constraints.idxbu = np.array([0, 1])
-    
+    ocp.constraints.lbu     = np.array([model.throttle_min, -model.torque_max])
+    ocp.constraints.ubu     = np.array([model.throttle_max, model.torque_max])
+    ocp.constraints.idxbu   = np.array([0, 1])
 
-    '''
-    ocp.constraints.lbx = np.array([-15.0, -15.0, -15.0]) # lower bounds on the velocity states
-    ocp.constraints.ubx = np.array([ 15.0,  15.0,  15.0]) # upper bounds on the velocity states
-    ocp.constraints.idxbx = np.array([3, 4, 5])
-    '''
+    if bound_on_phi == False and bound_on_y_z==False:
+        # constraints when no bounds are required
+        ocp.constraints.lbx     = np.array([model.v_min, model.v_min])
+        ocp.constraints.ubx     = np.array([model.v_max, model.v_max])
+        ocp.constraints.idxbx   = np.array([3, 4])
+    elif bound_on_phi == True and bound_on_y_z==False:
+        # constraints when following a circular trajectory
+        ocp.constraints.lbx     = np.array([model.phi_min, model.v_min, model.v_min])
+        ocp.constraints.ubx     = np.array([model.phi_max, model.v_max, model.v_max])
+        ocp.constraints.idxbx   = np.array([2, 3, 4])
+    elif bound_on_phi == False and bound_on_y_z==True:
+        # constraints when flipping
+        ocp.constraints.lbx     = np.array([model.y_min, model.z_min, model.v_min, model.v_min])
+        ocp.constraints.ubx     = np.array([model.y_max, model.z_max, model.v_max, model.v_max])
+        ocp.constraints.idxbx   = np.array([0, 1, 3, 4])
+    elif bound_on_phi == True and bound_on_y_z==True:
+        # Not really used but it is coded for completeness
+        ocp.constraints.lbx     = np.array([model.y_min, model.z_min, model.phi_min, model.v_min, model.v_min])
+        ocp.constraints.ubx     = np.array([model.y_max, model.z_max, model.phi_max, model.v_max, model.v_max])
+        ocp.constraints.idxbx   = np.array([0, 1, 2, 3, 4])
+    
 
     # set initial condition
     ocp.constraints.x0 = model.x0

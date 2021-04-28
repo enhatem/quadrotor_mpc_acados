@@ -13,7 +13,7 @@
     },
     "problem_class": "SIM",
     "solver_options": {
-        "Tsim": 0.04,
+        "Tsim": 0.01,
         "integrator_type": "IRK",
         "output_z": false,
         "sens_adj": false,

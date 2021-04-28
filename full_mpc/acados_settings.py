@@ -98,6 +98,7 @@ def acados_settings(Ts, Tf, N):
     ocp.constraints.ubu   = np.array([model.throttle_max])
     ocp.constraints.idxbu = np.array([0])
 
+
     '''
     ocp.constraints.lbx = np.array([-15.0, -15.0, -15.0]) # lower bounds on the velocity states
     ocp.constraints.ubx = np.array([ 15.0,  15.0,  15.0]) # upper bounds on the velocity states
