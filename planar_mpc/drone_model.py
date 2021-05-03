@@ -65,10 +65,10 @@ def drone_model():
     # model bounds
 
     model.y_min = 1
-    model.y_max = 5
+    model.y_max = 3
 
     model.z_min = 1
-    model.z_max = 5
+    model.z_max = 3
 
     model.v_min = -8
     model.v_max =  8
@@ -87,7 +87,7 @@ def drone_model():
 
 
     # define initial condition
-    model.x0 = np.array([1, 1, 0, 0, 0, 0]) # hovering at y=5, z=5 
+    model.x0 = np.array([5, 5, 0, 0, 0, 0]) # hovering at y=5, z=5 
 
     # define model struct
     params = types.SimpleNamespace()

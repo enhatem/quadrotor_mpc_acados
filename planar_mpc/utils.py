@@ -100,13 +100,7 @@ def getDynamics(m: float,
 
     # constants
     g = 9.81 # m/s^2
-
-    # state: X = [y, z, phi, vy, vz, phi_dot]
     
-    # dynamic equations 
-    # y_dot    = mean[3]                                  # y_dot   = vy
-    # z_dot    = mean[4]                                  # z_dot   = vz
-    #phi_dot  = mean[5]                                  # phi_dot = phi_dot
     vy_dot   = - ( U[0] / m ) * np.sin(mean[2])         # vy_dot = - u1/m * sin(phi)
     vz_dot   = - g + ( U[0] / m ) * np.cos(mean[2])     # vz_dot = -g + u1/m * cos(phi)
     phi_ddot = U[1] / Ixx                               # phi_ddot = u2 / Ixx

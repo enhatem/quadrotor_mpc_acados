@@ -192,6 +192,10 @@ def plotSim_ref_point(simX, save=False):
     NUM_STEPS = simX.shape[0]
     MEAS_EVERY_STEPS = 15
 
+    X0 = [simX[0,0], simX[0,1]]
+    phi_0 = simX[0,2]
+    plotDrone(ax,X0,phi_0)
+
     for step in range(NUM_STEPS):
         if step !=0 and step % MEAS_EVERY_STEPS ==0:
             phi = simX[step,2]
@@ -220,7 +224,7 @@ def plotSim(simX, ref_traj, Nsim, save=False):
     ax.set_ylabel("z[m]")
 
     NUM_STEPS = simX.shape[0]
-    MEAS_EVERY_STEPS = 15
+    MEAS_EVERY_STEPS = 50
 
     X0 = [simX[0,0], simX[0,1]]
     phi_0 = simX[0,2]
@@ -234,6 +238,35 @@ def plotSim(simX, ref_traj, Nsim, save=False):
 
     if save == True:
         fig.savefig('figures/sim.png', dpi=300)
+
+def plotPos_with_ref(t,simX, ref_traj, Nsim, save=False):
+    plt.style.use('seaborn')
+
+    fig, (ax1, ax2, ax3) = plt.subplots(nrows= 3, ncols = 1, sharex=True)
+
+    t = t[0:Nsim]
+
+    ax1.plot(t, simX[1:,0], label='y')
+    ax1.plot(t, ref_traj[0:Nsim,0], '--', label='y_ref')
+    ax2.plot(t, simX[1:,1], label='z')
+    ax2.plot(t, ref_traj[0:Nsim,1], '--', label='z_ref')
+    ax3.plot(t, R2D(simX[1:,2]), label='phi')
+    ax3.plot(t, R2D(ref_traj[0:Nsim,2]), '--', label='phi_ref')
+    
+    ax1.legend()
+    ax1.set_title('States: Positions')
+    ax1.set_ylabel('py[m]')
+
+    ax2.legend()
+    ax2.set_ylabel('pz[m]')
+
+    ax3.legend()
+    ax3.set_xlabel('t[s]')
+    ax3.set_ylabel('phi[deg]')
+
+    if save == True:
+        fig.savefig('figures/posStates.png', dpi=300)
+
 
 def plotPos(t, simX, ref_traj, Nsim, save=False):
     plt.style.use('seaborn')

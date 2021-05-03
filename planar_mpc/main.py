@@ -8,16 +8,16 @@ from utils import *
 from trajectory import *
 
 # mpc and simulation parameters
-Tf = 1       # prediction horizon
+Tf = 1        # prediction horizon
 N = 100       # number of discretization steps
-T = 4.00    # simulation time[s]
-Ts = Tf / N  # sampling time[s]
+T = 20.00      # simulation time[s]
+Ts = Tf / N   # sampling time[s]
 
 # constants
 g = 9.81     # m/s^2
 
 # bounds on phi
-bound_on_phi = False
+bound_on_phi = True
 
 # bounds on y and z
 bound_on_y_z = False
@@ -26,13 +26,13 @@ bound_on_y_z = False
 noisy_measurement = False
 
 # generate circulare trajectory with velocties
-traj_with_vel = False
+traj_with_vel = True
 
 # single reference point with phi = 2 * pi
 ref_point = False
 
 # import trajectory with positions and velocities and inputs
-import_trajectory = True
+import_trajectory = False
 
 # use acados integrator (if False, numerical integration is used instead):
 use_acados_integrator = True
@@ -64,7 +64,7 @@ if ref_point==False and import_trajectory==False:
     # creating a reference trajectory
     show_ref_traj = False
     radius  = 1 # m
-    freq    = 8 * np.pi/10 # frequency
+    freq    = 6 * np.pi/10 # frequency
 
     if traj_with_vel == False:
         t, y, z = trajectory_generator2D(T, Tf, Nsim, N, radius, show_ref_traj)
@@ -102,7 +102,7 @@ for i in range(Nsim):
     
     elif ref_point==True and import_trajectory==False:
         for j in range(N):
-            yref = np.array([0, 0, 2.0 * np.pi, 0.0, 0.0, 0.0, model.params.m * g, 0.0])
+            yref = np.array([1.3, 1.0, 2.0 * np.pi, 0.0, 0.0, 0.0, model.params.m * g, 0.0])
             acados_solver.set(j, "yref", yref)
         yref_N = np.array([1.3, 1.0, 2.0 * np.pi, 0.0, 0.0, 0.0])
         acados_solver.set(N, "yref", yref_N)
@@ -192,44 +192,15 @@ print("Average computation time: {}".format(tot_comp_sum / Nsim))
 print("Maximum computation time: {}".format(tcomp_max))
 
 
-'''
-
-if not flipping_ref_point:
-    # removing the last time horizon from the data since they are not part of the simulation
-    t = np.arange(0,T,Ts)
-    ref_traj = ref_traj[0:Nsim,:]
-
+if not ref_point and not import_trajectory:
+    # check if circular trajectory is with velocity or not
+    
     # root mean squared error on each axis
-    rmse_y, rmse_z = rmseX(simX, ref_traj)
+    rmse_y, rmse_z = rmseX(simX, ref_traj[0:Nsim,:])
 
     # print the RMSE on each axis
     print("RMSE on y: {}".format(rmse_y))
     print("RMSE on z: {}".format(rmse_z))
-
-
-    plotSim(simX, ref_traj, Nsim, save=True)
-    plotPos(t,simX, ref_traj, Nsim, save=True)
-    
-    if traj_with_vel == False:      # if generated circulare trajectory is without velocities
-        plotVel(t,simX,save=True)   # plot velocities without position references
-        plotSimU(t,simU,save=True)  # plot control inputs without control input references
-        
-    if import_trajectory == True: # if trajectory with inputs is imported
-        plotVel_with_ref(t,simX, ref_traj, Nsim, save=True)
-        plotSimU_with_ref(t,simU,ref_U, Nsim, save=True)
-    else:   # 
-        plotVel_with_vy_vz_only(t,simX, ref_traj, Nsim, save=True)
-
-else:
-    t = np.arange(0,T,Ts)
-    plotSimFlip(simX, save = True)
-    plotPosFlip(t,simX, save=True)
-    plotVel(t,simX,save=True)
-    plotSimU(t,simU,save=True)
-'''
-
-if not ref_point and not import_trajectory:
-    # check if circular trajectory is with velocity or not
 
     if traj_with_vel == False: # circular trajectory is generated without velocities
         plotSim(simX, ref_traj, Nsim, save=True)
@@ -251,9 +222,17 @@ if ref_point and not import_trajectory: # For single reference points
     plotSimU(t,simU, Nsim, save=True)
 
 if not ref_point and import_trajectory: # For imported trajectories with velocities and inputs
+    
+    # root mean squared error on each axis
+    rmse_y, rmse_z = rmseX(simX, ref_traj[0:Nsim,:])
+
+    # print the RMSE on each axis
+    print("RMSE on y: {}".format(rmse_y))
+    print("RMSE on z: {}".format(rmse_z))
+
     t = np.arange(0,T,Ts)
     plotSim(simX, ref_traj, Nsim, save=True)
-    plotPos(t,simX, ref_traj, Nsim, save=True)
+    plotPos_with_ref(t,simX, ref_traj, Nsim, save=True)
     plotVel_with_ref(t,simX, ref_traj, Nsim, save=True)
     plotSimU_with_ref(t,simU, ref_U, Nsim, save=True)
 
