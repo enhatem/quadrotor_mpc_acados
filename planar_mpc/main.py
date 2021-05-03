@@ -1,8 +1,12 @@
+from extended_kalman_filter.setup_ekf import setup_ekf
+import sys
 import time
 import numpy as np
 import matplotlib.pyplot as plt
 
 from acados_settings import acados_settings
+from extended_kalman_filter.ekf import *
+from extended_kalman_filter.jacobians import *
 from plotFnc import *
 from utils import *
 from trajectory import *
@@ -10,20 +14,26 @@ from trajectory import *
 # mpc and simulation parameters
 Tf = 1        # prediction horizon
 N = 100       # number of discretization steps
-T = 20.00      # simulation time[s]
+T = 20.00     # simulation time[s]
 Ts = Tf / N   # sampling time[s]
 
 # constants
 g = 9.81     # m/s^2
 
 # bounds on phi
-bound_on_phi = True
+bound_on_phi = False
 
 # bounds on y and z
 bound_on_y_z = False
 
-# noise bool
-noisy_measurement = False
+# measurement noise bool
+noisy_measurement = True
+
+# input noise bool
+noisy_input = False
+
+# extended kalman filter bool
+extended_kalman_filter = True
 
 # generate circulare trajectory with velocties
 traj_with_vel = True
@@ -41,7 +51,8 @@ use_acados_integrator = True
 save_data = True
 
 # load model and acados_solver
-model, acados_solver, acados_integrator = acados_settings(Ts, Tf, N, bound_on_phi, bound_on_y_z)
+model, acados_solver, acados_integrator = acados_settings(
+    Ts, Tf, N, bound_on_phi, bound_on_y_z)
 
 # quadrotor parameters
 m = model.params.m
@@ -55,83 +66,101 @@ Nsim = int(T * N / Tf)
 
 # initialize data structs
 predX = np.ndarray((Nsim+1, nx))
-simX  = np.ndarray((Nsim+1, nx))
-simU  = np.ndarray((Nsim,   nu))
+simX = np.ndarray((Nsim+1, nx))
+simU = np.ndarray((Nsim,   nu))
 tot_comp_sum = 0
 tcomp_max = 0
 
-if ref_point==False and import_trajectory==False:
+if ref_point == False and import_trajectory == False:
     # creating a reference trajectory
     show_ref_traj = False
-    radius  = 1 # m
-    freq    = 6 * np.pi/10 # frequency
+    radius = 1  # m
+    freq = 6 * np.pi/10  # frequency
 
     if traj_with_vel == False:
         t, y, z = trajectory_generator2D(T, Tf, Nsim, N, radius, show_ref_traj)
         ref_traj = np.stack((y, z), 1)
     else:
-        t, y, z, vy, vz = trajectory_generotaor2D_with_vel(model, radius, freq, T, Tf, Ts)
+        t, y, z, vy, vz = trajectory_generotaor2D_with_vel(
+            model, radius, freq, T, Tf, Ts)
         ref_traj = np.stack((y, z, vy, vz), 1)
-elif ref_point==False and import_trajectory==True:
+elif ref_point == False and import_trajectory == True:
     ref_traj, ref_U = readTrajectory(N)
-
 
 
 # set initial condition for acados integrator
 xcurrent = model.x0.reshape((nx,))
 simX[0, :] = xcurrent
 
+# setup the extended kalman filter
+if extended_kalman_filter == True and noisy_measurement == True:
+    ekf, C, D, Q_alpha, Q_beta, Q_gamma = setup_ekf(
+        Ts, m, Ixx, xcurrent, nx, nu)
+    MEAS_EVERY_STEPS = 1 # number of steps until a new measurement is taken
+    states = []
+    pred = []
+    covs = []
+    meas_xs = []
+
+elif extended_kalman_filter == True and noisy_measurement == False:
+    sys.exit("The extended Kalman filter must run with a noisy input")
+
+# set the seed for the random variables
+np.random.seed(20)
+
 # closed loop
 for i in range(Nsim):
-    
+
     # updating references
-    
-    if ref_point==False and import_trajectory==False:
+    if ref_point == False and import_trajectory == False:
         if traj_with_vel == False:
             for j in range(N):
-                yref = np.array([y[i+j], z[i+j], 0.0, 0.0, 0.0, 0.0, model.params.m * g, 0.0])
+                yref = np.array([y[i+j], z[i+j], 0.0, 0.0, 0.0,
+                                 0.0, model.params.m * g, 0.0])
                 acados_solver.set(j, "yref", yref)
             yref_N = np.array([y[i+N], z[i+N], 0.0, 0.0, 0.0, 0.0])
             acados_solver.set(N, "yref", yref_N)
         else:
             for j in range(N):
-                yref = np.array([y[i+j], z[i+j], 0.0, vy[i+j], vz[i+j], 0.0, model.params.m * g, 0.0])
+                yref = np.array([y[i+j], z[i+j], 0.0, vy[i+j],
+                                 vz[i+j], 0.0, model.params.m * g, 0.0])
                 acados_solver.set(j, "yref", yref)
             yref_N = np.array([y[i+N], z[i+N], 0.0, vy[i+j], vz[i+j], 0.0])
             acados_solver.set(N, "yref", yref_N)
-    
-    elif ref_point==True and import_trajectory==False:
+
+    elif ref_point == True and import_trajectory == False:
         for j in range(N):
-            yref = np.array([1.3, 1.0, 2.0 * np.pi, 0.0, 0.0, 0.0, model.params.m * g, 0.0])
+            yref = np.array([1.3, 1.0, 2.0 * np.pi, 0.0, 0.0,
+                             0.0, model.params.m * g, 0.0])
             acados_solver.set(j, "yref", yref)
         yref_N = np.array([1.3, 1.0, 2.0 * np.pi, 0.0, 0.0, 0.0])
         acados_solver.set(N, "yref", yref_N)
-    
-    elif ref_point==False and import_trajectory==True:
-        for j in range(N):
-            y       = ref_traj[i+j,0]
-            z       = ref_traj[i+j,1]
-            phi     = ref_traj[i+j,2]
-            vy      = ref_traj[i+j,3]
-            vz      = ref_traj[i+j,4]
-            phiDot  = ref_traj[i+j,5]
 
-            u1 = ref_U[i+j,0] # Thrust
-            u2 = ref_U[i+j,1] # Torque
+    elif ref_point == False and import_trajectory == True:
+        for j in range(N):
+            y = ref_traj[i+j, 0]
+            z = ref_traj[i+j, 1]
+            phi = ref_traj[i+j, 2]
+            vy = ref_traj[i+j, 3]
+            vz = ref_traj[i+j, 4]
+            phiDot = ref_traj[i+j, 5]
+
+            u1 = ref_U[i+j, 0]  # Thrust
+            u2 = ref_U[i+j, 1]  # Torque
 
             yref = np.array([y, z, phi, vy, vz, phiDot, u1, u2])
             acados_solver.set(j, "yref", yref)
-        
-            y_e       = ref_traj[i+N,0]
-            z_e       = ref_traj[i+N,1]
-            phi_e     = ref_traj[i+N,2]
-            vy_e      = ref_traj[i+N,3]
-            vz_e      = ref_traj[i+N,4]
-            phiDot_e  = ref_traj[i+N,5]
+
+            y_e = ref_traj[i+N, 0]
+            z_e = ref_traj[i+N, 1]
+            phi_e = ref_traj[i+N, 2]
+            vy_e = ref_traj[i+N, 3]
+            vz_e = ref_traj[i+N, 4]
+            phiDot_e = ref_traj[i+N, 5]
 
         yref_N = np.array([y_e, z_e, phi_e, vy_e, vz_e, phiDot_e])
         acados_solver.set(N, "yref", yref_N)
-    
+
     # solve ocp for a fixed reference
     acados_solver.set(0, "lbx", xcurrent)
     acados_solver.set(0, "ubx", xcurrent)
@@ -149,14 +178,58 @@ for i in range(Nsim):
     # get solution from acados_solver
     u0 = acados_solver.get(0, "u")
 
+    if noisy_input == True:
+        magnitude_u1 = Q_beta[0][0]  # magnitude of the input noise on thrust
+        magnitude_u2 = Q_beta[1][1]  # magnitude of the input noise on torque
+
+        # adding noise to the inputs
+        T_noisy = u0[0] + np.array(np.random.normal(0, magnitude_u1))
+        Tau_noisy = u0[1] + np.array(np.random.normal(0, magnitude_u2))
+
+        # making sure that inputs are within bounds
+        T_noisy = max(min(T_noisy, model.thrust_max), model.thrust_min)
+        Tau_noisy = max(min(Tau_noisy, model.torque_max), model.torque_min)
+
+        u0 = np.array([T_noisy, Tau_noisy])
+
     # storing results from acados solver
     simU[i, :] = u0
 
     # add measurement noise
-    if noisy_measurement == True:
+    if noisy_measurement == True and extended_kalman_filter==False:
         xcurrent_sim = add_measurement_noise(xcurrent)
+    elif noisy_measurement == True and extended_kalman_filter==True:
+        xcurrent_sim = add_measurement_noise_with_kalman(xcurrent, Q_gamma)
     else:
         xcurrent_sim = xcurrent
+
+    if extended_kalman_filter == True:
+        phi_k   = float (ekf.state[2])  # roll at time k
+
+        # stacking the covariance matrix and the state estimation at each time instant
+        covs.append(ekf.cov)
+        states.append(ekf.state)
+        
+        # The measurement vector at each time instant
+        meas_x = xcurrent_sim
+
+        # calculating the Jacobians of the evolution model with respect to the state vector and the input vector
+        T_k   = u0[0] # thrust at time step k
+        Tau_k = u0[1] # torque at time step k 
+        A_k = getA_k(phi_k, T_k, ekf._m, ekf._dt)
+        B_k = getB_k(phi_k, Ixx, ekf._m, ekf._dt)
+
+        # prediction phase
+        ekf.predict(A = A_k, B = B_k, u = u0, Q_alpha = Q_alpha, Q_beta = Q_beta)
+        pred.append(ekf.state)
+
+        # correction phase
+        if i != 0 and i % MEAS_EVERY_STEPS == 0:
+            ekf.update(C=C, meas=meas_x,
+                    meas_variance=Q_gamma)
+        meas_xs.append(meas_x)
+
+
 
     if use_acados_integrator == True:
         # simulate the system
@@ -166,25 +239,34 @@ for i in range(Nsim):
         if status != 0:
             raise Exception(
                 'acados integrator returned status {}. Exiting.'.format(status))
-        
+
         # get state
         xcurrent = acados_integrator.get("x")
     else:
         # integrate the accelerations
-        delta_vel = integrateArray(getDynamics(m, Ixx,xcurrent_sim,u0), Ts)
+        delta_vel = integrateArray(getDynamics(m, Ixx, xcurrent_sim, u0), Ts)
 
         # integrate the velocities
         delta_X = integrateArray(delta_vel, Ts)
 
         # update the state
-        xcurrent = updateState(xcurrent_sim,delta_X, delta_vel)
+        xcurrent = updateState(xcurrent_sim, delta_X, delta_vel)
+
+    
 
     # store state
     simX[i+1, :] = xcurrent
 
 # save measurements and inputs as .csv files
 if save_data == True:
-    saveData(simX,simU)
+    saveData(simX, simU)
+
+if extended_kalman_filter == True:
+    # converting lists to np arrays for plotting
+    meas_xs = np.array(meas_xs)
+    states = np.array(states)
+    covs = np.array(covs)
+    pred = np.array(pred)
 
 # print the computation times100
 print("Total computation time: {}".format(tot_comp_sum))
@@ -194,46 +276,46 @@ print("Maximum computation time: {}".format(tcomp_max))
 
 if not ref_point and not import_trajectory:
     # check if circular trajectory is with velocity or not
-    
+
     # root mean squared error on each axis
-    rmse_y, rmse_z = rmseX(simX, ref_traj[0:Nsim,:])
+    rmse_y, rmse_z = rmseX(simX, ref_traj[0:Nsim, :])
 
     # print the RMSE on each axis
     print("RMSE on y: {}".format(rmse_y))
     print("RMSE on z: {}".format(rmse_z))
 
-    if traj_with_vel == False: # circular trajectory is generated without velocities
+    if traj_with_vel == False:  # circular trajectory is generated without velocities
         plotSim(simX, ref_traj, Nsim, save=True)
-        plotPos(t,simX, ref_traj, Nsim, save=True)
-        plotVel(t,simX, Nsim, save=True)
-        plotSimU(t,simU, Nsim, save=True)
-    
-    elif traj_with_vel == True: # ciruclar trajectory is generated with velocities
+        plotPos(t, simX, ref_traj, Nsim, save=True)
+        plotVel(t, simX, Nsim, save=True)
+        plotSimU(t, simU, Nsim, save=True)
+
+    elif traj_with_vel == True:  # ciruclar trajectory is generated with velocities
         plotSim(simX, ref_traj, Nsim, save=True)
-        plotPos(t,simX, ref_traj, Nsim, save=True)
-        plotVel_with_vy_vz_references(t,simX, ref_traj, Nsim, save=True)
-        plotSimU(t,simU, Nsim, save=True)
+        plotPos(t, simX, ref_traj, Nsim, save=True)
+        plotVel_with_vy_vz_references(t, simX, ref_traj, Nsim, save=True)
+        plotSimU(t, simU, Nsim, save=True)
 
-if ref_point and not import_trajectory: # For single reference points
-    t = np.arange(0,T,Ts)
-    plotSim_ref_point(simX, save = True)
-    plotPos_ref_point(t,simX, save=True)
-    plotVel(t,simX, Nsim, save=True)
-    plotSimU(t,simU, Nsim, save=True)
+if ref_point and not import_trajectory:  # For single reference points
+    t = np.arange(0, T, Ts)
+    plotSim_ref_point(simX, save=True)
+    plotPos_ref_point(t, simX, save=True)
+    plotVel(t, simX, Nsim, save=True)
+    plotSimU(t, simU, Nsim, save=True)
 
-if not ref_point and import_trajectory: # For imported trajectories with velocities and inputs
-    
+if not ref_point and import_trajectory:  # For imported trajectories with velocities and inputs
+
     # root mean squared error on each axis
-    rmse_y, rmse_z = rmseX(simX, ref_traj[0:Nsim,:])
+    rmse_y, rmse_z = rmseX(simX, ref_traj[0:Nsim, :])
 
     # print the RMSE on each axis
     print("RMSE on y: {}".format(rmse_y))
     print("RMSE on z: {}".format(rmse_z))
 
-    t = np.arange(0,T,Ts)
+    t = np.arange(0, T, Ts)
     plotSim(simX, ref_traj, Nsim, save=True)
-    plotPos_with_ref(t,simX, ref_traj, Nsim, save=True)
-    plotVel_with_ref(t,simX, ref_traj, Nsim, save=True)
-    plotSimU_with_ref(t,simU, ref_U, Nsim, save=True)
+    plotPos_with_ref(t, simX, ref_traj, Nsim, save=True)
+    plotVel_with_ref(t, simX, ref_traj, Nsim, save=True)
+    plotSimU_with_ref(t, simU, ref_U, Nsim, save=True)
 
 plt.show()

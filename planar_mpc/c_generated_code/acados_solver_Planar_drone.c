@@ -52,7 +52,7 @@
 #define NZ     0
 #define NU     2
 #define NP     0
-#define NBX    3
+#define NBX    2
 #define NBX0   6
 #define NBU    2
 #define NSBX   0
@@ -397,7 +397,7 @@ int Planar_drone_acados_create(nlp_solver_capsule * capsule)
 
     double W_0[NY0*NY0];
     
-    W_0[0+(NY0) * 0] = 100;
+    W_0[0+(NY0) * 0] = 1;
     W_0[0+(NY0) * 1] = 0;
     W_0[0+(NY0) * 2] = 0;
     W_0[0+(NY0) * 3] = 0;
@@ -406,7 +406,7 @@ int Planar_drone_acados_create(nlp_solver_capsule * capsule)
     W_0[0+(NY0) * 6] = 0;
     W_0[0+(NY0) * 7] = 0;
     W_0[1+(NY0) * 0] = 0;
-    W_0[1+(NY0) * 1] = 100;
+    W_0[1+(NY0) * 1] = 1;
     W_0[1+(NY0) * 2] = 0;
     W_0[1+(NY0) * 3] = 0;
     W_0[1+(NY0) * 4] = 0;
@@ -479,7 +479,7 @@ int Planar_drone_acados_create(nlp_solver_capsule * capsule)
 
     double W[NY*NY];
     
-    W[0+(NY) * 0] = 100;
+    W[0+(NY) * 0] = 1;
     W[0+(NY) * 1] = 0;
     W[0+(NY) * 2] = 0;
     W[0+(NY) * 3] = 0;
@@ -488,7 +488,7 @@ int Planar_drone_acados_create(nlp_solver_capsule * capsule)
     W[0+(NY) * 6] = 0;
     W[0+(NY) * 7] = 0;
     W[1+(NY) * 0] = 0;
-    W[1+(NY) * 1] = 100;
+    W[1+(NY) * 1] = 1;
     W[1+(NY) * 2] = 0;
     W[1+(NY) * 3] = 0;
     W[1+(NY) * 4] = 0;
@@ -737,14 +737,14 @@ int Planar_drone_acados_create(nlp_solver_capsule * capsule)
 
     double W_e[NYN*NYN];
     
-    W_e[0+(NYN) * 0] = 100;
+    W_e[0+(NYN) * 0] = 1;
     W_e[0+(NYN) * 1] = 0;
     W_e[0+(NYN) * 2] = 0;
     W_e[0+(NYN) * 3] = 0;
     W_e[0+(NYN) * 4] = 0;
     W_e[0+(NYN) * 5] = 0;
     W_e[1+(NYN) * 0] = 0;
-    W_e[1+(NYN) * 1] = 100;
+    W_e[1+(NYN) * 1] = 1;
     W_e[1+(NYN) * 2] = 0;
     W_e[1+(NYN) * 3] = 0;
     W_e[1+(NYN) * 4] = 0;
@@ -900,18 +900,15 @@ int Planar_drone_acados_create(nlp_solver_capsule * capsule)
     // x
     int idxbx[NBX];
     
-    idxbx[0] = 2;
-    idxbx[1] = 3;
-    idxbx[2] = 4;
+    idxbx[0] = 3;
+    idxbx[1] = 4;
     double lbx[NBX];
     double ubx[NBX];
     
-    lbx[0] = -1.3962634015954636;
-    ubx[0] = 1.3962634015954636;
+    lbx[0] = -8;
+    ubx[0] = 8;
     lbx[1] = -8;
     ubx[1] = 8;
-    lbx[2] = -8;
-    ubx[2] = 8;
 
     for (int i = 1; i < N; i++)
     {
