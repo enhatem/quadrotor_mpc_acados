@@ -54,12 +54,12 @@ def add_measurement_noise(xcurrent):
     mean = 0
 
     # magnitude of the Gaussian white noise to be added on each state
-    magnitude_y         = 0.010
-    magnitude_z         = 0.010
-    magnitude_phi       = 0.087
-    magnitude_vy        = 0.100
-    magnitude_vz        = 0.100
-    magnitude_phi_dot   = 0.087
+    magnitude_y         = 5.77e-3
+    magnitude_z         = 5.77e-3
+    magnitude_phi       = 0.05
+    magnitude_vy        = 5.77e-3
+    magnitude_vz        = 5.77e-3
+    magnitude_phi_dot   = 0.05
     
     # create the noisy states
     y_noisy      = y + np.random.normal(mean, magnitude_y)
@@ -90,12 +90,12 @@ def add_measurement_noise_with_kalman(xcurrent, Q_gamma):
     mean = 0
 
     # magnitude of the Gaussian white noise to be added on each state
-    magnitude_y         = Q_gamma[0][0]
-    magnitude_z         = Q_gamma[1][1]
-    magnitude_phi       = Q_gamma[2][2]
-    magnitude_vy        = Q_gamma[3][3]
-    magnitude_vz        = Q_gamma[4][4]
-    magnitude_phi_dot   = Q_gamma[5][5]
+    magnitude_y         = np.sqrt(Q_gamma[0][0])
+    magnitude_z         = np.sqrt(Q_gamma[1][1])
+    magnitude_phi       = np.sqrt(Q_gamma[2][2])
+    magnitude_vy        = np.sqrt(Q_gamma[3][3])
+    magnitude_vz        = np.sqrt(Q_gamma[4][4])
+    magnitude_phi_dot   = np.sqrt(Q_gamma[5][5])
     
     # create the noisy states
     y_noisy      = y + np.random.normal(mean, magnitude_y)
@@ -115,6 +115,12 @@ def rmseX(simX, refX):
     rmse_z = mean_squared_error(refX[:,1], simX[1:,1], squared=False)
 
     return rmse_y, rmse_z
+
+def rmseX_kalman(states, refX):
+    rmse_y_kalman = mean_squared_error(refX[:,0], states[:,0,0], squared=False)
+    rmse_z_kalman = mean_squared_error(refX[:,1], states[:,1,0], squared=False)
+
+    return rmse_y_kalman, rmse_z_kalman
 
 def saveData(simX, simU):
     

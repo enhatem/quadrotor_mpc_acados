@@ -41,10 +41,10 @@ def acados_settings(Ts, Tf, N, bound_on_phi, bound_on_y_z):
     Q = np.eye(nx)
     Q[0][0] = 1e0   # weight of py
     Q[1][1] = 1e0  # weight of pz
-    Q[2][2] = 0e0   # weight of phi
-    Q[3][3] = 1e0   # weight of vy
-    Q[4][4] = 1e0   # weight of vz
-    Q[5][5] = 0e0   # weight of phidot
+    Q[2][2] = 1e0   # weight of phi
+    Q[3][3] = 10e0   # weight of vy
+    Q[4][4] = 10e0   # weight of vz
+    Q[5][5] = 1e0   # weight of phidot
 
     R = np.eye(nu)
     R[0][0] = 1e0  # weight of Thrust
@@ -53,10 +53,10 @@ def acados_settings(Ts, Tf, N, bound_on_phi, bound_on_y_z):
     Qe = np.eye(nx)
     Qe[0][0] = 1e0   # weight of py
     Qe[1][1] = 1e0   # weight of pz
-    Qe[2][2] = 0e0   # weight of phi
+    Qe[2][2] = 1e0   # weight of phi
     Qe[3][3] = 1e0   # weight of vy
     Qe[4][4] = 1e0   # weight of vz
-    Qe[5][5] = 0e0   # weight of phidot
+    Qe[5][5] = 1e0   # weight of phidot
 
 
     ocp.cost.cost_type   = "LINEAR_LS"
