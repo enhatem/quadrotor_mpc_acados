@@ -39,24 +39,24 @@ def acados_settings(Ts, Tf, N, bound_on_phi, bound_on_y_z):
 
     # set cost 
     Q = np.eye(nx)
-    Q[0][0] = 100e0   # weight of py
-    Q[1][1] = 100e0  # weight of pz
-    Q[2][2] = 0e0   # weight of phi
-    Q[3][3] = 1e0   # weight of vy
-    Q[4][4] = 1e0   # weight of vz
-    Q[5][5] = 0e0   # weight of phidot
+    Q[0][0] = 1e0   # weight of py
+    Q[1][1] = 1e0  # weight of pz
+    Q[2][2] = 1e0   # weight of phi
+    Q[3][3] = 10e0   # weight of vy
+    Q[4][4] = 10e0   # weight of vz
+    Q[5][5] = 1e0   # weight of phidot
 
     R = np.eye(nu)
     R[0][0] = 1e0  # weight of Thrust
     R[1][1] = 1e0  # weight of Torque
 
     Qe = np.eye(nx)
-    Qe[0][0] = 100e0   # weight of py
-    Qe[1][1] = 100e0   # weight of pz
-    Qe[2][2] = 0e0   # weight of phi
+    Qe[0][0] = 1e0   # weight of py
+    Qe[1][1] = 1e0   # weight of pz
+    Qe[2][2] = 1e0   # weight of phi
     Qe[3][3] = 1e0   # weight of vy
     Qe[4][4] = 1e0   # weight of vz
-    Qe[5][5] = 0e0   # weight of phidot
+    Qe[5][5] = 1e0   # weight of phidot
 
 
     ocp.cost.cost_type   = "LINEAR_LS"
@@ -84,8 +84,8 @@ def acados_settings(Ts, Tf, N, bound_on_phi, bound_on_y_z):
     ocp.cost.yref_e = x_ref
 
     # set constraints
-    ocp.constraints.lbu     = np.array([model.throttle_min, -model.torque_max])
-    ocp.constraints.ubu     = np.array([model.throttle_max, model.torque_max])
+    ocp.constraints.lbu     = np.array([model.thrust_min, -model.torque_max])
+    ocp.constraints.ubu     = np.array([model.thrust_max, model.torque_max])
     ocp.constraints.idxbu   = np.array([0, 1])
 
     if bound_on_phi == False and bound_on_y_z==False:

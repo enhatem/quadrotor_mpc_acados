@@ -5,9 +5,6 @@ import pandas as pd
 
 from sklearn.metrics import mean_squared_error
 
-
-
-
 def quaternion_to_euler(q):
     q = pyquaternion.Quaternion(w=q[0], x=q[1], y=q[2], z=q[3])
     yaw, pitch, roll = q.yaw_pitch_roll
@@ -56,21 +53,57 @@ def add_measurement_noise(xcurrent):
     # mean of the noise
     mean = 0
 
-    # std of each state for a noiseless simulation
-    std_y      = 0.01
-    std_z      = 0.01
-    std_phi    = 0.01
-    std_vy     = 0.01
-    std_vz     = 0.01
-    std_phidot = 0.01
+    # magnitude of the Gaussian white noise to be added on each state
+    magnitude_y         = 5.77e-3
+    magnitude_z         = 5.77e-3
+    magnitude_phi       = 0.05
+    magnitude_vy        = 5.77e-3
+    magnitude_vz        = 5.77e-3
+    magnitude_phi_dot   = 0.05
     
     # create the noisy states
-    y_noisy      = y + np.random.normal(mean, std_y)
-    z_noisy      = z + np.random.normal(mean, std_z)
-    phi_noisy    = phi + np.random.normal(mean, std_phi)
-    vy_noisy     = vy + np.random.normal(mean, std_vy)
-    vz_noisy     = vz + np.random.normal(mean, std_vz)
-    phidot_noisy = phidot + np.random.normal(mean, std_phidot)
+    y_noisy      = y + np.random.normal(mean, magnitude_y)
+    z_noisy      = z + np.random.normal(mean, magnitude_z)
+    phi_noisy    = phi + np.random.normal(mean, magnitude_phi)
+    vy_noisy     = vy + np.random.normal(mean, magnitude_vy)
+    vz_noisy     = vz + np.random.normal(mean, magnitude_vz)
+    phidot_noisy = phidot + np.random.normal(mean, magnitude_phi_dot)
+
+    # create new noisy measurement vector
+    xcurrent_noisy = np.array([y_noisy, z_noisy, phi_noisy, vy_noisy, vz_noisy, phidot_noisy])
+
+    return xcurrent_noisy
+
+def add_measurement_noise_with_kalman(xcurrent, Q_gamma):
+    # Apply noise to inputs (uniformly distributed noise with standard deviation proportional to input magnitude)
+
+    np.random.seed(20)
+
+    y       = xcurrent[0]
+    z       = xcurrent[1]
+    phi     = xcurrent[2]
+    vy      = xcurrent[3]
+    vz      = xcurrent[4]
+    phidot  = xcurrent[5]
+
+    # noise with zero mean for all elements of the measurement vector
+    mean = 0
+
+    # magnitude of the Gaussian white noise to be added on each state
+    magnitude_y         = np.sqrt(Q_gamma[0][0])
+    magnitude_z         = np.sqrt(Q_gamma[1][1])
+    magnitude_phi       = np.sqrt(Q_gamma[2][2])
+    magnitude_vy        = np.sqrt(Q_gamma[3][3])
+    magnitude_vz        = np.sqrt(Q_gamma[4][4])
+    magnitude_phi_dot   = np.sqrt(Q_gamma[5][5])
+    
+    # create the noisy states
+    y_noisy      = y + np.random.normal(mean, magnitude_y)
+    z_noisy      = z + np.random.normal(mean, magnitude_z)
+    phi_noisy    = phi + np.random.normal(mean, magnitude_phi)
+    vy_noisy     = vy + np.random.normal(mean, magnitude_vy)
+    vz_noisy     = vz + np.random.normal(mean, magnitude_vz)
+    phidot_noisy = phidot + np.random.normal(mean, magnitude_phi_dot)
 
     # create new noisy measurement vector
     xcurrent_noisy = np.array([y_noisy, z_noisy, phi_noisy, vy_noisy, vz_noisy, phidot_noisy])
@@ -82,6 +115,12 @@ def rmseX(simX, refX):
     rmse_z = mean_squared_error(refX[:,1], simX[1:,1], squared=False)
 
     return rmse_y, rmse_z
+
+def rmseX_kalman(states, refX):
+    rmse_y_kalman = mean_squared_error(refX[:,0], states[:,0,0], squared=False)
+    rmse_z_kalman = mean_squared_error(refX[:,1], states[:,1,0], squared=False)
+
+    return rmse_y_kalman, rmse_z_kalman
 
 def saveData(simX, simU):
     

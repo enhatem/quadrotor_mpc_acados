@@ -239,6 +239,65 @@ def plotSim(simX, ref_traj, Nsim, save=False):
     if save == True:
         fig.savefig('figures/sim.png', dpi=300)
 
+
+def plotSim_kalman(simX, states, pred, ref_traj, Nsim, save=False):
+    plt.style.use('seaborn')
+
+    fig, ax = plt.subplots()
+
+    ax.plot(simX[:,0], simX[:,1], label='noisy_meas')
+    ax.plot(states[:,0,0], states[:,1,0], label='kalman')
+    # ax.plot(pred[:,0], pred[:,1], label='pred')
+    ax.plot(ref_traj[0:Nsim,0], ref_traj[0:Nsim,1], '--', label='ref_traj')
+
+    ax.legend()
+    ax.set_title("Performed Trajectory")
+    ax.set_xlabel("y[m]")
+    ax.set_ylabel("z[m]")
+
+    NUM_STEPS = simX.shape[0]
+    MEAS_EVERY_STEPS = 50
+
+    # X0 = [simX[0,0], simX[0,1]]
+    # phi_0 = simX[0,2]
+    X0 = [states[0,0,0], states[0,1,0]]
+    phi_0 = states[0,2,0]
+    plotDrone(ax,X0,phi_0)
+    
+    for step in range(NUM_STEPS-1):
+        if step !=0 and step % MEAS_EVERY_STEPS ==0:
+            # phi = simX[step,2]
+            # X = [simX[step,0], simX[step,1]]
+            phi = states[step,2,0]
+            X = [states[step,0,0], states[step,1,0]]
+            plotDrone(ax,X,phi)
+
+    if save == True:
+        fig.savefig('figures/sim.png', dpi=300)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 def plotPos_with_ref(t,simX, ref_traj, Nsim, save=False):
     plt.style.use('seaborn')
 
@@ -279,6 +338,71 @@ def plotPos(t, simX, ref_traj, Nsim, save=False):
     ax1.plot(t, ref_traj[0:Nsim,0], '--', label='y_ref')
     ax2.plot(t, simX[1:,1], label='z')
     ax2.plot(t, ref_traj[0:Nsim,1], '--', label='z_ref')
+    ax3.plot(t, R2D(simX[1:,2]), label='phi')
+    # ax3.plot(t, R2D(ref_traj[0:Nsim,2]), label='phi_ref')
+    
+    ax1.legend()
+    ax1.set_title('States: Positions')
+    ax1.set_ylabel('py[m]')
+
+    ax2.legend()
+    ax2.set_ylabel('pz[m]')
+
+    ax3.legend()
+    ax3.set_xlabel('t[s]')
+    ax3.set_ylabel('phi[deg]')
+
+    if save == True:
+        fig.savefig('figures/posStates.png', dpi=300)
+
+
+def plotPos_kalman(t, simX, states, pred, covs, ref_traj, Nsim, save=False):
+
+# extracting the y and z positions from the kalman filter estimation
+    y_kalman        = states[:,0,0]
+    z_kalman        = states[:,1,0]
+    phi_kalman      = states[:,2,0] 
+
+# extracting the variances of y and z for plotting the lower and upper bounds of the confidence interval 
+    y_cov       = covs[:,0,0] # variance of y at each time instant
+    z_cov       = covs[:,1,1] # variance of z at each time instant
+    phi_cov     = covs[:,2,2] # variance of phi at each time instant
+
+# lower bound of confidence interval of the position (95%)
+    lower_conf_y        = y_kalman - 2*np.sqrt(y_cov)
+    lower_conf_z        = z_kalman - 2*np.sqrt(z_cov)
+    lower_conf_phi      = phi_kalman - 2*np.sqrt(phi_cov)
+
+# lower bound of confidence interval of the position (95%)
+    upper_conf_y        = y_kalman + 2*np.sqrt(y_cov)
+    upper_conf_z        = z_kalman + 2*np.sqrt(z_cov)
+    upper_conf_phi      = phi_kalman + 2*np.sqrt(phi_cov)
+
+
+    plt.style.use('seaborn')
+
+    fig, (ax1, ax2, ax3) = plt.subplots(nrows= 3, ncols = 1, sharex=True)
+
+    t = t[0:Nsim]
+
+    ax1.plot(t, simX[1:,0], label='y_meas')
+    ax1.plot(t, y_kalman, label='y_kalman')
+    # ax1.plot(t, pred[:,0,0], label='y_pred')
+    ax1.plot(t, lower_conf_y, 'r--', label='lower_bound_y')
+    ax1.plot(t, upper_conf_y, 'r--', label='upper_bound_y')
+    ax1.plot(t, ref_traj[0:Nsim,0], '--', label='y_ref')
+
+    ax2.plot(t, simX[1:,1], label='z')
+    ax2.plot(t, z_kalman, label='z_kalman')
+    # ax2.plot(t, pred[:,1,0], label='z_pred')
+    ax2.plot(t, lower_conf_z, 'r--', label='lower_bound_z')
+    ax2.plot(t, upper_conf_z, 'r--', label='upper_bound_z')
+    ax2.plot(t, ref_traj[0:Nsim,1], '--', label='z_ref')
+
+    ax3.plot(t, R2D(phi_kalman), label='phi_kalman')
+    # ax3.plot(t, R2D(pred[:,2,0]), label='phi_pred')
+    ax3.plot(t, R2D(lower_conf_phi), 'r--', label='lower_bound_phi')
+    ax3.plot(t, R2D(upper_conf_phi), 'r--', label='upper_bound_phi')
     ax3.plot(t, R2D(simX[1:,2]), label='phi')
     # ax3.plot(t, R2D(ref_traj[0:Nsim,2]), label='phi_ref')
     
@@ -349,6 +473,81 @@ def plotVel_with_vy_vz_references(t,simX, ref_traj, Nsim, save=True):
     if save == True:
         fig.savefig('figures/rateStates.png', dpi=300)
 
+
+
+def plotVel_with_vy_vz_references_kalman(t,simX, states, pred, covs, ref_traj, Nsim, save=True):
+    
+    # extracting the y and z positions from the kalman filter estimation
+    vy_kalman        = states[:,3,0]
+    vz_kalman        = states[:,4,0]
+    phi_dot_kalman      = states[:,5,0] 
+
+    # extracting the variances of y and z for plotting the lower and upper bounds of the confidence interval 
+    y_cov       = covs[:,3,0] # variance of y at each time instant
+    z_cov       = covs[:,4,1] # variance of z at each time instant
+    phi_cov     = covs[:,5,2] # variance of phi at each time instant
+
+    # lower bound of confidence interval of the position (95%)
+    lower_conf_vy        = vy_kalman - 2*np.sqrt(y_cov)
+    lower_conf_vz        = vz_kalman - 2*np.sqrt(z_cov)
+    lower_conf_phi_dot   = phi_dot_kalman - 2*np.sqrt(phi_cov)
+
+    # lower bound of confidence interval of the position (95%)
+    upper_conf_vy        = vy_kalman + 2*np.sqrt(y_cov)
+    upper_conf_vz        = vz_kalman + 2*np.sqrt(z_cov)
+    upper_conf_phi_dot   = phi_dot_kalman + 2*np.sqrt(phi_cov)
+    
+    
+    
+    plt.style.use('seaborn')
+
+    fig, (ax1, ax2, ax3) = plt.subplots(nrows=3, ncols=1, sharex=True)
+
+    t = t[0:Nsim]
+
+    ax1.plot(t, simX[1:,3], label='vy_meas')
+    ax1.plot(t, vy_kalman, label='vy_kalman')
+    # ax1.plot(t, pred[:,3,0], label='vy_pred')
+    ax1.plot(t, lower_conf_vy, 'r--', label='lower_bound_vy')
+    ax1.plot(t, upper_conf_vy, 'r--', label='upper_bound_vy')
+    ax1.plot(t, ref_traj[0:Nsim,2], '--', label='vy_ref')
+    
+    ax2.plot(t, simX[1:,4], label='vz_meas')
+    ax2.plot(t, vz_kalman, label='vz_kalman')
+    # ax2.plot(t, pred[:,4,0], label='vz_pred')
+    ax2.plot(t, lower_conf_vz, 'r--', label='lower_bound_vz')
+    ax2.plot(t, upper_conf_vz, 'r--', label='upper_bound_vz')
+    ax2.plot(t, ref_traj[0:Nsim,3], '--', label='ref_vz')
+
+
+    ax3.plot(t, simX[1:,5], label='phi_dot_meas')
+    ax3.plot(t, phi_dot_kalman, label='phi_dot_kalman')
+    # ax3.plot(t, pred[:,5,0], label='phi_dot_pred')
+    ax3.plot(t, lower_conf_phi_dot, 'r--', label='lower_bound_phi_dot')
+    ax3.plot(t, upper_conf_phi_dot, 'r--', label='lower_bound_phi_dot')
+
+    ax1.legend()
+    ax1.set_title('States: Rates')
+    ax1.set_ylabel('vy[m/s]')
+
+    ax2.legend()
+    ax2.set_ylabel('vz[m/s]')
+
+    ax3.legend()
+    ax3.set_xlabel('t[s]')
+    ax3.set_ylabel('phi_dot[rad/s]')
+
+    if save == True:
+        fig.savefig('figures/rateStates.png', dpi=300)
+
+
+
+
+
+
+
+
+
 def plotVel_with_ref(t, simX, ref_traj, Nsim, save=False):
     plt.style.use('seaborn')
 
@@ -396,6 +595,254 @@ def plotSimU_with_ref(t,simU,ref_U, Nsim, save=False):
 
     if save == True:
         fig.savefig('figures/controlInputs.png', dpi=300)
+
+
+
+def plotErrors_with_vel_kalman(t, simX, states, ref_traj, Nsim):
+    # errors 
+    ref_traj        = ref_traj[0:Nsim, :]
+    t = t[0:Nsim]
+
+    y_error             = ref_traj[:,0] - simX[1:,0]
+    z_error             = ref_traj[:,1] - simX[1:,1]
+    vy_error            = ref_traj[:,2] - simX[1:,3]
+    vz_error            = ref_traj[:,3] - simX[1:,4]
+
+    y_error_kalman      = ref_traj[:,0] - states[:,0,0]
+    z_error_kalman      = ref_traj[:,1] - states[:,1,0]
+    vy_error_kalman     = ref_traj[:,2] - states[:,3,0]
+    vz_error_kalman     = ref_traj[:,3] - states[:,4,0]
+
+    fig1, (ax1,ax2) = plt.subplots(nrows = 2, ncols = 1, sharex = True)
+
+    ax1.plot(t, y_error, label='y_meas_error')
+    ax1.plot(t,y_error_kalman, label='y_kalman_error')
+
+    ax2.plot(t, z_error, label='z_error')
+    ax2.plot(t, z_error_kalman, label='z_kalman_error')
+
+    ax1.legend()
+    ax1.set_title('Errors: Position')
+    ax1.set_ylabel('y_error[m]')
+
+    ax2.legend()
+    ax2.set_xlabel('t[s]')
+    ax2.set_ylabel('z_error[m]')
+
+    fig2, (ax3,ax4) = plt.subplots(nrows = 2, ncols = 1, sharex = True)
+
+    ax3.plot(t, vy_error, label='vy_error')
+    ax3.plot(t, vy_error_kalman, label='vy_kalman_error')
+
+    ax4.plot(t, vz_error, label='vz_error')
+    ax4.plot(t, vz_error_kalman, label='vz_kalman_error')
+
+    ax3.legend()
+    ax3.set_title('Errors: Velocities')
+    ax3.set_ylabel('vy_error[m/s]')
+
+    ax4.legend()
+    ax4.set_xlabel('t[s]')
+    ax4.set_ylabel('vz_error[m/s]')
+
+
+
+
+
+def plotErrors_with_vel(t, simX, ref_traj, Nsim):
+    # errors 
+    ref_traj        = ref_traj[0:Nsim, :]
+    t = t[0:Nsim]
+
+    y_error         = ref_traj[:,0] - simX[1:,0]
+    z_error         = ref_traj[:,1] - simX[1:,1]
+    vy_error        = ref_traj[:,2] - simX[1:,3]
+    vz_error        = ref_traj[:,3] - simX[1:,4]
+
+    fig1, (ax1,ax2) = plt.subplots(nrows = 2, ncols = 1, sharex = True)
+
+    ax1.plot(t, y_error, label='y_error')
+    ax2.plot(t, z_error, label='z_error')
+
+    ax1.set_title('Errors: Position')
+    ax1.set_ylabel('y_error[m]')
+
+    ax2.set_xlabel('t[s]')
+    ax2.set_ylabel('z_error[m]')
+
+    fig2, (ax3,ax4) = plt.subplots(nrows = 2, ncols = 1, sharex = True)
+
+    ax3.plot(t, vy_error, label='vy_error')
+    ax4.plot(t, vz_error, label='vz_error')
+
+    ax3.set_title('Errors: Velocities')
+    ax3.set_ylabel('vy_error[m/s]')
+
+    ax4.set_xlabel('t[s]')
+    ax4.set_ylabel('vz_error[m/s]')
+
+
+def plotErrors_with_ref_kalman(t, simX, states, ref_traj, Nsim):
+    # errors 
+    ref_traj        = ref_traj[0:Nsim, :]
+    t               = t[0:Nsim]
+
+    y_error         = ref_traj[:,0] - simX[1:,0]
+    z_error         = ref_traj[:,1] - simX[1:,1]
+    phi_error       = R2D(ref_traj[:,2] - simX[1:,2])
+    vy_error        = ref_traj[:,3] - simX[1:,3]
+    vz_error        = ref_traj[:,4] - simX[1:,4]
+    phi_dot_error   = ref_traj[:,5] - simX[1:,5]
+
+    y_error_kalman         = ref_traj[:,0] - states[:,0,0]
+    z_error_kalman         = ref_traj[:,1] - states[:,1,0]
+    phi_error_kalman       = R2D(ref_traj[:,2] - states[:,2,0])
+    vy_error_kalman        = ref_traj[:,3] - states[:,3,0]
+    vz_error_kalman        = ref_traj[:,4] - states[:,4,0]
+    phi_dot_error_kalman   = ref_traj[:,5] - states[:,5,0]
+
+    fig1, (ax1,ax2,ax3) = plt.subplots(nrows = 3, ncols = 1, sharex = True)
+
+    ax1.plot(t, y_error, label='y_error')
+    ax1.plot(t, y_error_kalman, label='y_error_kalman')
+
+    ax2.plot(t, z_error, label='z_error')
+    ax2.plot(t, z_error_kalman, label='z_error_kalman')
+    
+    ax3.plot(t, phi_error, label='phi_error')
+    ax3.plot(t, phi_error_kalman, label='phi_error_kalman')
+
+    ax1.legend()
+    ax1.set_title('Errors: Position')
+    ax1.set_ylabel('y_error[m]')
+
+    ax2.legend()
+    ax2.set_ylabel('z_error[m]')
+
+    ax3.legend()
+    ax3.set_xlabel('t[s]')
+    ax3.set_ylabel('phi_error[deg]')
+
+    fig2, (ax4,ax5,ax6) = plt.subplots(nrows = 3, ncols = 1, sharex = True)
+
+    ax4.plot(t, vy_error, label='vy_error')
+    ax4.plot(t, vy_error_kalman, label='vy_error_kalman')
+
+    ax5.plot(t, vz_error, label='vz_error')
+    ax5.plot(t, vz_error_kalman, label='vz_error_kalman')
+    
+    ax6.plot(t, phi_dot_error, label='phi_dot_error')
+    ax6.plot(t, phi_dot_error_kalman, label='phi_dot_error_kalman')
+
+    ax4.legend()
+    ax4.set_title('Errors: Velocities')
+    ax4.set_ylabel('vy_error[m/s]')
+
+    ax5.legend()
+    ax5.set_ylabel('vz_error[m/s]')
+
+    ax6.legend()
+    ax6.set_xlabel('t[s]')
+    ax6.set_ylabel('phi_dot_error[rad/s]')
+
+
+
+
+
+
+
+def plotErrors_with_ref(t, simX, ref_traj, Nsim):
+    # errors 
+    ref_traj        = ref_traj[0:Nsim, :]
+    t               = t[0:Nsim]
+
+    y_error         = ref_traj[:,0] - simX[1:,0]
+    z_error         = ref_traj[:,1] - simX[1:,1]
+    phi_error       = R2D(ref_traj[:,2] - simX[1:,2])
+    vy_error        = ref_traj[:,3] - simX[1:,3]
+    vz_error        = ref_traj[:,4] - simX[1:,4]
+    phi_dot_error   = ref_traj[:,5] - simX[1:,5]
+
+    fig1, (ax1,ax2,ax3) = plt.subplots(nrows = 3, ncols = 1, sharex = True)
+
+    ax1.plot(t, y_error, label='y_error')
+    ax2.plot(t, z_error, label='z_error')
+    ax3.plot(t, phi_error, label='phi_error')
+
+    ax1.legend()
+    ax1.set_title('Errors: Position')
+    ax1.set_ylabel('y_error[m]')
+
+    ax2.legend()
+    ax2.set_ylabel('z_error[m]')
+
+    ax3.legend()
+    ax3.set_xlabel('t[s]')
+    ax3.set_ylabel('phi_error[deg]')
+
+    fig2, (ax4,ax5,ax6) = plt.subplots(nrows = 3, ncols = 1, sharex = True)
+
+    ax4.plot(t, vy_error, label='vy_error')
+    ax5.plot(t, vz_error, label='vz_error')
+    ax6.plot(t, phi_dot_error, label='phi_dot_error')
+
+    ax4.legend()
+    ax4.set_title('Errors: Velocities')
+    ax4.set_ylabel('vy_error[m/s]')
+
+    ax5.legend()
+    ax5.set_ylabel('vz_error[m/s]')
+
+    ax6.legend()
+    ax6.set_xlabel('t[s]')
+    ax6.set_ylabel('phi_dot_error[rad/s]')
+
+
+
+
+
+
+
+
+
+
+
+def plotErrors_no_vel(t, simX, ref_traj, Nsim):
+    # errors 
+    ref_traj        = ref_traj[0:Nsim, :]
+    t = t[0:Nsim]
+
+    y_error         = ref_traj[:,0] - simX[1:,0]
+    z_error         = ref_traj[:,1] - simX[1:,1]
+    # vy_error        = ref_traj[:,2] - simX[1:,3]
+    # vz_error        = ref_traj[:,3] - simX[1:,4]
+
+    fig1, (ax1,ax2) = plt.subplots(nrows = 2, ncols = 1, sharex = True)
+
+    ax1.plot(t, y_error, label='y_error')
+    ax2.plot(t, z_error, label='z_error')
+
+    ax1.set_title('Errors: Position')
+    ax1.set_ylabel('y_error[m]')
+
+    ax2.set_xlabel('t[s]')
+    ax2.set_ylabel('z_error[m]')
+
+    # fig2, (ax3,ax4) = plt.subplots(nrows = 2, ncols = 1, sharex = True)
+
+    # ax3.plot(t, vy_error, label='vy_error')
+    ## ax4.plot(t, vz_error, label='vz_error')
+
+    # ax3.set_title('Errors: Velocities')
+    # ax3.set_ylabel('vy_error[m/s]')
+
+    # ax4.set_xlabel('t[s]')
+    # ax4.set_ylabel('vz_error[m/s]')
+
+
+
+
+
 
 def plotSimU(t, simU, Nsim, save=False):
     plt.style.use('seaborn')
