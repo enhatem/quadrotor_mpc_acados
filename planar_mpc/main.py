@@ -25,16 +25,16 @@ T = T_hover + T_traj # total simulation time
 g = 9.81     # m/s^2
 
 # bounds on phi
-bound_on_phi = True
+bound_on_phi = False
 
 # bounds on y and z
 bound_on_y_z = False
 
 # measurement noise bool
-noisy_measurement = False
+noisy_measurement = True
 
 # input noise bool
-noisy_input = False
+noisy_input = True
 
 # extended kalman filter bool
 extended_kalman_filter = True
@@ -71,8 +71,8 @@ Nsim = int(T * N / Tf)
 
 # initialize data structs
 predX = np.ndarray((Nsim+1, nx))
-simX = np.ndarray((Nsim+1, nx))
-simU = np.ndarray((Nsim,   nu))
+simX  = np.ndarray((Nsim+1, nx))
+simU  = np.ndarray((Nsim,   nu))
 tot_comp_sum = 0
 tcomp_max = 0
 
@@ -80,16 +80,12 @@ tcomp_max = 0
 xcurrent = model.x0.reshape((nx,))
 simX[0, :] = xcurrent
 
-# using predefined control input (for testing only)
-# if sine_input == True:
-#     U_sine = circular_control_input()
-
 # creating or extracting trajectory
 if ref_point == False and import_trajectory == False:
     # creating a reference trajectory
     show_ref_traj = False
     radius = 1  # m
-    freq = 6 * np.pi/10  # frequency
+    freq = 8 * np.pi/10  # frequency
 
     if traj_with_vel == False:
         y, z = trajectory_generator2D(xcurrent, N_hover, Nsim, N, radius, show_ref_traj)
@@ -105,7 +101,7 @@ elif ref_point == False and import_trajectory == True:
     ref_traj, ref_U = readTrajectory(N)
 
 # setup the extended kalman filter
-if extended_kalman_filter == True and noisy_measurement == False:
+if extended_kalman_filter == True:
     ekf, C, D, Q_alpha, Q_beta, Q_gamma = setup_ekf(
         Ts, m, Ixx, xcurrent, nx, nu)
     MEAS_EVERY_STEPS = 1 # number of steps until a new measurement is taken
@@ -114,8 +110,8 @@ if extended_kalman_filter == True and noisy_measurement == False:
     covs = []
     meas_xs = []
 
-elif extended_kalman_filter == True and noisy_measurement == False:
-    sys.exit("The extended Kalman filter must run with a noisy input")
+# elif extended_kalman_filter == True and noisy_measurement == False:
+#     sys.exit("The extended Kalman filter must run with a noisy input")
 
 # set the seed for the random variables
 np.random.seed(20)
@@ -142,10 +138,10 @@ for i in range(Nsim):
 
     elif ref_point == True and import_trajectory == False:
         for j in range(N):
-            yref = np.array([1.3, 1.0, 2.0 * np.pi, 0.0, 0.0,
+            yref = np.array([2.0, 2.0, 0.0 * np.pi, 0.0, 0.0,
                             0.0, model.params.m * g, 0.0])
             acados_solver.set(j, "yref", yref)
-        yref_N = np.array([1.3, 1.0, 2.0 * np.pi, 0.0, 0.0, 0.0])
+        yref_N = np.array([2.0, 2.0, 0.0 * np.pi, 0.0, 0.0, 0.0])
         acados_solver.set(N, "yref", yref_N)
 
     elif ref_point == False and import_trajectory == True:
@@ -238,8 +234,7 @@ for i in range(Nsim):
 
         # correction phase
         if i != 0 and i % MEAS_EVERY_STEPS == 0:
-            ekf.update(C=C, meas=meas_x,
-                    meas_variance=Q_gamma)
+            ekf.update(C = C, meas = meas_x, meas_variance = Q_gamma)
         meas_xs.append(meas_x)
 
     if use_acados_integrator == True:
@@ -267,7 +262,7 @@ for i in range(Nsim):
     simX[i+1, :] = xcurrent
 
 # save measurements and inputs as .csv files
-if save_data == True:
+if save_data == True and extended_kalman_filter == False:
     saveData(simX, simU)
 
 if extended_kalman_filter == True:
@@ -284,6 +279,87 @@ print("Maximum computation time: {}".format(tcomp_max))
 
 
 t = np.arange(0, T, Ts)
+
+# plotting and RMSE
+
+if extended_kalman_filter == True:
+
+    if ref_point == False and import_trajectory == False:
+        
+        # root mean squared error on each axis
+        rmse_y, rmse_z = rmseX(simX, ref_traj[0:Nsim, :])
+        rmse_y_kalman, rmse_z_kalman = rmseX_kalman(states, ref_traj[0:Nsim, :])
+
+        # print the RMSE on each axis
+        print("RMSE on y: {}".format(rmse_y))
+        print("RMSE on z: {}".format(rmse_z))
+        print("RMSE on y with EKF measurements: {}".format(rmse_y_kalman))
+        print("RMSE on z with EKF measurements: {}".format(rmse_z_kalman))
+
+        # check if circular trajectory is with velocity or not
+        if traj_with_vel == False:  # circular trajectory is generated without velocities
+            plotSim_kalman(simX, states, pred, ref_traj, Nsim, save=True)
+            plotPos_kalman(t, simX, states, pred, covs, ref_traj, Nsim, save=True)
+            plotVel_without_vy_vz_references_kalman(t, simX, states, pred, covs, ref_traj, Nsim, save=True)            
+            plotSimU(t, simU, Nsim, save=True)
+            plotErrors_without_vel_kalman(t, simX, states, ref_traj, Nsim)
+        else:                       # circular trajectory is generated with velocities
+            plotSim_kalman(simX, states, pred, ref_traj, Nsim, save=True)
+            plotPos_kalman(t, simX, states, pred, covs, ref_traj, Nsim, save=True)
+            plotVel_with_vy_vz_references_kalman(t, simX, states, pred, covs, ref_traj, Nsim, save=True)
+            plotSimU(t, simU, Nsim, save=True)
+            plotErrors_with_vel_kalman(t, simX, states, ref_traj, Nsim)
+
+    if ref_point == True and import_trajectory == False:  # For single reference points
+        plotSim_ref_point_kalman(simX, states, save=True)
+        plotPos_ref_point_kalman(t, simX, states, save=True)
+        plotVel_with_ref_pose_kalman(t,simX, states, covs, Nsim, save=True)            
+        plotSimU(t, simU, Nsim, save=True)
+
+    if ref_point == False and import_trajectory == True:  # For imported trajectories with velocities and inputs
+        plotSim_kalman(simX, states, pred, ref_traj, Nsim, save=True)
+        plotPos_with_imported_traj_kalman(t, simX, states, ref_traj, Nsim, save=True)
+        plotVel_with_imported_traj_kalman(t, simX, states, ref_traj, Nsim, save=True)
+        plotSimU_with_ref(t, simU, ref_U, Nsim, save=True)
+        plotErrors_with_ref_kalman(t, simX, states, ref_traj, Nsim)
+else:
+    
+    if ref_point == False and import_trajectory == False:
+        
+        # root mean squared error on each axis
+        rmse_y, rmse_z = rmseX(simX, ref_traj[0:Nsim, :])
+
+        # print the RMSE on each axis
+        print("RMSE on y: {}".format(rmse_y))
+        print("RMSE on z: {}".format(rmse_z))
+
+        # check if circular trajectory is with velocity or not
+        if traj_with_vel == False:                      # circular trajectory is generated without velocities
+            plotSim(simX, ref_traj, Nsim, save=True)
+            plotPos(t, simX, ref_traj, Nsim, save=True)
+            plotVel(t, simX, Nsim, save=True)            
+            plotSimU(t, simU, Nsim, save=True)
+            plotErrors_no_vel(t, simX, ref_traj, Nsim)
+        else:                                           # circular trajectory is generated with velocities
+            plotSim(simX, ref_traj, Nsim, save=True)
+            plotPos(t, simX, ref_traj, Nsim, save=True)
+            plotVel_with_vy_vz_references(t,simX, ref_traj, Nsim, save=True)
+            plotSimU(t, simU, Nsim, save=True)
+            plotErrors_with_vel(t, simX, ref_traj, Nsim)
+    
+    if ref_point == True and import_trajectory == False:  # For single reference points
+        plotSim_ref_point(simX, save=True)
+        plotPos_ref_point(t, simX, save=True)
+        plotVel_with_ref_pose(t,simX, Nsim, save=True)   
+        plotSimU(t, simU, Nsim, save=True)
+
+    if ref_point == False and import_trajectory == True:  # For imported trajectories with velocities and inputs
+        plotSim(simX, ref_traj, Nsim, save=True)
+        plotPos_with_imported_traj(t, simX, ref_traj, Nsim, save=True)
+        plotVel_with_imported_traj(t, simX, ref_traj, Nsim, save=True)
+        plotSimU_with_ref(t, simU, ref_U, Nsim, save=True)
+        plotErrors_with_ref(t, simX, ref_traj, Nsim)
+'''
 
 # plotting and RMSE
 if not ref_point and not import_trajectory:
@@ -369,4 +445,6 @@ else:
         plotVel_with_ref(t, simX, ref_traj, Nsim, save=True)
         plotSimU_with_ref(t, simU, ref_U, Nsim, save=True)
         plotErrors_with_ref_kalman(t, simX, states, ref_traj, Nsim)
+'''
+
 plt.show()

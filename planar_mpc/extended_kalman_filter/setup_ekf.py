@@ -14,21 +14,21 @@ def setup_ekf(DT, m, Ixx, x0, nx, nu):
     # initial state and covariance
     x0 = x0
     P0 = np.eye(nx)
-    P0[0][0] = 1e0 # variance on the initial y
-    P0[1][1] = 1e0 # variance on the initial z
-    P0[2][2] = 1e0 # variance on the initial phi
-    P0[3][3] = 1e0 # variance on the initial vy
-    P0[4][4] = 1e0 # variance on the initial vz
-    P0[5][5] = 1e0 # variance on the initial phi_dot
+    P0[0][0] = 1e-2 # variance on the initial y
+    P0[1][1] = 1e-2 # variance on the initial z
+    P0[2][2] = 1e-2 # variance on the initial phi
+    P0[3][3] = 1e-2 # variance on the initial vy
+    P0[4][4] = 1e-2 # variance on the initial vz
+    P0[5][5] = 1e-2 # variance on the initial phi_dot
 
     # variance of state noise in the prediction
     Q_alpha = np.zeros((6,6))
-    Q_alpha[0][0] = 1e-7 # variance of the state noise on y
-    Q_alpha[1][1] = 1e-6 # variance of the state noise on z
-    Q_alpha[2][2] = 1e0 # variance of the state noise on phi
-    Q_alpha[3][3] = 1e0 # variance of the state noise on vy
-    Q_alpha[4][4] = 1e0 # variance of the state noise on vz
-    Q_alpha[5][5] = 1e0 # variance of the state noise on phi_dot
+    Q_alpha[0][0] = 5e-8  # variance of the state noise on y
+    Q_alpha[1][1] = 5e-8  # variance of the state noise on z
+    Q_alpha[2][2] = 1e-3  # variance of the state noise on phi
+    Q_alpha[3][3] = 1e-3  # variance of the state noise on vy
+    Q_alpha[4][4] = 1e-2  # variance of the state noise on vz
+    Q_alpha[5][5] = 1e-2  # variance of the state noise on phi_dot
 
     # variance of the input noise
     Q_beta =  np.eye(nu)
