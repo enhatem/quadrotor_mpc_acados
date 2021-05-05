@@ -13,15 +13,19 @@ from trajectory import *
 
 # mpc and simulation parameters
 Tf = 1        # prediction horizon
-N = 100       # number of discretization steps
-T = 4.00     # simulation time[s]
+N  = 100       # number of discretization steps
 Ts = Tf / N   # sampling time[s]
+
+T_hover = 5     # hovering time[s]
+T_traj  = 20.00 # trajectory time[s]
+
+T = T_hover + T_traj # total simulation time
 
 # constants
 g = 9.81     # m/s^2
 
 # bounds on phi
-bound_on_phi = False
+bound_on_phi = True
 
 # bounds on y and z
 bound_on_y_z = False
@@ -36,13 +40,13 @@ noisy_input = False
 extended_kalman_filter = True
 
 # generate circulare trajectory with velocties
-traj_with_vel = False
+traj_with_vel = True
 
 # single reference point with phi = 2 * pi
 ref_point = False
 
 # import trajectory with positions and velocities and inputs
-import_trajectory = True
+import_trajectory = False
 
 # use acados integrator (if False, numerical integration is used instead):
 use_acados_integrator = True
@@ -62,6 +66,7 @@ Ixx = model.params.J[0]
 nx = model.x.size()[0]
 nu = model.u.size()[0]
 ny = nx + nu
+N_hover = int (T_hover * N / Tf)
 Nsim = int(T * N / Tf)
 
 # initialize data structs
@@ -71,6 +76,15 @@ simU = np.ndarray((Nsim,   nu))
 tot_comp_sum = 0
 tcomp_max = 0
 
+# set initial condition for acados integrator
+xcurrent = model.x0.reshape((nx,))
+simX[0, :] = xcurrent
+
+# using predefined control input (for testing only)
+# if sine_input == True:
+#     U_sine = circular_control_input()
+
+# creating or extracting trajectory
 if ref_point == False and import_trajectory == False:
     # creating a reference trajectory
     show_ref_traj = False
@@ -78,19 +92,17 @@ if ref_point == False and import_trajectory == False:
     freq = 6 * np.pi/10  # frequency
 
     if traj_with_vel == False:
-        t, y, z = trajectory_generator2D(T, Tf, Nsim, N, radius, show_ref_traj)
+        y, z = trajectory_generator2D(xcurrent, N_hover, Nsim, N, radius, show_ref_traj)
         ref_traj = np.stack((y, z), 1)
+            # adding the hovering position to the beginning of the trajectory
+        # ref_traj = add_hover(ref_traj)
     else:
-        t, y, z, vy, vz = trajectory_generotaor2D_with_vel(
-            model, radius, freq, T, Tf, Ts)
+        y, z, vy, vz = trajectory_generotaor2D_with_vel(
+            xcurrent, N_hover, model, radius, freq, T_traj, Tf, Ts)
         ref_traj = np.stack((y, z, vy, vz), 1)
+
 elif ref_point == False and import_trajectory == True:
     ref_traj, ref_U = readTrajectory(N)
-
-
-# set initial condition for acados integrator
-xcurrent = model.x0.reshape((nx,))
-simX[0, :] = xcurrent
 
 # setup the extended kalman filter
 if extended_kalman_filter == True and noisy_measurement == False:
@@ -116,14 +128,14 @@ for i in range(Nsim):
         if traj_with_vel == False:
             for j in range(N):
                 yref = np.array([y[i+j], z[i+j], 0.0, 0.0, 0.0,
-                                 0.0, model.params.m * g, 0.0])
+                                0.0, model.params.m * g, 0.0])
                 acados_solver.set(j, "yref", yref)
             yref_N = np.array([y[i+N], z[i+N], 0.0, 0.0, 0.0, 0.0])
             acados_solver.set(N, "yref", yref_N)
         else:
             for j in range(N):
                 yref = np.array([y[i+j], z[i+j], 0.0, vy[i+j],
-                                 vz[i+j], 0.0, model.params.m * g, 0.0])
+                                vz[i+j], 0.0, model.params.m * g, 0.0])
                 acados_solver.set(j, "yref", yref)
             yref_N = np.array([y[i+N], z[i+N], 0.0, vy[i+j], vz[i+j], 0.0])
             acados_solver.set(N, "yref", yref_N)
@@ -131,7 +143,7 @@ for i in range(Nsim):
     elif ref_point == True and import_trajectory == False:
         for j in range(N):
             yref = np.array([1.3, 1.0, 2.0 * np.pi, 0.0, 0.0,
-                             0.0, model.params.m * g, 0.0])
+                            0.0, model.params.m * g, 0.0])
             acados_solver.set(j, "yref", yref)
         yref_N = np.array([1.3, 1.0, 2.0 * np.pi, 0.0, 0.0, 0.0])
         acados_solver.set(N, "yref", yref_N)
@@ -271,7 +283,7 @@ print("Average computation time: {}".format(tot_comp_sum / Nsim))
 print("Maximum computation time: {}".format(tcomp_max))
 
 
-
+t = np.arange(0, T, Ts)
 
 # plotting and RMSE
 if not ref_point and not import_trajectory:
@@ -293,8 +305,6 @@ if not ref_point and not import_trajectory:
         print("RMSE on z with EKF measurements: {}".format(rmse_z_kalman))
 
     if traj_with_vel == False:  # circular trajectory is generated without velocities
-
-        
         plotSim(simX, ref_traj, Nsim, save=True)
         plotPos(t, simX, ref_traj, Nsim, save=True)
         plotVel(t, simX, Nsim, save=True)
@@ -316,9 +326,7 @@ if not ref_point and not import_trajectory:
         plotErrors_with_vel_kalman(t, simX, states, ref_traj, Nsim)
 
 
-
 if ref_point and not import_trajectory:  # For single reference points
-    t = np.arange(0, T, Ts)
     plotSim_ref_point(simX, save=True)
     plotPos_ref_point(t, simX, save=True)
     plotVel(t, simX, Nsim, save=True)
@@ -335,7 +343,6 @@ if extended_kalman_filter == False:
         print("RMSE on y: {}".format(rmse_y))
         print("RMSE on z: {}".format(rmse_z))
 
-        t = np.arange(0, T, Ts)
         plotSim(simX, ref_traj, Nsim, save=True)
         plotPos_with_ref(t, simX, ref_traj, Nsim, save=True)
         plotVel_with_ref(t, simX, ref_traj, Nsim, save=True)
@@ -357,7 +364,6 @@ else:
         print("RMSE on y: {}".format(rmse_y))
         print("RMSE on z: {}".format(rmse_z))
 
-        t = np.arange(0, T, Ts)
         plotSim(simX, ref_traj, Nsim, save=True)
         plotPos_with_ref(t, simX, ref_traj, Nsim, save=True)
         plotVel_with_ref(t, simX, ref_traj, Nsim, save=True)

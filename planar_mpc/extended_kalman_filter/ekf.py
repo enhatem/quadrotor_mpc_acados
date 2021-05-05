@@ -3,7 +3,7 @@ import numpy as np
 from extended_kalman_filter.evolution import evolution
 
 def is_pos_def(x):
-    return np.all(np.linalg.eigvals(x) > 0)
+    return np.all(np.linalg.eigvals(x) >= 0)
 
 class EKF:
     def __init__(self,  initial_x: np.array, 
@@ -60,7 +60,7 @@ class EKF:
         # innovation
         innov = y - y_hat
         
-        # Mobile robot equations
+        # MOBRO equations
         K = self._P @ C.T @ np.linalg.inv( C @ self._P @C.T + Q_gamma)
         new_x = self._x + K @ innov
         # new_P = ( np.eye(len(new_x)) - K @ C) @ self._P

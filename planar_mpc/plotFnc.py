@@ -483,19 +483,19 @@ def plotVel_with_vy_vz_references_kalman(t,simX, states, pred, covs, ref_traj, N
     phi_dot_kalman      = states[:,5,0] 
 
     # extracting the variances of y and z for plotting the lower and upper bounds of the confidence interval 
-    y_cov       = covs[:,3,0] # variance of y at each time instant
-    z_cov       = covs[:,4,1] # variance of z at each time instant
-    phi_cov     = covs[:,5,2] # variance of phi at each time instant
+    vy_cov       = covs[:,3,3] # variance of y at each time instant
+    vz_cov       = covs[:,4,4] # variance of z at each time instant
+    phi_dot_cov     = covs[:,5,5] # variance of phi at each time instant
 
     # lower bound of confidence interval of the position (95%)
-    lower_conf_vy        = vy_kalman - 2*np.sqrt(y_cov)
-    lower_conf_vz        = vz_kalman - 2*np.sqrt(z_cov)
-    lower_conf_phi_dot   = phi_dot_kalman - 2*np.sqrt(phi_cov)
+    lower_conf_vy        = vy_kalman - 2*np.sqrt(vy_cov)
+    lower_conf_vz        = vz_kalman - 2*np.sqrt(vz_cov)
+    lower_conf_phi_dot   = phi_dot_kalman - 2*np.sqrt(phi_dot_cov)
 
     # lower bound of confidence interval of the position (95%)
-    upper_conf_vy        = vy_kalman + 2*np.sqrt(y_cov)
-    upper_conf_vz        = vz_kalman + 2*np.sqrt(z_cov)
-    upper_conf_phi_dot   = phi_dot_kalman + 2*np.sqrt(phi_cov)
+    upper_conf_vy        = vy_kalman + 2*np.sqrt(vy_cov)
+    upper_conf_vz        = vz_kalman + 2*np.sqrt(vz_cov)
+    upper_conf_phi_dot   = phi_dot_kalman + 2*np.sqrt(phi_dot_cov)
     
     
     

@@ -70,8 +70,8 @@ def drone_model():
     model.z_min = 1
     model.z_max = 3
 
-    model.v_min = -8
-    model.v_max =  8
+    model.v_min = -5
+    model.v_max =  5
 
     model.phi_min = -80 * np.pi / 180
     model.phi_max =  80 * np.pi / 180
@@ -87,7 +87,7 @@ def drone_model():
     model.torque_min = - model.torque_max
 
     # define initial condition
-    model.x0 = np.array([1, 1, 0, 0, 0, 0]) # hovering at y=5, z=5 
+    model.x0 = np.array([5, 5, 0, 0, 0, 0]) # hovering at y=5, z=5 
 
     # define model struct
     params = types.SimpleNamespace()

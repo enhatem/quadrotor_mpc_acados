@@ -1,3 +1,4 @@
+import sys
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -61,28 +62,33 @@ def trajectory_generator(T_final, N, traj=0, show_traj=False):
 
     return t,x,y,z
 
-def trajectory_generator2D( T_final, # simulation time 
-                            Tf, # control horizon
-                            Nsim, # number of time steps in the simulation 
-                            N, # number of time step in a single time horizon
-                            radius, # radius of the circle
-                            show_traj=False):
+def trajectory_generator2D( x0: np.array,       # initial position of the quadrotor
+                            N_hover: int,       # number of time steps in the hovering phase
+                            Nsim: int,          # number of time steps in the simulation 
+                            N: int,             # number of time step in a single time horizon (used to add an additional horizon in order for the closed loop simulation to work)
+                            radius: float,      # radius of the circular trajectory
+                            show_traj=False):   # boolean to show trajectory before the simulation
     '''
-    Generates a circular trajectory given a final time and a sampling time 
+    Generates a circular trajectory with a hovering time of T_hover at the start, 
+    given a trajectory time and a sampling time.
     '''
-    phi = np.linspace(0,4*np.pi,Nsim+N)
+
+    # hovering trajectory
+    y_hover = np.ones(N_hover) * x0[0]
+    z_hover = np.ones(N_hover) * x0[1]
+
+    # circular trajectory parameters
+    theta = np.linspace(0,4*np.pi,Nsim+N)
     c_x, c_y = [4,5] # center coordinates 
+
     ## circular trajectory
-    t  = np.linspace(0,T_final + Tf,Nsim+N)
-    y  = radius * np.cos(phi) + c_x
-    z  = radius * np.sin(phi) + c_y
+    y_circle  = radius * np.cos(theta) + c_x
+    z_circle  = radius * np.sin(theta) + c_y
 
-    # y_end = y[-1] * np.ones_like(np.ndarray((N, 1)))
-    # z_end = z[-1] * np.ones_like(np.ndarray((N, 1)))
-
-    # y = np.append(y,y_end)
-    # z = np.append(z,z_end)
-
+    # appending the hovering and the circular trajectories
+    y = np.append(y_hover, y_circle)
+    z = np.append(z_hover, z_circle)
+        
     if show_traj == True:
         fig, ax = plt.subplots()
         plt.title('Reference trajectory')
@@ -91,26 +97,41 @@ def trajectory_generator2D( T_final, # simulation time
         ax.set_ylabel("z[m]")
         plt.show()
 
-    return t,y,z
+    return y,z
 
 
 # trajectory generation with velocities
-def trajectory_generotaor2D_with_vel(   model: object,
-                                        radius: float, 
-                                        freq: float, 
-                                        T_final: float, 
-                                        Tf: float,
+def trajectory_generotaor2D_with_vel(   x0: np.array,   # initial potision of the quadrotor
+                                        N_hover: int,   # number of time steps in the hovering phase
+                                        model: object,  # model of the drone (used to check if the maximum )
+                                        radius: float,  # radius of the circular trajectory
+                                        freq: float,    # used to control the speed of the trajectory
+                                        T_traj: float,  # final time of the tre
+                                        Tf: float,      # control horizon (used to add an additional horizon in order for the closed loop simulation to work)
                                         dt: float):
 
-    t = np.arange(0,T_final+Tf,dt)
+    # hovering trajectory
+    y_hover     = np.ones(N_hover) * x0[0]
+    z_hover     = np.ones(N_hover) * x0[1]
+    vz_hover    = np.zeros(N_hover)
+    vy_hover    = np.zeros(N_hover)
+    
+    t = np.arange(0,T_traj+Tf,dt)
 
     c_y, c_z = [4,5] # center coordinates 
 
-    y = radius * np.cos(freq * t) + c_y
-    z = radius * np.sin(freq * t) + c_z
+    y_circle = radius * np.cos(freq * t) + c_y
+    z_circle = radius * np.sin(freq * t) + c_z
 
-    vy  = - radius * freq * np.sin(freq * t)
-    vz  = + radius * freq * np.cos(freq * t)
+    vy_circle  = - radius * freq * np.sin(freq * t)
+    vz_circle  = + radius * freq * np.cos(freq * t)
+
+    # appending the hovering and the circular trajectories
+    y  = np.append(y_hover, y_circle)
+    z  = np.append(z_hover, z_circle)
+    vy = np.append(vy_hover, vy_circle)
+    vz = np.append(vz_hover, vz_circle)
+
 
     v = np.sqrt(vy**2 + vz**2)
 
@@ -118,10 +139,9 @@ def trajectory_generotaor2D_with_vel(   model: object,
     v_max = np.max(v) 
     
     if v_max > model.v_max:
-        print('The desired trajectory contains velocities that the drone cannot handle.')
-        return -1
+        sys.exit("The desired trajectory contains velocities that the drone cannot handle.")
     else:
-        return t, y, z, vy, vz
+        return y, z, vy, vz
 
 def readTrajectory(N):
         
