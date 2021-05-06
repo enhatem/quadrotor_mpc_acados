@@ -302,13 +302,13 @@ if extended_kalman_filter == True:
             plotPos_kalman(t, simX, states, pred, covs, ref_traj, Nsim, save=True)
             plotVel_without_vy_vz_references_kalman(t, simX, states, pred, covs, ref_traj, Nsim, save=True)            
             plotSimU(t, simU, Nsim, save=True)
-            plotErrors_without_vel_kalman(t, simX, states, ref_traj, Nsim)
+            plotErrors_without_vel_kalman(t, simX, states, ref_traj, Nsim, save=True)
         else:                       # circular trajectory is generated with velocities
             plotSim_kalman(simX, states, pred, ref_traj, Nsim, save=True)
             plotPos_kalman(t, simX, states, pred, covs, ref_traj, Nsim, save=True)
             plotVel_with_vy_vz_references_kalman(t, simX, states, pred, covs, ref_traj, Nsim, save=True)
             plotSimU(t, simU, Nsim, save=True)
-            plotErrors_with_vel_kalman(t, simX, states, ref_traj, Nsim)
+            plotErrors_with_vel_kalman(t, simX, states, ref_traj, Nsim, save=True)
 
     if ref_point == True and import_trajectory == False:  # For single reference points
         plotSim_ref_point_kalman(simX, states, save=True)
@@ -321,7 +321,7 @@ if extended_kalman_filter == True:
         plotPos_with_imported_traj_kalman(t, simX, states, ref_traj, Nsim, save=True)
         plotVel_with_imported_traj_kalman(t, simX, states, ref_traj, Nsim, save=True)
         plotSimU_with_ref(t, simU, ref_U, Nsim, save=True)
-        plotErrors_with_ref_kalman(t, simX, states, ref_traj, Nsim)
+        plotErrors_with_ref_kalman(t, simX, states, ref_traj, Nsim, save=True)
 else:
     
     if ref_point == False and import_trajectory == False:
@@ -345,7 +345,7 @@ else:
             plotPos(t, simX, ref_traj, Nsim, save=True)
             plotVel_with_vy_vz_references(t,simX, ref_traj, Nsim, save=True)
             plotSimU(t, simU, Nsim, save=True)
-            plotErrors_with_vel(t, simX, ref_traj, Nsim)
+            plotErrors_with_vel(t, simX, ref_traj, Nsim, save=True)
     
     if ref_point == True and import_trajectory == False:  # For single reference points
         plotSim_ref_point(simX, save=True)
@@ -358,7 +358,7 @@ else:
         plotPos_with_imported_traj(t, simX, ref_traj, Nsim, save=True)
         plotVel_with_imported_traj(t, simX, ref_traj, Nsim, save=True)
         plotSimU_with_ref(t, simU, ref_U, Nsim, save=True)
-        plotErrors_with_ref(t, simX, ref_traj, Nsim)
+        plotErrors_with_ref(t, simX, ref_traj, Nsim, save=True)
 '''
 
 # plotting and RMSE

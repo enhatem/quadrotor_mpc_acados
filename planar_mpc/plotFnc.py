@@ -928,7 +928,7 @@ def plotSimU_with_ref(t,simU,ref_U, Nsim, save=False):
         fig.savefig('figures/controlInputs.png', dpi=300)
 
 
-def plotErrors_without_vel_kalman(t, simX, states, ref_traj, Nsim):
+def plotErrors_without_vel_kalman(t, simX, states, ref_traj, Nsim, save=False):
     # errors 
     ref_traj        = ref_traj[0:Nsim, :]
     t = t[0:Nsim]
@@ -943,7 +943,7 @@ def plotErrors_without_vel_kalman(t, simX, states, ref_traj, Nsim):
     # vy_error_kalman     = ref_traj[:,2] - states[:,3,0]
     # vz_error_kalman     = ref_traj[:,3] - states[:,4,0]
 
-    fig1, (ax1,ax2) = plt.subplots(nrows = 2, ncols = 1, sharex = True)
+    fig, (ax1,ax2) = plt.subplots(nrows = 2, ncols = 1, sharex = True)
 
     ax1.plot(t, y_error, label='y_meas_error')
     ax1.plot(t,y_error_kalman, label='y_kalman_error')
@@ -959,8 +959,11 @@ def plotErrors_without_vel_kalman(t, simX, states, ref_traj, Nsim):
     ax2.set_xlabel('t[s]')
     ax2.set_ylabel('z_error[m]')
 
+    if save == True:
+        fig.savefig('figures/Errors_position.png', dpi=300)
 
-def plotErrors_with_vel_kalman(t, simX, states, ref_traj, Nsim):
+
+def plotErrors_with_vel_kalman(t, simX, states, ref_traj, Nsim, save=False):
     # errors 
     ref_traj        = ref_traj[0:Nsim, :]
     t = t[0:Nsim]
@@ -1007,11 +1010,15 @@ def plotErrors_with_vel_kalman(t, simX, states, ref_traj, Nsim):
     ax4.set_xlabel('t[s]')
     ax4.set_ylabel('vz_error[m/s]')
 
+    if save == True:
+        fig1.savefig('figures/Errors_position.png'  , dpi=300)
+        fig2.savefig('figures/Errors_velocities.png', dpi=300)
 
 
 
 
-def plotErrors_with_vel(t, simX, ref_traj, Nsim):
+
+def plotErrors_with_vel(t, simX, ref_traj, Nsim, save=False):
     # errors 
     ref_traj        = ref_traj[0:Nsim, :]
     t = t[0:Nsim]
@@ -1043,8 +1050,12 @@ def plotErrors_with_vel(t, simX, ref_traj, Nsim):
     ax4.set_xlabel('t[s]')
     ax4.set_ylabel('vz_error[m/s]')
 
+    if save == True:
+        fig1.savefig('figures/Errors_position.png', dpi=300)
+        fig2.savefig('figures/Errors_velocities.png', dpi=300)
 
-def plotErrors_with_ref_kalman(t, simX, states, ref_traj, Nsim):
+
+def plotErrors_with_ref_kalman(t, simX, states, ref_traj, Nsim, save=False):
     # errors 
     ref_traj        = ref_traj[0:Nsim, :]
     t               = t[0:Nsim]
@@ -1107,13 +1118,17 @@ def plotErrors_with_ref_kalman(t, simX, states, ref_traj, Nsim):
     ax6.set_xlabel('t[s]')
     ax6.set_ylabel('phi_dot_error[rad/s]')
 
+    if save == True:
+        fig1.savefig('figures/Errors_position.png'  , dpi=300)
+        fig2.savefig('figures/Errors_velocities.png', dpi=300)
 
 
 
 
 
 
-def plotErrors_with_ref(t, simX, ref_traj, Nsim):
+
+def plotErrors_with_ref(t, simX, ref_traj, Nsim, save=False):
     # errors 
     ref_traj        = ref_traj[0:Nsim, :]
     t               = t[0:Nsim]
@@ -1159,15 +1174,9 @@ def plotErrors_with_ref(t, simX, ref_traj, Nsim):
     ax6.set_xlabel('t[s]')
     ax6.set_ylabel('phi_dot_error[rad/s]')
 
-
-
-
-
-
-
-
-
-
+    if save == True:
+        fig1.savefig('figures/Errors_position.png'  , dpi=300)
+        fig2.savefig('figures/Errors_velocities.png', dpi=300)
 
 def plotErrors_no_vel(t, simX, ref_traj, Nsim):
     # errors 
