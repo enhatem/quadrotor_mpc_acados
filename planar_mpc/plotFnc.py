@@ -313,7 +313,7 @@ def plotSim_kalman(simX, states, pred, ref_traj, Nsim, save=False):
     ax.set_ylabel("z[m]")
 
     NUM_STEPS = simX.shape[0]
-    MEAS_EVERY_STEPS = 50
+    MEAS_EVERY_STEPS = 20
 
     # X0 = [simX[0,0], simX[0,1]]
     # phi_0 = simX[0,2]
@@ -910,6 +910,8 @@ def plotVel_with_ref(t, simX, ref_traj, Nsim, save=False):
 def plotSimU_with_ref(t,simU,ref_U, Nsim, save=False):
     plt.style.use('seaborn')
     fig, (ax1, ax2) = plt.subplots(nrows=2, ncols=1, sharex=True)
+
+    t = t[0:Nsim]
 
     ax1.step(t, simU[:,0], label='T')
     ax1.step(t, ref_U[0:Nsim,0], '--',label='T_ref')

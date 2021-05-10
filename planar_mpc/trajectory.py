@@ -143,17 +143,29 @@ def trajectory_generotaor2D_with_vel(   x0: np.array,   # initial potision of th
     else:
         return y, z, vy, vz
 
-def readTrajectory(N):
+def readTrajectory(T_hover, N):
         
     # import csv file of measX and simU (noisy measurement)
-    ref_traj = pd.read_csv('used_data/measX.csv')
-    ref_U = pd.read_csv('used_data/simU.csv')
+    ref_traj = pd.read_csv('used_data/matlab/measX.csv')
+    ref_U = pd.read_csv('used_data/matlab/simU.csv')
     
-    ref_traj = ref_traj.append( ref_traj.iloc[[-1]*N] )
-    ref_U    = ref_U.append( ref_U.iloc[[-1]*N] )
+    # create references to add for the hovering time
+    ref_traj_x0 = ref_traj.iloc[[0]*N*T_hover]
+    ref_u0 = ref_U.iloc[[0]*N*T_hover]
+
+    # insert hovering references and inputs into their respective dataframes
+    ref_traj = pd.concat([pd.DataFrame(ref_traj_x0), ref_traj], ignore_index=True)
+    ref_U = pd.concat([pd.DataFrame(ref_u0), ref_U], ignore_index=True)
+    
+    # append last reference point N times in order for the MPC controller to work at the last iteration
+    ref_traj = ref_traj.append( ref_traj.iloc[[-1]*N*3] )
+    ref_U = ref_U.append( ref_U.iloc[[-1]*N*3] )
 
     # convert data frames to numpy arrays
     ref_traj = ref_traj[['y', 'z', 'phi', 'vy', 'vz', 'phi_dot']].to_numpy()
     ref_U = ref_U[['Thrust', 'Torque']].to_numpy()
 
-    return ref_traj, ref_U
+    # computing simulation time
+    T = (len(ref_traj)-1 ) / N
+
+    return T, ref_traj, ref_U

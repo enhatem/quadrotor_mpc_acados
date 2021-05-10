@@ -23,8 +23,8 @@ def setup_ekf(DT, m, Ixx, x0, nx, nu):
 
     # variance of state noise in the prediction
     Q_alpha = np.zeros((6,6))
-    Q_alpha[0][0] = 5e-8  # variance of the state noise on y
-    Q_alpha[1][1] = 5e-8  # variance of the state noise on z
+    Q_alpha[0][0] = 5e-2  # variance of the state noise on y
+    Q_alpha[1][1] = 5e-2  # variance of the state noise on z
     Q_alpha[2][2] = 1e-3  # variance of the state noise on phi
     Q_alpha[3][3] = 1e-3  # variance of the state noise on vy
     Q_alpha[4][4] = 1e-2  # variance of the state noise on vz

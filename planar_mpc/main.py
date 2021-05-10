@@ -16,10 +16,11 @@ Tf = 1        # prediction horizon
 N  = 100       # number of discretization steps
 Ts = Tf / N   # sampling time[s]
 
-T_hover = 5     # hovering time[s]
+T_hover = 1     # hovering time[s]
 T_traj  = 20.00 # trajectory time[s]
 
 T = T_hover + T_traj # total simulation time
+T = 4
 
 # constants
 g = 9.81     # m/s^2
@@ -31,22 +32,22 @@ bound_on_phi = False
 bound_on_y_z = False
 
 # measurement noise bool
-noisy_measurement = True
+noisy_measurement = False
 
 # input noise bool
-noisy_input = True
+noisy_input = False
 
 # extended kalman filter bool
 extended_kalman_filter = True
 
 # generate circulare trajectory with velocties
-traj_with_vel = True
+traj_with_vel = False
 
 # single reference point with phi = 2 * pi
 ref_point = False
 
 # import trajectory with positions and velocities and inputs
-import_trajectory = False
+import_trajectory = True
 
 # use acados integrator (if False, numerical integration is used instead):
 use_acados_integrator = True
@@ -98,7 +99,12 @@ if ref_point == False and import_trajectory == False:
         ref_traj = np.stack((y, z, vy, vz), 1)
 
 elif ref_point == False and import_trajectory == True:
-    ref_traj, ref_U = readTrajectory(N)
+    T, ref_traj, ref_U = readTrajectory(T_hover, N)
+    Nsim = int((T-1) * N / Tf)
+    predX = np.ndarray((Nsim+1, nx))
+    simX  = np.ndarray((Nsim+1, nx))
+    simU  = np.ndarray((Nsim,   nu))
+    simX[0, :] = xcurrent
 
 # setup the extended kalman filter
 if extended_kalman_filter == True:
@@ -113,7 +119,7 @@ if extended_kalman_filter == True:
 # elif extended_kalman_filter == True and noisy_measurement == False:
 #     sys.exit("The extended Kalman filter must run with a noisy input")
 
-# set the seed for the random variables
+# set the seed for the random variables (if noisy measurement and noisy input are applied)
 np.random.seed(20)
 
 # closed loop
@@ -145,6 +151,9 @@ for i in range(Nsim):
         acados_solver.set(N, "yref", yref_N)
 
     elif ref_point == False and import_trajectory == True:
+        # if i == Nsim-5:
+        #     print(f'i={i}')
+        
         for j in range(N):
             y       = ref_traj[i+j, 0]
             z       = ref_traj[i+j, 1]
@@ -278,7 +287,10 @@ print("Average computation time: {}".format(tot_comp_sum / Nsim))
 print("Maximum computation time: {}".format(tcomp_max))
 
 
-t = np.arange(0, T, Ts)
+if import_trajectory == False:
+    t = np.arange(0, T, Ts)
+else:
+    t = np.arange(0, T-Tf ,Ts)
 
 # plotting and RMSE
 
