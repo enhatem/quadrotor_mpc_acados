@@ -54,12 +54,12 @@ def add_measurement_noise(xcurrent):
     mean = 0
 
     # magnitude of the Gaussian white noise to be added on each state
-    magnitude_y         = 5.77e-3
-    magnitude_z         = 5.77e-3
-    magnitude_phi       = 0.05
-    magnitude_vy        = 5.77e-3
-    magnitude_vz        = 5.77e-3
-    magnitude_phi_dot   = 0.05
+    magnitude_y         = 0.01 # 1 cm
+    magnitude_z         = 0.01 # 1 cm
+    magnitude_phi       = 0.05 # 2.86 degrees
+    magnitude_vy        = 0.01 # 1cm/s
+    magnitude_vz        = 0.01 # 1cm/s
+    magnitude_phi_dot   = 0.05 # 2.86 degrees/s
     
     # create the noisy states
     y_noisy      = y + np.random.normal(mean, magnitude_y)

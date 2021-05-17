@@ -23,17 +23,17 @@ def setup_ekf(DT, m, Ixx, x0, nx, nu):
 
     # variance of state noise in the prediction
     Q_alpha = np.zeros((6,6))
-    Q_alpha[0][0] = 5e-2  # variance of the state noise on y
-    Q_alpha[1][1] = 5e-2  # variance of the state noise on z
-    Q_alpha[2][2] = 1e-3  # variance of the state noise on phi
-    Q_alpha[3][3] = 1e-3  # variance of the state noise on vy
+    Q_alpha[0][0] = 5e0  # variance of the state noise on y
+    Q_alpha[1][1] = 5e-7  # variance of the state noise on z
+    Q_alpha[2][2] = 1e0  # variance of the state noise on phi
+    Q_alpha[3][3] = 1e-2  # variance of the state noise on vy
     Q_alpha[4][4] = 1e-2  # variance of the state noise on vz
-    Q_alpha[5][5] = 1e-2  # variance of the state noise on phi_dot
+    Q_alpha[5][5] = 1e0  # variance of the state noise on phi_dot
 
     # variance of the input noise
     Q_beta =  np.eye(nu)
-    Q_beta[0][0] = 1e-3 # variance of the noise on the thrust input u1 (unit: N)
-    Q_beta[1][1] = 1e-4 # variance of the noise on the torque input u2 (unit: N.m)
+    Q_beta[0][0] = (1e-3)**2 # variance of the noise on the thrust input u1 (unit: N)
+    Q_beta[1][1] = (1e-4)**2 # variance of the noise on the torque input u2 (unit: N.m)
 
     # variance of the measurement noise (same values used in the magnitudes for state measurement noise)
     Q_gamma = np.eye(nx)

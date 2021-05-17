@@ -10,4 +10,4 @@ def evolution(X, U, m, Ixx, dt):
     vz      = X[4] + ( -g + U[0] / m ) * np.cos(X[2]) * dt
     phi_dot = X[5] + U[1] / Ixx * dt
 
-    return np.array([y, z, phi, vy, vz, phi_dot]) 
+    return np.array([y, z, phi, vy, vz, phi_dot])

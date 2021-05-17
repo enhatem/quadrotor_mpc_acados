@@ -16,11 +16,10 @@ Tf = 1        # prediction horizon
 N  = 100       # number of discretization steps
 Ts = Tf / N   # sampling time[s]
 
-T_hover = 1     # hovering time[s]
+T_hover = 2     # hovering time[s]
 T_traj  = 20.00 # trajectory time[s]
 
 T = T_hover + T_traj # total simulation time
-T = 4
 
 # constants
 g = 9.81     # m/s^2
@@ -32,10 +31,10 @@ bound_on_phi = False
 bound_on_y_z = False
 
 # measurement noise bool
-noisy_measurement = False
+noisy_measurement = True
 
 # input noise bool
-noisy_input = False
+noisy_input = True
 
 # extended kalman filter bool
 extended_kalman_filter = True
@@ -68,6 +67,7 @@ nx = model.x.size()[0]
 nu = model.u.size()[0]
 ny = nx + nu
 N_hover = int (T_hover * N / Tf)
+N_traj  = int (T_traj  * N / Tf)
 Nsim = int(T * N / Tf)
 
 # initialize data structs
@@ -86,10 +86,10 @@ if ref_point == False and import_trajectory == False:
     # creating a reference trajectory
     show_ref_traj = False
     radius = 1  # m
-    freq = 8 * np.pi/10  # frequency
+    freq = 6 * np.pi/10  # frequency
 
     if traj_with_vel == False:
-        y, z = trajectory_generator2D(xcurrent, N_hover, Nsim, N, radius, show_ref_traj)
+        y, z = trajectory_generator2D(xcurrent, N_hover, N_traj, N, radius, show_ref_traj)
         ref_traj = np.stack((y, z), 1)
             # adding the hovering position to the beginning of the trajectory
         # ref_traj = add_hover(ref_traj)
@@ -100,7 +100,7 @@ if ref_point == False and import_trajectory == False:
 
 elif ref_point == False and import_trajectory == True:
     T, ref_traj, ref_U = readTrajectory(T_hover, N)
-    Nsim = int((T-1) * N / Tf)
+    Nsim = int((T-Tf) * N / Tf)
     predX = np.ndarray((Nsim+1, nx))
     simX  = np.ndarray((Nsim+1, nx))
     simU  = np.ndarray((Nsim,   nu))
@@ -196,8 +196,8 @@ for i in range(Nsim):
     u0 = acados_solver.get(0, "u")
 
     if noisy_input == True:
-        magnitude_u1 = Q_beta[0][0]  # magnitude of the input noise on thrust
-        magnitude_u2 = Q_beta[1][1]  # magnitude of the input noise on torque
+        magnitude_u1 = np.sqrt(Q_beta[0][0])  # magnitude of the input noise on thrust
+        magnitude_u2 = np.sqrt(Q_beta[1][1])  # magnitude of the input noise on torque
 
         # adding noise to the inputs
         T_noisy = u0[0] + np.array(np.random.normal(0, magnitude_u1))
@@ -330,8 +330,8 @@ if extended_kalman_filter == True:
 
     if ref_point == False and import_trajectory == True:  # For imported trajectories with velocities and inputs
         plotSim_kalman(simX, states, pred, ref_traj, Nsim, save=True)
-        plotPos_with_imported_traj_kalman(t, simX, states, ref_traj, Nsim, save=True)
-        plotVel_with_imported_traj_kalman(t, simX, states, ref_traj, Nsim, save=True)
+        plotPos_with_imported_traj_kalman(t, simX, states, covs, ref_traj, Nsim, save=True)
+        plotVel_with_imported_traj_kalman(t, simX, states, covs, ref_traj, Nsim, save=True)
         plotSimU_with_ref(t, simU, ref_U, Nsim, save=True)
         plotErrors_with_ref_kalman(t, simX, states, ref_traj, Nsim, save=True)
 else:
