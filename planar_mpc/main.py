@@ -13,10 +13,10 @@ from trajectory import *
 
 # mpc and simulation parameters
 Tf = 1        # prediction horizon
-N  = 100       # number of discretization steps
+N  = 100      # number of discretization steps
 Ts = Tf / N   # sampling time[s]
 
-T_hover = 2     # hovering time[s]
+T_hover = 1     # hovering time[s]
 T_traj  = 20.00 # trajectory time[s]
 
 T = T_hover + T_traj # total simulation time
@@ -31,13 +31,13 @@ bound_on_phi = False
 bound_on_y_z = False
 
 # measurement noise bool
-noisy_measurement = True
+noisy_measurement = False
 
 # input noise bool
-noisy_input = True
+noisy_input = False
 
 # extended kalman filter bool
-extended_kalman_filter = True
+extended_kalman_filter = False
 
 # generate circulare trajectory with velocties
 traj_with_vel = False
@@ -46,7 +46,7 @@ traj_with_vel = False
 ref_point = False
 
 # import trajectory with positions and velocities and inputs
-import_trajectory = True
+import_trajectory = False
 
 # use acados integrator (if False, numerical integration is used instead):
 use_acados_integrator = True
@@ -91,8 +91,6 @@ if ref_point == False and import_trajectory == False:
     if traj_with_vel == False:
         y, z = trajectory_generator2D(xcurrent, N_hover, N_traj, N, radius, show_ref_traj)
         ref_traj = np.stack((y, z), 1)
-            # adding the hovering position to the beginning of the trajectory
-        # ref_traj = add_hover(ref_traj)
     else:
         y, z, vy, vz = trajectory_generotaor2D_with_vel(
             xcurrent, N_hover, model, radius, freq, T_traj, Tf, Ts)

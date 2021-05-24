@@ -104,21 +104,22 @@ def plotPred(predX,ref_traj):
     plt.show()
 
 
-def plotSim_pos(t, simX, ref_traj, save=False):
+def plotSim_pos(t, simX, ref_traj, Nsim, save=False):
     # figure: container holding the plots (can have multiple plots)
     # axes: actual plots
     plt.style.use('seaborn')
     fig, (ax1, ax2, ax3) = plt.subplots(nrows=3, ncols=1, sharex=True)
 
+    t = t[0:Nsim]
     
     ax1.plot(t, simX[1:,0], label='x_sim')
-    ax1.plot(t, ref_traj[:,0], '--', label='x_ref')
+    ax1.plot(t, ref_traj[:Nsim,0], '--', label='x_ref')
     #ax1.plot(t, x_ref, '--', label ='x_ref')
     ax2.plot(t, simX[1:,1], label='y_sim')
-    ax2.plot(t, ref_traj[:,1], '--', label='y_ref')
+    ax2.plot(t, ref_traj[:Nsim,1], '--', label='y_ref')
     #ax2.plot(t, y_ref, '--', label='x_ref')
     ax3.plot(t, simX[1:,2], label='z_sim')
-    ax3.plot(t, ref_traj[:,2], '--', label='z_ref')
+    ax3.plot(t, ref_traj[:Nsim,2], '--', label='z_ref')
     #ax3.plot(t, z_ref, '--', label='z_ref')
     
     ax1.legend()
@@ -137,9 +138,93 @@ def plotSim_pos(t, simX, ref_traj, save=False):
     if save ==True:
         fig.savefig('figures/posStates.png')
 
-def plotSim_Angles(t, simX, simEuler, save=True):
+
+
+def plotSim3D(simX, ref_traj, save=False):
+    
+    # extracting initial position
+    # x_start = simX[0][0]
+    # y_start = simX[0][1]
+    # z_start = simX[0][2]
+
+    # extracting final position
+    # x_end = simX[-1][0]
+    # y_end = simX[-1][1]
+    # z_end = simX[-1][2]
+
+    plt.style.use('seaborn')
+
+    x = simX[:,0]
+    y = simX[:,1]
+    z = simX[:,2]
+
+    x_ref = ref_traj[:,0]
+    y_ref = ref_traj[:,1]
+    z_ref = ref_traj[:,2]
+
+    
+
+
+    fig, ax = plt.subplots()
+    plt.title('Reference trajectory')
+    ax = plt.axes(projection = "3d")
+    ax.plot3D(x, y, z, label='meas')
+    ax.plot3D(x_ref, y_ref, z_ref, label='ref')
+    ax.set_xlabel("x[m]")
+    ax.set_ylabel("y[m]")
+    ax.set_zlabel("z[m]")
+    # fig, ax = plt.subplots()
+
+    # ax.plot(simX[:,0], simX[:,1], label='traj')
+    # ax.plot(ref_traj[0:Nsim,0], ref_traj[0:Nsim,1], '--', label='ref_traj')
+
+    # plotting initial and final position
+    # ax.plot(y_start,z_start,'.', color='red')
+    # ax.text(y_start,z_start,'start', color='red')
+    # ax.plot(y_end,z_end,'.', color = 'red')
+    # ax.text(y_end,z_end,'end', color='red')
+
+    ax.legend()
+    ax.set_title("Performed Trajectory")
+    ax.set_xlabel("x[m]")
+    ax.set_ylabel("y[m]")
+    ax.set_zlabel("z[m]")
+
+    if save == True:
+        fig.savefig('figures/sim3D.png')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+def plotSim_Angles(t, simX, simEuler, Nsim, save=True):
     plt.style.use('seaborn')
     fig, (ax1, ax2) = plt.subplots(nrows=2, ncols=1, sharex=True)
+
+    t = t[0:Nsim]
 
     ax1.plot(t, simX[1:,3], label='qw')
     ax1.plot(t, simX[1:,4], label='qx')
@@ -161,11 +246,13 @@ def plotSim_Angles(t, simX, simEuler, save=True):
     if save ==True:
         fig.savefig('figures/angleStates.png')
 
-def plotSim_vel(t, simX, save=False):
+def plotSim_vel(t, simX, Nsim, save=False):
     # figure: container holding the plots (can have multiple plots)
     # axes: actual plots
     plt.style.use('seaborn')
     fig, (ax1, ax2, ax3) = plt.subplots(nrows=3, ncols=1, sharex=True)
+
+    t = t[0:Nsim]
 
     ax1.plot(t, simX[1:,7], label='vx')
     ax2.plot(t, simX[1:,8], label='vy')
@@ -188,10 +275,12 @@ def plotSim_vel(t, simX, save=False):
         fig.savefig('figures/velStates.png')
 
 
-def plotThrustInput(t,simU,save=False):
+def plotThrustInput(t, simU, Nsim, save=False):
     
     plt.style.use('seaborn')
     fig, ax1 = plt.subplots()
+
+    t = t[0:Nsim]
 
     ax1.step(t,simU[:,0], label='Thrust')
     ax1.legend()
@@ -204,9 +293,12 @@ def plotThrustInput(t,simU,save=False):
     if save ==True:
         fig.savefig('figures/thrustInput.png')
 
-def plotAngularRatesInputs(t, simU, save=True):
+def plotAngularRatesInputs(t, simU, Nsim, save=True):
     plt.style.use('seaborn')
     fig, (ax1,ax2,ax3) = plt.subplots(nrows=3, ncols=1, sharex=True)
+    
+    t = t[0:Nsim]
+
     ax1.step(t,simU[:,1], label='wx')
     ax2.step(t,simU[:,2], label='wy')
     ax3.step(t,simU[:,3], label='wz')
@@ -252,25 +344,6 @@ def plotAngleInputs(t,simU,eulerAngles,save=False):
 
     if save ==True:
         fig.savefig('figures/angleInputs.png')
-
-def plotSim3D(simX, ref_traj, save=False):
-    # 3D plot of the simulation
-        # plotting the prediction trajectory done by the drone
-    fig = plt.figure()
-    ax = plt.axes(projection = "3d")
-    plt.title('3D trajectory')
-    ax.plot3D(simX[:,0], simX[:,1], simX[:,2], label='sim')
-    ax.plot3D(ref_traj[:,0], ref_traj[:,1], ref_traj[:,2], '--', label='ref')
-    
-    ax.legend()
-    ax.set_xlabel('x[m]')
-    ax.set_ylabel('y[m]')
-    ax.set_zlabel('z[m]')
-
-    plt.tight_layout()
-
-    if save ==True:
-        fig.savefig('figures/sim3D.png')
 
 
 def plotRes3D(predX, simX, simU, simU_euler, t):

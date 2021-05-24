@@ -38,10 +38,10 @@ def add_measurement_noise(xcurrent):
     std_x   = 0.01
     std_y   = 0.01
     std_z   = 0.01
-    std_qw  = 0.01
-    std_qx  = 0.01
-    std_qy  = 0.01
-    std_qz  = 0.01
+    std_qw  = 0
+    std_qx  = 0
+    std_qy  = 0
+    std_qz  = 0
     std_vx  = 0.01
     std_vy  = 0.01
     std_vz  = 0.01
@@ -65,6 +65,33 @@ def add_measurement_noise(xcurrent):
     xcurrent_noisy = np.array([x_noisy, y_noisy, z_noisy, q_noisy, vx_noisy, vy_noisy, vz_noisy])
 
     return xcurrent_noisy
+
+
+def ensure_unit_quat(xcurrent):
+    # ensure that the quaternion in the current state is a unit vector
+    x  = xcurrent[0]
+    y  = xcurrent[1]
+    z  = xcurrent[2]
+    qw = xcurrent[3]
+    qx = xcurrent[4]
+    qy = xcurrent[5]
+    qz = xcurrent[6]
+    vx = xcurrent[7]
+    vy = xcurrent[8]
+    vz = xcurrent[9]
+
+    q = np.array([qw, qx, qy, qz])
+    q = unit_quat(q)
+    
+    # extracting the elements from q
+    qw = q[0]
+    qx = q[1]
+    qy = q[2]
+    qz = q[3]
+    xcurrent = np.array([x, y, z, qw, qx, qy, qz, vx, vy, vz])
+
+    return xcurrent
+
 
 def unit_quat(q):
     """

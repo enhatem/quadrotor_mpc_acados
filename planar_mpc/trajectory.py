@@ -146,8 +146,8 @@ def trajectory_generotaor2D_with_vel(   x0: np.array,   # initial potision of th
 def readTrajectory(T_hover, N):
         
     # import csv file of measX and simU (noisy measurement)
-    ref_traj = pd.read_csv('used_data/matlab/2/measX.csv')
-    ref_U = pd.read_csv('used_data/matlab/2/simU.csv')
+    ref_traj = pd.read_csv('used_data/matlab/ga3/measX.csv')
+    ref_U = pd.read_csv('used_data/matlab/ga3/simU.csv')
     
     # create references to add for the hovering time
     ref_traj_x0 = ref_traj.iloc[[0]*N*T_hover]
@@ -157,7 +157,7 @@ def readTrajectory(T_hover, N):
     ref_traj = pd.concat([pd.DataFrame(ref_traj_x0), ref_traj], ignore_index=True)
     ref_U = pd.concat([pd.DataFrame(ref_u0), ref_U], ignore_index=True)
     
-    # append last reference point N times in order for the MPC controller to work at the last iteration
+    # append last reference point 3*N times in order for the MPC controller to work at the last iteration (multiplication by 3 is not necessary for the simulation to work)
     ref_traj = ref_traj.append( ref_traj.iloc[[-1]*N*3] )
     ref_U = ref_U.append( ref_U.iloc[[-1]*N*3] )
 

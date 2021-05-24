@@ -20,9 +20,6 @@ def export_drone_integrator(Ts, model_ac):
     ny = nx + nu
     ny_e = nx
 
-    # disturbances
-    # To be added later
-
     # solver options
     sim.solver_options.integrator_type = 'IRK'
 

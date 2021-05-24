@@ -268,6 +268,15 @@ def plotSim_ref_point(simX, save=False):
         fig.savefig('figures/sim.png', dpi=300)
 
 def plotSim(simX, ref_traj, Nsim, save=False):
+    
+    # extracting initial position
+    y_start = simX[0][0]
+    z_start = simX[0][1]
+
+    # extracting final position
+    y_end = simX[-1][0]
+    z_end = simX[-1][1]
+    
     plt.style.use('seaborn')
 
     fig, ax = plt.subplots()
@@ -275,13 +284,19 @@ def plotSim(simX, ref_traj, Nsim, save=False):
     ax.plot(simX[:,0], simX[:,1], label='traj')
     ax.plot(ref_traj[0:Nsim,0], ref_traj[0:Nsim,1], '--', label='ref_traj')
 
+    # plotting initial and final position
+    ax.plot(y_start,z_start,'.', color='red')
+    ax.text(y_start,z_start,'start', color='red')
+    ax.plot(y_end,z_end,'.', color = 'red')
+    ax.text(y_end,z_end,'end', color='red')
+
     ax.legend()
     ax.set_title("Performed Trajectory")
     ax.set_xlabel("y[m]")
     ax.set_ylabel("z[m]")
 
     NUM_STEPS = simX.shape[0]
-    MEAS_EVERY_STEPS = 50
+    MEAS_EVERY_STEPS = 30
 
     X0 = [simX[0,0], simX[0,1]]
     phi_0 = simX[0,2]
@@ -300,12 +315,26 @@ def plotSim(simX, ref_traj, Nsim, save=False):
 def plotSim_kalman(simX, states, pred, ref_traj, Nsim, save=False):
     plt.style.use('seaborn')
 
+    # extracting initial position
+    y_start = states[0][0]
+    z_start = states[0][1]
+
+    # extracting final position
+    y_end = states[-1][0]
+    z_end = states[-1][1]
+
     fig, ax = plt.subplots()
 
     ax.plot(simX[:,0], simX[:,1], label='noisy_meas')
     ax.plot(states[:,0,0], states[:,1,0], label='kalman')
     # ax.plot(pred[:,0], pred[:,1], label='pred')
     ax.plot(ref_traj[0:Nsim,0], ref_traj[0:Nsim,1], '--', label='ref_traj')
+
+    # plotting initial and final position
+    ax.plot(y_start,z_start,'.', color='red')
+    ax.text(y_start,z_start,'start', color='red')
+    ax.plot(y_end,z_end,'.', color = 'red')
+    ax.text(y_end,z_end,'end', color='red')
 
     ax.legend()
     ax.set_title("Performed Trajectory")
@@ -328,11 +357,12 @@ def plotSim_kalman(simX, states, pred, ref_traj, Nsim, save=False):
             phi = states[step,2,0]
             X = [states[step,0,0], states[step,1,0]]
             plotDrone(ax,X,phi)
+    X_end = [y_end, z_end]
+    phi_end = states[-1,2,0]
+    plotDrone(ax,X_end,phi)
 
     if save == True:
         fig.savefig('figures/sim.png', dpi=300)
-
-
 
 def plotPos_with_imported_traj_kalman(t,simX, states, covs, ref_traj, Nsim, save=False):
     
@@ -367,20 +397,20 @@ def plotPos_with_imported_traj_kalman(t,simX, states, covs, ref_traj, Nsim, save
 
     ax1.plot(t, simX[1:,0], label='y')
     ax1.plot(t, y_kalman, label='y_kalman')
-    ax1.plot(t, lower_conf_y, 'r--', label='lower_bound_y')
-    ax1.plot(t, upper_conf_y, 'r--', label='upper_bound_y')
+    # ax1.plot(t, lower_conf_y, 'r--', label='lower_bound_y')
+    # ax1.plot(t, upper_conf_y, 'r--', label='upper_bound_y')
     ax1.plot(t, ref_traj[0:Nsim,0], '--', label='y_ref')
     
     ax2.plot(t, simX[1:,1], label='z')
     ax2.plot(t, z_kalman, label='z_kalman')
-    ax2.plot(t, lower_conf_z, 'r--', label='lower_bound_z')
-    ax2.plot(t, upper_conf_z, 'r--', label='upper_bound_z')
+    # ax2.plot(t, lower_conf_z, 'r--', label='lower_bound_z')
+    # ax2.plot(t, upper_conf_z, 'r--', label='upper_bound_z')
     ax2.plot(t, ref_traj[0:Nsim,1], '--', label='z_ref')
     
     ax3.plot(t, R2D(simX[1:,2]), label='phi')
     ax3.plot(t, R2D(phi_kalman), label='phi_kalman')
-    ax3.plot(t, R2D(lower_conf_phi), 'r--', label='lower_bound_phi')
-    ax3.plot(t, R2D(upper_conf_phi), 'r--', label='upper_bound_phi')
+    # ax3.plot(t, R2D(lower_conf_phi), 'r--', label='lower_bound_phi')
+    # ax3.plot(t, R2D(upper_conf_phi), 'r--', label='upper_bound_phi')
     ax3.plot(t, R2D(ref_traj[0:Nsim,2]), '--', label='phi_ref')
     
     ax1.legend()
@@ -430,20 +460,20 @@ def plotVel_with_imported_traj_kalman(t,simX, states, covs, ref_traj, Nsim, save
 
     ax1.plot(t, simX[1:,3], label='vy')
     ax1.plot(t, vy_kalman, label='vy_kalman')
-    ax1.plot(t, lower_conf_vy, 'r--', label='lower_bound_vy')
-    ax1.plot(t, upper_conf_vy, 'r--', label='upper_bound_vy')
+    # ax1.plot(t, lower_conf_vy, 'r--', label='lower_bound_vy')
+    # ax1.plot(t, upper_conf_vy, 'r--', label='upper_bound_vy')
     ax1.plot(t, ref_traj[0:Nsim,3], '--', label='vy_ref')
     
     ax2.plot(t, simX[1:,4], label='vz')
     ax2.plot(t, vz_kalman, label='vz_kalman')
-    ax2.plot(t, lower_conf_vz, 'r--', label='lower_bound_vz')
-    ax2.plot(t, upper_conf_vz, 'r--', label='upper_bound_vz')
+    # ax2.plot(t, lower_conf_vz, 'r--', label='lower_bound_vz')
+    # ax2.plot(t, upper_conf_vz, 'r--', label='upper_bound_vz')
     ax2.plot(t, ref_traj[0:Nsim,4], '--', label='vz_ref')
     
     ax3.plot(t, simX[1:,5], label='phi_dot')
     ax3.plot(t, phi_dot_kalman, label='phi_dot_kalman')
-    ax3.plot(t, lower_conf_phi_dot, 'r--', label='lower_bound_phi_dot')
-    ax3.plot(t, upper_conf_phi_dot, 'r--', label='lower_bound_phi_dot')
+    # ax3.plot(t, lower_conf_phi_dot, 'r--', label='lower_bound_phi_dot')
+    # ax3.plot(t, upper_conf_phi_dot, 'r--', label='lower_bound_phi_dot')
     ax3.plot(t, ref_traj[0:Nsim,5], '--', label='phi_dot_ref')
     
     ax1.legend()

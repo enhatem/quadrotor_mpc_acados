@@ -9,7 +9,7 @@ from trajectory import *
 
 
 Tf = 1       # prediction horizon
-N = 100       # number of discretization steps
+N = 100      # number of discretization steps
 T = 20.00    # simulation time[s]
 Ts = Tf / N  # sampling time[s]
 

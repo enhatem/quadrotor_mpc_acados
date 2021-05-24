@@ -96,7 +96,7 @@ def add_measurement_noise_with_kalman(xcurrent, Q_gamma):
     magnitude_vy        = np.sqrt(Q_gamma[3][3])
     magnitude_vz        = np.sqrt(Q_gamma[4][4])
     magnitude_phi_dot   = np.sqrt(Q_gamma[5][5])
-    
+
     # create the noisy states
     y_noisy      = y + np.random.normal(mean, magnitude_y)
     z_noisy      = z + np.random.normal(mean, magnitude_z)

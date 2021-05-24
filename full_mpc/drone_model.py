@@ -19,6 +19,7 @@ def drone_model():
     J = np.array([1.657171e-05, 1.657171e-05, 2.9261652e-05])
     length = 0.046
 
+
     # constants
     g = 9.81 # m/s^2
 
@@ -76,10 +77,25 @@ def drone_model():
         ( 1 - 2 * qx * qx - 2 * qy * qy ) * T - g
     )
 
+    # model bounds
+    model.v_min = -5
+    model.v_max =  5
+
+    model.phi_min = -80 * np.pi / 180
+    model.phi_max =  80 * np.pi / 180
+
+    model.theta_min = -80 * np.pi / 180
+    model.theta_max =  80 * np.pi / 180
+
     # input bounds
-    model.throttle_min = 0
-    model.throttle_max = 57e-3 * g # max_thrust = 57g
-    # model.throttle_max = 2 * m * g 
+    model.thrust_min = 0
+    model.thrust_max = 0.9 * ((57e-3 * g)) # 90 % of max_thrust (max_thrust = 57g)
+
+    model.torque_max = 1 / 2 * model.thrust_max * length # divided by 2 since we only have 2 propellers in a planar quadrotor
+    model.torque_max = 0.1 * model.torque_max # keeping 10% margin for steering torque. This is done because the torque_max 
+                                              # is the maximum torque that can be given around any one axis. But, we are going to
+                                              # limit the torque greatly.
+    model.torque_min = - model.torque_max
 
     # define initial condition
     model.x0 = np.array([1.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])

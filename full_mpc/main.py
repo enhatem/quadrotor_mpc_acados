@@ -9,25 +9,48 @@ from trajectory import *
 
 
 # mpc and simulation parameters
-Tf = 1       # prediction horizon
-N = 100      # number of discretization steps
-T = 20.00    # simulation time[s]
-Ts = Tf / N  # sampling time[s]
+Tf = 1        # prediction horizon
+N  = 100      # number of discretization steps
+Ts = Tf / N   # sampling time[s]
+
+T_hover = 5     # hovering time[s]
+T_traj  = 20.00 # trajectory time[s]
+
+T = T_hover + T_traj # total simulation time
 
 # constants
 g = 9.81     # m/s^2
 
-# noise bool
+# measurement noise bool
 noisy_measurement = False
+
+# input noise bool
+noisy_input = False
+
+# extended kalman filter bool
+extended_kalman_filter = False
+
+# generate circulare trajectory with velocties
+traj_with_vel = True
+
+# single reference point with phi = 2 * pi
+ref_point = False
+
+# import trajectory with positions and velocities and inputs
+import_trajectory = False
+
+# bool to save measurements and inputs as .csv files
+save_data = True
 
 # load model and acados_solver
 model, acados_solver, acados_integrator = acados_settings(Ts, Tf, N)
-
 
 # dimensions
 nx = model.x.size()[0]
 nu = model.u.size()[0]
 ny = nx + nu
+N_hover = int (T_hover * N / Tf)
+N_traj  = int (T_traj  * N / Tf)
 Nsim = int(T * N / Tf)
 
 # initialize data structs
@@ -37,26 +60,50 @@ simU = np.ndarray((Nsim, nu))
 tot_comp_sum = 0
 tcomp_max = 0
 
-# creating a reference trajectory
-traj = 0 # traj = 0: circular trajectory, traj = 1: hellical trajectory
-show_ref_traj = False
-N_steps, x, y, z = trajectory_generator(T, Nsim, traj, show_ref_traj)
-ref_traj = np.stack((x, y, z), 1)
 
 # set initial condition for acados integrator
 xcurrent = model.x0.reshape((nx,))
 simX[0, :] = xcurrent
-# predX[0, :] = xcurrent
+
+# creating or extracting trajectory
+if ref_point == False and import_trajectory == False:
+    # creating a reference trajectory
+    show_ref_traj = False
+    radius = 1  # m
+    freq = 6 * np.pi/10  # frequency
+
+    if traj_with_vel == False:
+        x, y, z = trajectory_generator3D(xcurrent, N_hover, N_traj, N, radius, show_ref_traj)
+        ref_traj = np.stack((x, y, z), 1)
+    else:
+        x, y, z, vx, vy, vz = trajectory_generotaor3D_with_vel(
+            xcurrent, N_hover, model, radius, freq, T_traj, Tf, Ts)
+        ref_traj = np.stack((x, y, z, vx, vy, vz), 1)
+'''
+elif ref_point == False and import_trajectory == True:
+    T, ref_traj, ref_U = readTrajectory(T_hover, N)
+    Nsim = int((T-Tf) * N / Tf)
+    predX = np.ndarray((Nsim+1, nx))
+    simX  = np.ndarray((Nsim+1, nx))
+    simU  = np.ndarray((Nsim,   nu))
+    simX[0, :] = xcurrent
+'''
+
+
+# N_steps, x, y, z = trajectory_generator(T, Nsim, traj, show_ref_traj)
+# ref_traj = np.stack((x, y, z), 1)
+
+
 
 # closed loop
 for i in range(Nsim):
 
     # updating references
     for j in range(N):
-        yref = np.array([x[i], y[i], z[i], 1.0, 0.0, 0.0, 0.0,
+        yref = np.array([x[i+j],y[i+j], z[i+j], 1.0, 0.0, 0.0, 0.0,
                          0.0, 0.0, 0.0, model.params.m * g, 0.0, 0.0, 0.0])
         acados_solver.set(j, "yref", yref)
-    yref_N = np.array([x[i], y[i], z[i], 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+    yref_N = np.array([x[i+N], y[i+N], z[i+N], 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
     acados_solver.set(N, "yref", yref_N)
 
     # solve ocp for a fixed reference
@@ -74,7 +121,6 @@ for i in range(Nsim):
         tcomp_max = elapsed
 
     # get solution from acados_solver
-    # xcurrent_pred = acados_solver.get(1, "x")
     u0 = acados_solver.get(0, "u")
     
     # add noise to inputs
@@ -82,7 +128,6 @@ for i in range(Nsim):
         xcurrent = add_measurement_noise(xcurrent)
 
     # storing results from acados solver
-    # predX[i+1, :] = xcurrent_pred
     simU[i, :] = u0
 
     # simulate the system
@@ -96,6 +141,9 @@ for i in range(Nsim):
     # get state
     xcurrent = acados_integrator.get("x")
 
+    # make sure that the quaternion is unit
+    xcurrent = ensure_unit_quat(xcurrent)
+
     # add measurement noise
     if noisy_measurement == True:
         xcurrent = add_measurement_noise(xcurrent)
@@ -104,17 +152,11 @@ for i in range(Nsim):
     simX[i+1, :] = xcurrent
 
 # root mean squared error on each axis
-rmse_x, rmse_y, rmse_z = rmseX(simX, ref_traj)
+# rmse_x, rmse_y, rmse_z = rmseX(simX, ref_traj)
 
 # print the computation times
 print("Average computation time: {}".format(tot_comp_sum / Nsim))
 print("Maximum computation time: {}".format(tcomp_max))
-
-# print the RMSE on each axis
-print("RMSE on x: {}".format(rmse_x))
-print("RMSE on y: {}".format(rmse_y))
-print("RMSE on z: {}".format(rmse_z))
-
 
 simX_euler = np.zeros((simX.shape[0], 3))
 
@@ -124,12 +166,17 @@ for i in range(simX.shape[0]):
 simX_euler = R2D(simX_euler)
 print(simX_euler)
 
+if import_trajectory == False:
+    t = np.arange(0, T, Ts)
+else:
+    t = np.arange(0, T-Tf ,Ts)
+
 # Plot Results
-t = np.linspace(0, T, Nsim)
-plotSim_pos(t, simX, ref_traj, save=True)
-plotSim_Angles(t, simX, simX_euler, save=True)
-plotSim_vel(t, simX, save=True)
-plotThrustInput(t, simU, save=True)
-plotAngularRatesInputs(t, simU, save=True)
-plotSim3D(simX, ref_traj, save=True)
+plotSim3D(simX, ref_traj, save=False)
+plotSim_pos(t, simX, ref_traj, Nsim, save=True)
+plotSim_Angles(t, simX, simX_euler, Nsim, save=True)
+plotSim_vel(t, simX, Nsim, save=True)
+plotThrustInput(t, simU, Nsim, save=True)
+plotAngularRatesInputs(t, simU, Nsim, save=True)
+
 plt.show()

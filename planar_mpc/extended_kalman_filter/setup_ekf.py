@@ -23,12 +23,12 @@ def setup_ekf(DT, m, Ixx, x0, nx, nu):
 
     # variance of state noise in the prediction
     Q_alpha = np.zeros((6,6))
-    Q_alpha[0][0] = 5e0  # variance of the state noise on y
-    Q_alpha[1][1] = 5e-7  # variance of the state noise on z
-    Q_alpha[2][2] = 1e0  # variance of the state noise on phi
-    Q_alpha[3][3] = 1e-2  # variance of the state noise on vy
-    Q_alpha[4][4] = 1e-2  # variance of the state noise on vz
-    Q_alpha[5][5] = 1e0  # variance of the state noise on phi_dot
+    Q_alpha[0][0] = 1e-7  # variance of the state noise on y
+    Q_alpha[1][1] = 1e-4  # variance of the state noise on z
+    Q_alpha[2][2] = 1e-5  # variance of the state noise on phi
+    Q_alpha[3][3] = 1e-7  # variance of the state noise on vy
+    Q_alpha[4][4] = 1e-4  # variance of the state noise on vz
+    Q_alpha[5][5] = 1e-5  # variance of the state noise on phi_dot
 
     # variance of the input noise
     Q_beta =  np.eye(nu)
@@ -37,12 +37,12 @@ def setup_ekf(DT, m, Ixx, x0, nx, nu):
 
     # variance of the measurement noise (same values used in the magnitudes for state measurement noise)
     Q_gamma = np.eye(nx)
-    Q_gamma[0][0] = 0.01**2 # variance on the y measurement (between -1cm and +1 cm)
-    Q_gamma[1][1] = 0.01**2 # variance on the z measurement (between -1cm and +1 cm)
-    Q_gamma[2][2] = 0.05**2 # variance on the phi measurement (between -5 degrees and +5 degrees)
-    Q_gamma[3][3] = 0.01**2 # variance on the vy measurement (between -0.1m/s and +0.1m/s)
-    Q_gamma[4][4] = 0.01**2 # variance on the vz measurement (between -0.1m/s and +0.1m/s)
-    Q_gamma[5][5] = 0.05**2 # variance on the phi_dot measurement (between -5 degrees/s^2 and +5 degrees/s^2)
+    Q_gamma[0][0] = 0.01**2             # variance on the y measurement (between -1cm and +1 cm)
+    Q_gamma[1][1] = 0.01**2             # variance on the z measurement (between -1cm and +1 cm)
+    Q_gamma[2][2] = (np.pi / 180)**2    # variance on the phi measurement (between -1 degree and +1 degree)
+    Q_gamma[3][3] = 0.001**2             # variance on the vy measurement (between -0.01m/s and +0.01m/s)
+    Q_gamma[4][4] = 0.001**2             # variance on the vz measurement (between -0.01m/s and +0.01m/s)
+    Q_gamma[5][5] = (np.pi / 180)**2    # variance on the phi_dot measurement (between -1 degrees/s^2 and +1 degrees/s^2)
 
 
     ekf = EKF(initial_x=x0, P_0=P0, m=m, Ixx=Ixx, dt = DT)
