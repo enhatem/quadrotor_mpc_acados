@@ -31,13 +31,13 @@ bound_on_phi = False
 bound_on_y_z = False
 
 # measurement noise bool
-noisy_measurement = False
+noisy_measurement = True
 
 # input noise bool
-noisy_input = False
+noisy_input = True
 
 # extended kalman filter bool
-extended_kalman_filter = False
+extended_kalman_filter = True
 
 # generate circulare trajectory with velocties
 traj_with_vel = False
@@ -46,7 +46,7 @@ traj_with_vel = False
 ref_point = False
 
 # import trajectory with positions and velocities and inputs
-import_trajectory = False
+import_trajectory = True
 
 # use acados integrator (if False, numerical integration is used instead):
 use_acados_integrator = True
@@ -347,7 +347,7 @@ else:
         if traj_with_vel == False:                      # circular trajectory is generated without velocities
             plotSim(simX, ref_traj, Nsim, save=True)
             plotPos(t, simX, ref_traj, Nsim, save=True)
-            plotVel(t, simX, Nsim, save=True)            
+            plotVel(t, simX, Nsim, save=True)
             plotSimU(t, simU, Nsim, save=True)
             plotErrors_no_vel(t, simX, ref_traj, Nsim)
         else:                                           # circular trajectory is generated with velocities
@@ -360,7 +360,7 @@ else:
     if ref_point == True and import_trajectory == False:  # For single reference points
         plotSim_ref_point(simX, save=True)
         plotPos_ref_point(t, simX, save=True)
-        plotVel_with_ref_pose(t,simX, Nsim, save=True)   
+        plotVel_with_ref_pose(t,simX, Nsim, save=True)
         plotSimU(t, simU, Nsim, save=True)
 
     if ref_point == False and import_trajectory == True:  # For imported trajectories with velocities and inputs

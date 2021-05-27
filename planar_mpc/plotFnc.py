@@ -294,6 +294,7 @@ def plotSim(simX, ref_traj, Nsim, save=False):
     ax.set_title("Performed Trajectory")
     ax.set_xlabel("y[m]")
     ax.set_ylabel("z[m]")
+    
 
     NUM_STEPS = simX.shape[0]
     MEAS_EVERY_STEPS = 30

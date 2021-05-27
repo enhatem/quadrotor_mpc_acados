@@ -47,7 +47,7 @@
 
 #include "simstruc.h"
 
-#define SAMPLINGTIME 0.01
+#define SAMPLINGTIME 0.05
 
 static void mdlInitializeSizes (SimStruct *S)
 {
@@ -69,13 +69,13 @@ static void mdlInitializeSizes (SimStruct *S)
     // y_ref_0
     ssSetInputPortVectorDimension(S, 2, 14);
     // y_ref
-    ssSetInputPortVectorDimension(S, 3, 1386);
+    ssSetInputPortVectorDimension(S, 3, 266);
     // y_ref_e
     ssSetInputPortVectorDimension(S, 4, 10);
     // lbu
-    ssSetInputPortVectorDimension(S, 5, 400);
+    ssSetInputPortVectorDimension(S, 5, 80);
     // ubu
-    ssSetInputPortVectorDimension(S, 6, 400);/* specify dimension information for the OUTPUT ports */
+    ssSetInputPortVectorDimension(S, 6, 80);/* specify dimension information for the OUTPUT ports */
     ssSetOutputPortVectorDimension(S, 0, 4 );
     ssSetOutputPortVectorDimension(S, 1, 1 );
     ssSetOutputPortVectorDimension(S, 2, 1 );
@@ -173,7 +173,7 @@ static void mdlOutputs(SimStruct *S, int_T tid)
     // y_ref - for stages 1 to N-1
     in_sign = ssGetInputPortRealSignalPtrs(S, 3);
 
-    for (int ii = 1; ii < 100; ii++)
+    for (int ii = 1; ii < 20; ii++)
     {
         for (int jj = 0; jj < 14; jj++)
             buffer[jj] = (double)(*in_sign[(ii-1)*14+jj]);
@@ -187,10 +187,10 @@ static void mdlOutputs(SimStruct *S, int_T tid)
     for (int i = 0; i < 10; i++)
         buffer[i] = (double)(*in_sign[i]);
 
-    ocp_nlp_cost_model_set(nlp_config, nlp_dims, nlp_in, 100, "yref", (void *) buffer);
+    ocp_nlp_cost_model_set(nlp_config, nlp_dims, nlp_in, 20, "yref", (void *) buffer);
     // lbu
     in_sign = ssGetInputPortRealSignalPtrs(S, 5);
-    for (int ii = 0; ii < 100; ii++)
+    for (int ii = 0; ii < 20; ii++)
     {
         for (int jj = 0; jj < 4; jj++)
             buffer[jj] = (double)(*in_sign[ii*4+jj]);
@@ -198,7 +198,7 @@ static void mdlOutputs(SimStruct *S, int_T tid)
     }
     // ubu
     in_sign = ssGetInputPortRealSignalPtrs(S, 6);
-    for (int ii = 0; ii < 100; ii++)
+    for (int ii = 0; ii < 20; ii++)
     {
         for (int jj = 0; jj < 4; jj++)
             buffer[jj] = (double)(*in_sign[ii*4+jj]);
