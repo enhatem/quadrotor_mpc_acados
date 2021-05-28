@@ -10,11 +10,11 @@ from trajectory import *
 
 # mpc and simulation parameters
 Tf = 1        # prediction horizon
-N  = 20      # number of discretization steps
+N  = 100      # number of discretization steps
 Ts = Tf / N   # sampling time[s]
 
 T_hover = 2     # hovering time[s]
-T_traj  = 20.00 # trajectory time[s]
+T_traj  = 10.00 # trajectory time[s]
 
 T = T_hover + T_traj # total simulation time
 
@@ -68,7 +68,7 @@ if ref_point == False and import_trajectory == False:
     # creating a reference trajectory
     show_ref_traj = False
     radius = 1  # m
-    freq = 8 * np.pi/10  # frequency
+    freq = 14 * np.pi/10  # frequency
 
     if traj_with_vel == False:
         x, y, z = trajectory_generator3D(xcurrent, N_hover, N_traj, N, radius, show_ref_traj)
@@ -79,9 +79,9 @@ if ref_point == False and import_trajectory == False:
         ref_traj = np.stack((x, y, z, vx, vy, vz), 1)
 elif ref_point == True and import_trajectory == False:
     X0 = xcurrent
-    x_ref_point = 5.5
-    y_ref_point = 5.5
-    z_ref_point = 5.5
+    x_ref_point = 3
+    y_ref_point = 3
+    z_ref_point = 3
     X_ref = np.array([x_ref_point, y_ref_point, z_ref_point])
 
 '''
@@ -205,7 +205,7 @@ else:
 if ref_point == False and import_trajectory == False:
     # Plot Results
     if traj_with_vel == False:
-        plotSim3D(simX, ref_traj, save=False)
+        plotSim3D(simX, ref_traj, save=True)
         plotSim_pos(t, simX, ref_traj, Nsim, save=True)
         plotSim_Angles(t, simX, simX_euler, Nsim, save=True)
         plotSim_vel(t, simX, Nsim, save=True)
@@ -213,7 +213,7 @@ if ref_point == False and import_trajectory == False:
         plotAngularRatesInputs(t, simU, Nsim, save=True)
         plotErrors_no_vel(t, simX, ref_traj, Nsim, save=True)
     elif traj_with_vel == True:
-        plotSim3D(simX, ref_traj, save=False)
+        plotSim3D(simX, ref_traj, save=True)
         plotSim_pos(t, simX, ref_traj, Nsim, save=True)
         plotSim_Angles(t, simX, simX_euler, Nsim, save=True)
         plotSim_vel_with_ref(t, simX, ref_traj, Nsim, save=True)

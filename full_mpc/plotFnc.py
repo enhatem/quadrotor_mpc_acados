@@ -112,7 +112,7 @@ def plotStates(t, simX,predX, x, y, z, save=False):
     plt.tight_layout()
 
     if save ==True:
-        fig.savefig('figures/states.png')
+        fig.savefig('figures/states.png', dpi=300)
 
     plt.show()
 
@@ -186,7 +186,7 @@ def plotSim_pos(t, simX, ref_traj, Nsim, save=False):
     plt.tight_layout()
 
     if save ==True:
-        fig.savefig('figures/posStates.png')
+        fig.savefig('figures/posStates.png', dpi=300)
 
 
 
@@ -217,7 +217,7 @@ def plotSim_pos_ref_point(t, simX, Nsim, save=False):
     plt.tight_layout()
 
     if save ==True:
-        fig.savefig('figures/posStates.png')
+        fig.savefig('figures/posStates.png', dpi=300)
 
 
 
@@ -271,7 +271,7 @@ def plotSim3D(simX, ref_traj, save=False):
 
 
     NUM_STEPS = simX.shape[0]
-    MEAS_EVERY_STEPS = 40
+    MEAS_EVERY_STEPS = 100
 
     X0 = [simX[0,0], simX[0,1], simX[0,2]]
     q0 = [simX[0,3], simX[0,4], simX[0,5], simX[0,6]]
@@ -287,7 +287,7 @@ def plotSim3D(simX, ref_traj, save=False):
     
 
     if save == True:
-        fig.savefig('figures/sim3D.png')
+        fig.savefig('figures/sim3D.png', dpi=300)
 
 
 
@@ -340,7 +340,7 @@ def plotSim_Angles(t, simX, simEuler, Nsim, save=True):
     ax2.legend()
 
     if save ==True:
-        fig.savefig('figures/angleStates.png')
+        fig.savefig('figures/angleStates.png', dpi=300)
 
 def plotSim_vel(t, simX, Nsim, save=False):
     # figure: container holding the plots (can have multiple plots)
@@ -368,7 +368,7 @@ def plotSim_vel(t, simX, Nsim, save=False):
     plt.tight_layout()
 
     if save ==True:
-        fig.savefig('figures/velStates.png')
+        fig.savefig('figures/velStates.png', dpi=300)
 
 
 def plotSim_vel_with_ref(t, simX, ref_traj, Nsim, save=False):
@@ -406,7 +406,7 @@ def plotSim_vel_with_ref(t, simX, ref_traj, Nsim, save=False):
     plt.tight_layout()
 
     if save ==True:
-        fig.savefig('figures/velStates.png')
+        fig.savefig('figures/velStates.png', dpi=300)
 
 
 
@@ -426,7 +426,7 @@ def plotThrustInput(t, simU, Nsim, save=False):
     plt.tight_layout()
 
     if save ==True:
-        fig.savefig('figures/thrustInput.png')
+        fig.savefig('figures/thrustInput.png', dpi=300)
 
 def plotAngularRatesInputs(t, simU, Nsim, save=True):
     plt.style.use('seaborn')
@@ -452,7 +452,7 @@ def plotAngularRatesInputs(t, simU, Nsim, save=True):
     plt.tight_layout()
 
     if save ==True:
-        fig.savefig('figures/angulareRatesInputs.png')
+        fig.savefig('figures/angulareRatesInputs.png', dpi=300)
 
 def plotAngleInputs(t,simU,eulerAngles,save=False):
 
@@ -478,7 +478,7 @@ def plotAngleInputs(t,simU,eulerAngles,save=False):
     plt.tight_layout()
 
     if save ==True:
-        fig.savefig('figures/angleInputs.png')
+        fig.savefig('figures/angleInputs.png', dpi=300)
 
 
 def plotRes3D(predX, simX, simU, simU_euler, t):
@@ -620,8 +620,23 @@ def plotSim3D_ref_point(simX, X_ref, save=False):
     ax.set_ylabel("y[m]")
     ax.set_zlabel("z[m]")
 
+    NUM_STEPS = simX.shape[0]
+    MEAS_EVERY_STEPS = 30
+
+    X0 = [simX[0,0], simX[0,1], simX[0,2]]
+    q0 = [simX[0,3], simX[0,4], simX[0,5], simX[0,6]]
+    plotDrone3D(ax,X0,q0)
+    
+    for step in range(NUM_STEPS):
+        if step !=0 and step % MEAS_EVERY_STEPS ==0:
+            X = [simX[step,0], simX[step,1], simX[step,2]]
+            q = [simX[step,3], simX[step,4], simX[step,5], simX[step,6]]
+            plotDrone3D(ax,X,q)
+
+    axisEqual3D(ax)
+
     if save == True:
-        fig.savefig('figures/sim3D.png')
+        fig.savefig('figures/sim3D.png', dpi=300)
 
 
 

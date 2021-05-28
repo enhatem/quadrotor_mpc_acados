@@ -93,8 +93,8 @@ def acados_settings(Ts, Tf, N):
     ocp.cost.yref_e = x_ref
 
     # set constraints on thrust and angular velocities
-    ocp.constraints.lbu   = np.array([model.thrust_min, -np.pi, -np.pi, -np.pi])
-    ocp.constraints.ubu   = np.array([model.thrust_max,  np.pi,  np.pi,  np.pi])
+    ocp.constraints.lbu   = np.array([model.thrust_min, -4*np.pi, -4*np.pi, -4*np.pi])
+    ocp.constraints.ubu   = np.array([model.thrust_max,  4*np.pi,  4*np.pi,  4*np.pi])
     ocp.constraints.idxbu = np.array([0,1,2,3])
 
     
