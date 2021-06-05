@@ -31,7 +31,7 @@ bound_on_phi = False
 bound_on_y_z = False
 
 # measurement noise bool
-noisy_measurement = False
+noisy_measurement = True
 
 # input noise bool
 noisy_input = False
@@ -117,7 +117,7 @@ if extended_kalman_filter == True:
 # elif extended_kalman_filter == True and noisy_measurement == False:
 #     sys.exit("The extended Kalman filter must run with a noisy input")
 
-# set the seed for the random variables (if noisy measurement and noisy input are applied)
+# set the seed for the random variables ( only relevant if noisy measurement and noisy input are applied)
 np.random.seed(20)
 
 # closed loop

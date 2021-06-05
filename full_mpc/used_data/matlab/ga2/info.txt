@@ -1,0 +1,11 @@
+% Bounds on the z trajectory of the reaching phase
+z1_min = 3;
+z1_max = 3.5;
+
+% Bounds on the z trajectory of the flipping phase
+z2_min = 0.8;
+z2_max = 3.5;
+
+% Bounds on the z trajectory of the recovery phase
+z3_min = 0.8;
+z3_max = 2.5;

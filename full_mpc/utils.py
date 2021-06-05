@@ -20,49 +20,58 @@ def euler_to_quaternion(roll, pitch, yaw):
 def add_measurement_noise(xcurrent):
     # Apply noise to inputs (uniformly distributed noise with standard deviation proportional to input magnitude)
 
-    x  = xcurrent[0]
-    y  = xcurrent[1]
-    z  = xcurrent[2]
     qw = xcurrent[3]
     qx = xcurrent[4]
     qy = xcurrent[5]
     qz = xcurrent[6]
-    vx = xcurrent[7]
-    vy = xcurrent[8]
-    vz = xcurrent[9]
+
+    quat = np.array([qw,qx,qy,qz])
+    euler_angles = quaternion_to_euler(quat)
+
+    x     = xcurrent[0]
+    y     = xcurrent[1]
+    z     = xcurrent[2]
+    roll  = euler_angles[0]
+    pitch = euler_angles[1]
+    yaw   = euler_angles[2]
+    vx    = xcurrent[7]
+    vy    = xcurrent[8]
+    vz    = xcurrent[9]
 
     # mean of the noise
     mean = 0
 
     # scale of noise of each state
-    std_x   = 0.01
-    std_y   = 0.01
-    std_z   = 0.01
-    std_qw  = 0
-    std_qx  = 0
-    std_qy  = 0
-    std_qz  = 0
-    std_vx  = 0.01
-    std_vy  = 0.01
-    std_vz  = 0.01
-    
-    # create the noisy states
-    x_noisy  =  x + np.random.normal(mean, std_x)
-    y_noisy  =  y + np.random.normal(mean, std_y)
-    z_noisy  =  z + np.random.normal(mean, std_z)
-    qw_noisy = qw + np.random.normal(mean, std_qw)
-    qx_noisy = qx + np.random.normal(mean, std_qx)
-    qy_noisy = qy + np.random.normal(mean, std_qy)
-    qz_noisy = qz + np.random.normal(mean, std_qz)
-    vx_noisy = vx + np.random.normal(mean, std_vx)
-    vy_noisy = vy + np.random.normal(mean, std_vy)
-    vz_noisy = vz + np.random.normal(mean, std_vz)
+    std_x     = 0.01
+    std_y     = 0.01
+    std_z     = 0.01
+    std_roll  = (np.pi / 180) / 2 
+    std_pitch = (np.pi / 180) / 2
+    std_yaw   = (np.pi / 180) / 2
+    std_vx    = 0.001
+    std_vy    = 0.001
+    std_vz    = 0.001
 
-    q_noisy = np.append([qw_noisy, qx_noisy, qy_noisy, qz_noisy])
+    # create the noisy states
+    x_noisy     =  x + np.random.normal(mean, std_x)
+    y_noisy     =  y + np.random.normal(mean, std_y)
+    z_noisy     =  z + np.random.normal(mean, std_z)
+    roll_noisy  =  roll + np.random.normal(mean, std_roll)
+    pitch_noisy =  pitch + np.random.normal(mean, std_pitch)
+    yaw_noisy   =  yaw + np.random.normal(mean, std_yaw)
+    vx_noisy    =  vx + np.random.normal(mean, std_vx)
+    vy_noisy    =  vy + np.random.normal(mean, std_vy)
+    vz_noisy    =  vz + np.random.normal(mean, std_vz)
+
+    q_noisy = euler_to_quaternion(roll_noisy, pitch_noisy, yaw_noisy)
     q_noisy = unit_quat(q_noisy)
+    qw_noisy = q_noisy[0]
+    qx_noisy = q_noisy[1]
+    qy_noisy = q_noisy[2]
+    qz_noisy = q_noisy[3]
 
     # create new noisy measurement vector
-    xcurrent_noisy = np.array([x_noisy, y_noisy, z_noisy, q_noisy, vx_noisy, vy_noisy, vz_noisy])
+    xcurrent_noisy = np.array([x_noisy, y_noisy, z_noisy, qw_noisy, qx_noisy, qy_noisy, qz_noisy, vx_noisy, vy_noisy, vz_noisy])
 
     return xcurrent_noisy
 

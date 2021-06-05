@@ -7,6 +7,8 @@ def plotDrone3D(ax,X,q):
     
     l= 0.046 # arm length
     r = 0.02 # rotor length
+    # l = 0.1
+    # r = 0.04
 
     x = X[0]
     y = X[1]
@@ -271,7 +273,7 @@ def plotSim3D(simX, ref_traj, save=False):
 
 
     NUM_STEPS = simX.shape[0]
-    MEAS_EVERY_STEPS = 100
+    MEAS_EVERY_STEPS = 10
 
     X0 = [simX[0,0], simX[0,1], simX[0,2]]
     q0 = [simX[0,3], simX[0,4], simX[0,5], simX[0,6]]
@@ -283,8 +285,10 @@ def plotSim3D(simX, ref_traj, save=False):
             q = [simX[step,3], simX[step,4], simX[step,5], simX[step,6]]
             plotDrone3D(ax,X,q)
 
-    axisEqual3D(ax)
-    
+    # axisEqual3D(ax)
+    ax.set_xlim3d(-5, 5)
+    ax.set_ylim3d(-5, 5)
+    ax.set_zlim3d(0, 5)
 
     if save == True:
         fig.savefig('figures/sim3D.png', dpi=300)
@@ -409,6 +413,46 @@ def plotSim_vel_with_ref(t, simX, ref_traj, Nsim, save=False):
         fig.savefig('figures/velStates.png', dpi=300)
 
 
+def plotSim_vel_with_ref_for_imported_trajectory(t, simX, ref_traj, Nsim, save=False):
+    # figure: container holding the plots (can have multiple plots)
+    # axes: actual plots
+
+    plt.style.use('seaborn')
+    fig, (ax1, ax2, ax3) = plt.subplots(nrows=3, ncols=1, sharex=True)
+
+    ref_traj = ref_traj[0:Nsim]
+
+    vx_ref = ref_traj[:,7]
+    vy_ref = ref_traj[:,8]
+    vz_ref = ref_traj[:,9]
+
+    t = t[0:Nsim]
+
+    ax1.plot(t, simX[1:,7], label='vx')
+    ax1.plot(t, vx_ref, '--', label='vx_ref')
+    ax2.plot(t, simX[1:,8], label='vy')
+    ax2.plot(t, vy_ref, '--', label='vy_ref')
+    ax3.plot(t, simX[1:,9], label='vz')
+    ax3.plot(t, vz_ref, '--', label='vz_ref')
+    
+    ax1.legend()
+    ax1.set_title('States: Linear velocities')
+    ax1.set_ylabel('vx[m/s]')
+
+    ax2.legend()
+    ax2.set_ylabel('vy[m/s]')
+
+    ax3.legend()
+    ax3.set_xlabel('t[s]')
+    ax3.set_ylabel('vz[m/s]')
+    
+    plt.tight_layout()
+
+    if save ==True:
+        fig.savefig('figures/velStates.png', dpi=300)
+
+
+
 
 def plotThrustInput(t, simU, Nsim, save=False):
     
@@ -418,6 +462,27 @@ def plotThrustInput(t, simU, Nsim, save=False):
     t = t[0:Nsim]
 
     ax1.step(t,simU[:,0], label='Thrust')
+    ax1.legend()
+    ax1.set_title('Control inputs: Thrust')
+    ax1.set_xlabel('t[s]')
+    ax1.set_ylabel('T[N]')
+
+    plt.tight_layout()
+
+    if save ==True:
+        fig.savefig('figures/thrustInput.png', dpi=300)
+
+def plotThrustInput_with_ref(t, simU, ref_U, Nsim, save=False):
+    
+    plt.style.use('seaborn')
+    fig, ax1 = plt.subplots()
+
+    Thrust = ref_U[0:Nsim,0]
+
+    t = t[0:Nsim]
+
+    ax1.step(t,simU[:,0], label='Thrust')
+    ax1.step(t,Thrust, label = 'Thrust_ref')
     ax1.legend()
     ax1.set_title('Control inputs: Thrust')
     ax1.set_xlabel('t[s]')

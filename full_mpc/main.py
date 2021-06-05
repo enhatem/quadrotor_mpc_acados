@@ -22,7 +22,7 @@ T = T_hover + T_traj # total simulation time
 g = 9.81     # m/s^2
 
 # measurement noise bool
-noisy_measurement = False
+noisy_measurement = True
 
 # input noise bool
 noisy_input = False
@@ -31,13 +31,13 @@ noisy_input = False
 extended_kalman_filter = False
 
 # generate circulare trajectory with velocties
-traj_with_vel = True
+traj_with_vel = False
 
 # single reference point with phi = 2 * pi
 ref_point = False
 
 # import trajectory with positions and velocities and inputs
-import_trajectory = False
+import_trajectory = True
 
 # bool to save measurements and inputs as .csv files
 save_data = True
@@ -64,25 +64,41 @@ xcurrent = model.x0.reshape((nx,))
 simX[0, :] = xcurrent
 
 # creating or extracting trajectory
+
+# circular trajectory
 if ref_point == False and import_trajectory == False:
     # creating a reference trajectory
     show_ref_traj = False
     radius = 1  # m
     freq = 14 * np.pi/10  # frequency
-
+    
+    # without velocity
     if traj_with_vel == False:
         x, y, z = trajectory_generator3D(xcurrent, N_hover, N_traj, N, radius, show_ref_traj)
         ref_traj = np.stack((x, y, z), 1)
     else:
+        # with velocity
         x, y, z, vx, vy, vz = trajectory_generotaor3D_with_vel(
             xcurrent, N_hover, model, radius, freq, T_traj, Tf, Ts)
         ref_traj = np.stack((x, y, z, vx, vy, vz), 1)
+
+# reference point 
 elif ref_point == True and import_trajectory == False:
     X0 = xcurrent
     x_ref_point = 3
     y_ref_point = 3
     z_ref_point = 3
     X_ref = np.array([x_ref_point, y_ref_point, z_ref_point])
+
+# imported trajectory
+elif ref_point == False and import_trajectory == True:
+    # T, ref_traj, ref_U = readTrajectory(T_hover, N)
+    T, ref_traj, ref_U = readTrajectory(T_hover, N)
+    Nsim = int((T-Tf) * N / Tf)
+    predX = np.ndarray((Nsim+1, nx))
+    simX  = np.ndarray((Nsim+1, nx))
+    simU  = np.ndarray((Nsim,   nu))
+    simX[0, :] = xcurrent
 
 '''
 elif ref_point == False and import_trajectory == True:
@@ -119,6 +135,7 @@ for i in range(Nsim):
                 acados_solver.set(j, "yref", yref)
             yref_N = np.array([x[i+N], y[i+N], z[i+N], 1.0, 0.0, 0.0, 0.0, vx[i+N], vy[i+N], vz[i+N]])
             acados_solver.set(N, "yref", yref_N)
+    
     elif ref_point == True and import_trajectory == False:
         for j in range(N):
             if i < N_hover:
@@ -136,6 +153,43 @@ for i in range(Nsim):
             yref_N = np.array([x_ref_point, y_ref_point, z_ref_point, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
             acados_solver.set(N, "yref", yref_N)
 
+    elif ref_point == False and import_trajectory == True:
+        # if i == Nsim-5:
+        #     print(f'i={i}')
+        
+        for j in range(N):
+            x       = ref_traj[i+j, 0]
+            y       = ref_traj[i+j, 1]
+            z       = ref_traj[i+j, 2]
+            qw      = ref_traj[i+j, 3]
+            qx      = ref_traj[i+j, 4]
+            qy      = ref_traj[i+j, 5]
+            qz      = ref_traj[i+j, 6]
+            vx      = ref_traj[i+j, 7]
+            vy      = ref_traj[i+j, 8]
+            vz      = ref_traj[i+j, 9]
+
+            T_ref   = ref_U[i+j, 0] * 2 # Thrust 
+            wx_ref  = 0  # Angular rate around x (no reference)
+            wy_ref  = 0  # Angular rate around x (no reference)
+            wz_ref  = 0  # Angular rate around x (no reference)
+
+            yref    = np.array([x, y, z, qw, qx, qy, qz, vx, vy, vz, T_ref, wx_ref, wy_ref, wz_ref])
+            acados_solver.set(j, "yref", yref)
+
+        x_e  = ref_traj[i+N, 0]
+        y_e  = ref_traj[i+N, 1]
+        z_e  = ref_traj[i+N, 2]
+        qw_e = ref_traj[i+N, 3]
+        qx_e = ref_traj[i+N, 4]
+        qy_e = ref_traj[i+N, 5]
+        qz_e = ref_traj[i+N, 6]
+        vx_e = ref_traj[i+N, 7]
+        vy_e = ref_traj[i+N, 8]
+        vz_e = ref_traj[i+N, 9]
+
+        yref_N      = np.array([x_e, y_e, z_e, qw_e, qx_e, qy_e, qz_e, vx_e, vy_e, vz_e])
+        acados_solver.set(N, "yref", yref_N)
     # solve ocp for a fixed reference
     acados_solver.set(0, "lbx", xcurrent)
     acados_solver.set(0, "ubx", xcurrent)
@@ -152,13 +206,13 @@ for i in range(Nsim):
 
     # get solution from acados_solver
     u0 = acados_solver.get(0, "u")
-    
-    # add noise to inputs
-    if noisy_measurement == True:
-        xcurrent = add_measurement_noise(xcurrent)
 
     # storing results from acados solver
     simU[i, :] = u0
+
+    # add noise to measurement
+    if noisy_measurement == True:
+        xcurrent = add_measurement_noise(xcurrent)
 
     # simulate the system
     acados_integrator.set("x", xcurrent)
@@ -172,11 +226,7 @@ for i in range(Nsim):
     xcurrent = acados_integrator.get("x")
 
     # make sure that the quaternion is unit
-    xcurrent = ensure_unit_quat(xcurrent)
-
-    # add measurement noise
-    if noisy_measurement == True:
-        xcurrent = add_measurement_noise(xcurrent)
+    # xcurrent = ensure_unit_quat(xcurrent)
 
     # store state
     simX[i+1, :] = xcurrent
@@ -220,11 +270,20 @@ if ref_point == False and import_trajectory == False:
         plotThrustInput(t, simU, Nsim, save=True)
         plotAngularRatesInputs(t, simU, Nsim, save=True)
         plotErrors_with_vel(t, simX, ref_traj, Nsim, save=True)
+
 elif ref_point == True and import_trajectory == False:
     plotSim3D_ref_point(simX, X_ref, save=True)
     plotSim_pos_ref_point(t, simX, Nsim, save=True)
     plotSim_Angles(t, simX, simX_euler, Nsim, save=True)
     plotSim_vel(t, simX, Nsim, save=True)
     plotThrustInput(t, simU, Nsim, save=True)
+    plotAngularRatesInputs(t, simU, Nsim, save=True)
+
+elif ref_point == False and import_trajectory == True:
+    plotSim3D(simX, ref_traj, save=True)
+    plotSim_pos(t, simX, ref_traj, Nsim, save=True)
+    plotSim_Angles(t, simX, simX_euler, Nsim, save=True)
+    plotSim_vel_with_ref_for_imported_trajectory(t, simX, ref_traj, Nsim, save=True)
+    plotThrustInput_with_ref(t, simU, ref_U, Nsim, save=True)
     plotAngularRatesInputs(t, simU, Nsim, save=True)
 plt.show()
