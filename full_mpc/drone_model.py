@@ -98,7 +98,7 @@ def drone_model():
     model.torque_min = - model.torque_max
 
     # define initial condition
-    model.x0 = np.array([0.0, 0.0, 3.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+    model.x0 = np.array([0.0, 0.0, 2.1382, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
 
     # define model struct
     params = types.SimpleNamespace()

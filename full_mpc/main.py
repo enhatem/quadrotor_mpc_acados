@@ -22,7 +22,7 @@ T = T_hover + T_traj # total simulation time
 g = 9.81     # m/s^2
 
 # measurement noise bool
-noisy_measurement = True
+noisy_measurement = False
 
 # input noise bool
 noisy_input = False

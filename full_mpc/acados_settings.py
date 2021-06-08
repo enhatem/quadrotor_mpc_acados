@@ -39,16 +39,16 @@ def acados_settings(Ts, Tf, N):
 
     # set cost 
     Q = np.eye(nx)
-    Q[0][0] = 1e0  # weight of px
-    Q[1][1] = 1e2  # weight of py
-    Q[2][2] = 2e2  # weight of pz
-    Q[3][3] = 0e0  # weight of qw
-    Q[4][4] = 0e0  # weight of qx
-    Q[5][5] = 0e0  # weight of qy
-    Q[6][6] = 0e0  # weight of qz
+    Q[0][0] = 0e0  # weight of px
+    Q[1][1] = 0e0  # weight of py
+    Q[2][2] = 1e0  # weight of pz
+    Q[3][3] = 1e0  # weight of qw
+    Q[4][4] = 1e0  # weight of qx
+    Q[5][5] = 1e0  # weight of qy
+    Q[6][6] = 1e0  # weight of qz
     Q[7][7] = 0e0  # weight of vx
-    Q[8][8] = 1e0  # weight of vy
-    Q[9][9] = 1e0  # weight of vz
+    Q[8][8] = 0e0  # weight of vy
+    Q[9][9] = 0e0  # weight of vz
 
     R = np.eye(nu)
     R[0][0] = 1e0  # weight of Thrust
@@ -57,16 +57,16 @@ def acados_settings(Ts, Tf, N):
     R[3][3] = 1e0  # weight of wz
 
     Qe = np.eye(nx)
-    Qe[0][0] = 1e0  # terminal weight of px
-    Qe[1][1] = 1e2  # terminal weight of py
-    Qe[2][2] = 2e2  # terminal weight of pz
-    Qe[3][3] = 0e0  # terminal weight of qw
-    Qe[4][4] = 0e0  # terminal weight of qx
-    Qe[5][5] = 0e0  # terminal weight of qy
-    Qe[6][6] = 0e0  # terminal weight of qz
+    Qe[0][0] = 0e1  # terminal weight of px
+    Qe[1][1] = 0e2  # terminal weight of py
+    Qe[2][2] = 1e0  # terminal weight of pz
+    Qe[3][3] = 1e0  # terminal weight of qw
+    Qe[4][4] = 1e0  # terminal weight of qx
+    Qe[5][5] = 1e0  # terminal weight of qy
+    Qe[6][6] = 1e0  # terminal weight of qz
     Qe[7][7] = 0e0  # terminal weight of vx
-    Qe[8][8] = 1e0  # terminal weight of vy
-    Qe[9][9] = 1e0  # terminal weight of vz
+    Qe[8][8] = 0e0  # terminal weight of vy
+    Qe[9][9] = 0e0  # terminal weight of vz
 
     ocp.cost.cost_type   = "LINEAR_LS"
     ocp.cost.cost_type_e = "LINEAR_LS"
