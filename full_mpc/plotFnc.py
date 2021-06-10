@@ -285,10 +285,10 @@ def plotSim3D(simX, ref_traj, save=False):
             q = [simX[step,3], simX[step,4], simX[step,5], simX[step,6]]
             plotDrone3D(ax,X,q)
 
-    # axisEqual3D(ax)
-    ax.set_xlim3d(-5, 5)
-    ax.set_ylim3d(-5, 5)
-    ax.set_zlim3d(0, 5)
+    axisEqual3D(ax)
+    # ax.set_xlim3d(-5, 5)
+    # ax.set_ylim3d(-5, 5)
+    # ax.set_zlim3d(0, 5)
 
     if save == True:
         fig.savefig('figures/sim3D.png', dpi=300)
