@@ -156,9 +156,12 @@ def trajectory_generotaor3D_with_vel(   x0: np.array,   # initial potision of th
 def readTrajectory(T_hover, N):
         
     # import csv file of measX and simU (noisy measurement)
-    ref_traj = pd.read_csv('used_data/matlab/fmincon1/measX.csv')
-    ref_U = pd.read_csv('used_data/matlab/fmincon1/simU.csv')
+    ref_traj = pd.read_csv('used_data/matlab/polynomial_5/fmincon1/measX.csv')
+    ref_U = pd.read_csv('used_data/matlab/polynomial_5/fmincon1/simU.csv')
     
+    # ref_traj = pd.read_csv('used_data/matlab/fmincon5/measX.csv')
+    # ref_U = pd.read_csv('used_data/matlab/fmincon5/simU.csv')
+
     # create references to add for the hovering time
     ref_traj_x0 = ref_traj.iloc[[0]*N*T_hover]
     ref_u0 = ref_U.iloc[[0]*N*T_hover]

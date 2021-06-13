@@ -78,8 +78,8 @@ def drone_model():
     )
 
     # model bounds (realistically, there should be no limits on the model)
-    model.v_min = -1000000000
-    model.v_max =  1000000000
+    # model.v_min = -1000000000
+    # model.v_max =  1000000000
 
     model.phi_min = -80 * np.pi / 180
     model.phi_max =  80 * np.pi / 180
@@ -98,7 +98,7 @@ def drone_model():
     model.torque_min = - model.torque_max
 
     # define initial condition
-    model.x0 = np.array([0.0, 1, 1, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+    model.x0 = np.array([0.0, 0.0, 0.86943, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
 
     # define model struct
     params = types.SimpleNamespace()

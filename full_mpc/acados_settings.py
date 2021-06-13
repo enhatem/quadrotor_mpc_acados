@@ -40,8 +40,8 @@ def acados_settings(Ts, Tf, N):
     # set cost 
     Q = np.eye(nx)
     Q[0][0] = 0e0  # weight of px
-    Q[1][1] = 5e1  # weight of py
-    Q[2][2] = 5e1  # weight of pz
+    Q[1][1] = 1e0  # weight of py
+    Q[2][2] = 1e0  # weight of pz
     Q[3][3] = 1e0  # weight of qw
     Q[4][4] = 1e0  # weight of qx
     Q[5][5] = 1e0  # weight of qy
