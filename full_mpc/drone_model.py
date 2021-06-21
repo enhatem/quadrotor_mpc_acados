@@ -77,10 +77,6 @@ def drone_model():
         ( ( 1 - 2 * qx * qx - 2 * qy * qy ) * T ) / m - g 
     )
 
-    # model bounds (realistically, there should be no limits on the model)
-    # model.v_min = -1000000000
-    # model.v_max =  1000000000
-
     model.phi_min = -80 * np.pi / 180
     model.phi_max =  80 * np.pi / 180
 
