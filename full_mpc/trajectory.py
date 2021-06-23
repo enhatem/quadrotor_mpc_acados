@@ -4,7 +4,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from mpl_toolkits import mplot3d
 from numpy.core.numeric import ones_like
-from utils import quaternion_to_euler, euler_to_quaternion, unit_quat
+from utils import get_angular_velocities, get_q_dot, quaternion_to_euler, euler_to_quaternion, unit_quat
 
 def trajectory_generator(T_final, N, traj=0, show_traj=False):
     '''
@@ -153,11 +153,11 @@ def trajectory_generotaor3D_with_vel(   x0: np.array,   # initial potision of th
     else:
         return x, y, z, vx, vy, vz
 
-def readTrajectory(T_hover, N):
+def readTrajectory(T_hover, N, Ts):
         
     # import csv file of measX and simU (noisy measurement)
-    ref_traj = pd.read_csv('used_data/matlab/polynomial_5/fmincon4_solved/measX.csv')
-    ref_U = pd.read_csv('used_data/matlab/polynomial_5/fmincon4_solved/simU.csv')
+    ref_traj = pd.read_csv('used_data/matlab/polynomial_5/fmincon7_solved/measX.csv')
+    ref_U = pd.read_csv('used_data/matlab/polynomial_5/fmincon7_solved/simU.csv')
     
     # ref_traj = pd.read_csv('used_data/matlab/fmincon5/measX.csv')
     # ref_U = pd.read_csv('used_data/matlab/fmincon5/simU.csv')
@@ -209,9 +209,13 @@ def readTrajectory(T_hover, N):
     qy_ref = quat_ref[:,2]
     qz_ref = quat_ref[:,3]
 
+    q_dot = get_q_dot(quat_ref,Ts,rows)
+
+    w_ref = get_angular_velocities(q_dot,quat_ref, rows)
+
     ref_traj = np.array([x_ref, y_ref, z_ref, qw_ref, qx_ref, qy_ref, qz_ref, vx_ref, vy_ref, vz_ref]).T
 
     # computing simulation time
     T = ((len(ref_traj) ) / N)
 
-    return T, ref_traj , ref_U
+    return T, ref_traj , ref_U, w_ref

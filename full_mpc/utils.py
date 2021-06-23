@@ -1,11 +1,12 @@
 import numpy as np
-import pyquaternion
+from pyquaternion import Quaternion
 import casadi as cs
+
 from sklearn.metrics import mean_squared_error
 
 
 def quaternion_to_euler(q):
-    q = pyquaternion.Quaternion(w=q[0], x=q[1], y=q[2], z=q[3])
+    q = Quaternion(w=q[0], x=q[1], y=q[2], z=q[3])
     yaw, pitch, roll = q.yaw_pitch_roll
     return [roll, pitch, yaw]
 
@@ -159,3 +160,38 @@ def rmseX(simX, refX):
     rmse_z = mean_squared_error(refX[:,2], simX[1:,2], squared=False)
 
     return rmse_x, rmse_y, rmse_z
+
+def get_q_dot(quat_ref,dt,rows):
+    
+    # declaring the q_dot variable
+    q_dot = np.zeros((quat_ref.shape[0]-1,quat_ref.shape[1]))
+    
+    # numerical differentiation
+    for i in range(rows-1):
+        q_dot[i] = (quat_ref[i+1] - quat_ref[i])/dt
+
+    return q_dot
+
+def get_angular_velocities(q_dot, quat_ref, rows):
+    
+    # declaring the w variable
+    w = np.zeros_like(q_dot)
+
+    for i in range(rows-1):
+        q_i  = Quaternion(quat_ref[i])
+        q_dot_i = Quaternion(q_dot[i])
+        temp = 2 * q_dot_i * q_i.inverse
+        w[i,0] = temp[0] 
+        w[i,1] = temp[1] 
+        w[i,2] = temp[2] 
+        w[i,3] = temp[3] 
+
+    w = np.vstack([ np.zeros((1,4),float),w]) # to account for the first row that was removed because of the derivatives
+    w = w[:,1:] # to remove the unwanted column and keep the angular velocities
+
+    # Extracting each angular velocity
+    # wx = w_stacked[:,0]
+    # wy = w_stacked[:,1]
+    # wz = w_stacked[:,2]
+
+    return w
