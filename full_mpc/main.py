@@ -10,7 +10,7 @@ from trajectory import *
 
 # mpc and simulation parameters
 Tf = 1        # prediction horizon
-N = 100      # number of discretization steps
+N = 50      # number of discretization steps
 Ts = Tf / N   # sampling time[s]
 
 T_hover = 2     # hovering time[s]
@@ -34,10 +34,10 @@ noisy_input = False
 traj_with_vel = False
 
 # use a single reference point
-ref_point = True
+ref_point = False
 
 # import trajectory with positions and velocities and inputs
-import_trajectory = False
+import_trajectory = True
 
 # bool to save measurements and inputs as .csv files
 save_data = True
