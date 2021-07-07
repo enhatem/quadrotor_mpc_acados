@@ -63,7 +63,7 @@ tcomp_max = 0
 xcurrent = model.x0.reshape((nx,))
 simX[0, :] = xcurrent
 
-# creating or extracting trajectory
+## creating or extracting trajectory
 
 # circular trajectory
 if ref_point == False and import_trajectory == False:
