@@ -33,11 +33,11 @@ noisy_input = False
 # generate circulare trajectory with velocties
 traj_with_vel = False
 
-# single reference point with phi = 2 * pi
-ref_point = False
+# use a single reference point
+ref_point = True
 
 # import trajectory with positions and velocities and inputs
-import_trajectory = True
+import_trajectory = False
 
 # bool to save measurements and inputs as .csv files
 save_data = True
@@ -144,7 +144,7 @@ for i in range(Nsim):
                                  0.0, 0.0, 0.0, model.params.m * g, 0.0, 0.0, 0.0])
                 acados_solver.set(j, "yref", yref)
             else:
-                yref = np.array([x_ref_point, y_ref_point, z_ref_point, -1.0, 0.0, 0.0, 0.0,
+                yref = np.array([x_ref_point, y_ref_point, z_ref_point, 1.0, 0.0, 0.0, 0.0,
                                  0.0, 0.0, 0.0, model.params.m * g, 0.0, 0.0, 0.0])
                 acados_solver.set(j, "yref", yref)
         if i < N_hover:
@@ -153,7 +153,7 @@ for i in range(Nsim):
             acados_solver.set(N, "yref", yref_N)
         else:
             yref_N = np.array(
-                [x_ref_point, y_ref_point, z_ref_point, -1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+                [x_ref_point, y_ref_point, z_ref_point, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
             acados_solver.set(N, "yref", yref_N)
 
     elif ref_point == False and import_trajectory == True:
@@ -211,6 +211,7 @@ for i in range(Nsim):
 
     # get solution from acados_solver
     u0 = acados_solver.get(0, "u")
+    # x4 = acados_solver.get(4, "x") # used to compensate for delays
 
     # storing results from acados solver
     simU[i, :] = u0
