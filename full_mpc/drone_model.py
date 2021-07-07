@@ -15,7 +15,7 @@ def drone_model():
     # length = 0.47 / 2  # m
 
     # crazyflie 2.0 parameters
-    m =  0.029 # m=27g
+    m =  0.033 # m=27g
     J = np.array([1.657171e-05, 1.657171e-05, 2.9261652e-05])
     length = 0.046
 
@@ -94,7 +94,7 @@ def drone_model():
     model.torque_min = - model.torque_max
 
     # define initial condition
-    model.x0 = np.array([0.0, 0.0, 1.1056, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+    model.x0 = np.array([0.0, 0.0, 1.595, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
 
     # define model struct
     params = types.SimpleNamespace()

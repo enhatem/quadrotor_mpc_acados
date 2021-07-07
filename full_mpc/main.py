@@ -28,7 +28,7 @@ noisy_measurement = False
 noisy_input = False
 
 # extended kalman filter bool
-extended_kalman_filter = False
+# extended_kalman_filter = False
 
 # generate circulare trajectory with velocties
 traj_with_vel = False
@@ -86,9 +86,9 @@ if ref_point == False and import_trajectory == False:
 # reference point
 elif ref_point == True and import_trajectory == False:
     X0 = xcurrent
-    x_ref_point = 3
-    y_ref_point = 3
-    z_ref_point = 3
+    x_ref_point = 0
+    y_ref_point = 1.2
+    z_ref_point = 1.0
     X_ref = np.array([x_ref_point, y_ref_point, z_ref_point])
 
 # imported trajectory
@@ -144,7 +144,7 @@ for i in range(Nsim):
                                  0.0, 0.0, 0.0, model.params.m * g, 0.0, 0.0, 0.0])
                 acados_solver.set(j, "yref", yref)
             else:
-                yref = np.array([x_ref_point, y_ref_point, z_ref_point, 1.0, 0.0, 0.0, 0.0,
+                yref = np.array([x_ref_point, y_ref_point, z_ref_point, -1.0, 0.0, 0.0, 0.0,
                                  0.0, 0.0, 0.0, model.params.m * g, 0.0, 0.0, 0.0])
                 acados_solver.set(j, "yref", yref)
         if i < N_hover:
@@ -153,7 +153,7 @@ for i in range(Nsim):
             acados_solver.set(N, "yref", yref_N)
         else:
             yref_N = np.array(
-                [x_ref_point, y_ref_point, z_ref_point, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+                [x_ref_point, y_ref_point, z_ref_point, -1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
             acados_solver.set(N, "yref", yref_N)
 
     elif ref_point == False and import_trajectory == True:
@@ -181,9 +181,9 @@ for i in range(Nsim):
                              vz, T_ref, wx_ref, wy_ref, wz_ref])
             acados_solver.set(j, "yref", yref)
 
-        x_e = ref_traj[i+N, 0]
-        y_e = ref_traj[i+N, 1]
-        z_e = ref_traj[i+N, 2]
+        x_e  = ref_traj[i+N, 0]
+        y_e  = ref_traj[i+N, 1]
+        z_e  = ref_traj[i+N, 2]
         qw_e = ref_traj[i+N, 3]
         qx_e = ref_traj[i+N, 4]
         qy_e = ref_traj[i+N, 5]
@@ -291,6 +291,6 @@ elif ref_point == False and import_trajectory == True:
     plotSim_vel_with_ref_for_imported_trajectory(
         t, simX, ref_traj, Nsim, save=True)
     plotThrustInput_with_ref(t, simU, ref_U, Nsim, save=True)
-    plotAngularRatesInputs(t, simU, Nsim, save=True)
+    plotAngularRatesInputs(t, simU, w_ref, Nsim, save=True)
     plotErrors_with_vel(t, simX, ref_traj, Nsim, save=True)
 plt.show()

@@ -1,4 +1,5 @@
 from acados_template import AcadosModel, AcadosOcp, AcadosOcpSolver
+import acados_template
 from drone_model import drone_model
 from acados_integrator import export_drone_integrator
 
@@ -36,12 +37,12 @@ def acados_settings(Ts, Tf, N):
 
     # discretization 
     ocp.dims.N = N
-
+    
     # set cost 
     Q = np.eye(nx)
     Q[0][0] = 0e0  # weight of px
     Q[1][1] = 5e1  # weight of py
-    Q[2][2] = 1e1  # weight of pz
+    Q[2][2] = 5e1  # weight of pz
     Q[3][3] = 1e0  # weight of qw
     Q[4][4] = 1e0  # weight of qx
     Q[5][5] = 1e0  # weight of qy
@@ -59,7 +60,7 @@ def acados_settings(Ts, Tf, N):
     Qe = np.eye(nx)
     Qe[0][0] = 0e0  # terminal weight of px
     Qe[1][1] = 5e1  # terminal weight of py
-    Qe[2][2] = 1e1  # terminal weight of pz
+    Qe[2][2] = 5e1  # terminal weight of pz
     Qe[3][3] = 1e0  # terminal weight of qw
     Qe[4][4] = 1e0  # terminal weight of qx
     Qe[5][5] = 1e0  # terminal weight of qy
@@ -87,7 +88,7 @@ def acados_settings(Ts, Tf, N):
     ocp.cost.Vx_e = Vx_e
     
     # Initial reference trajectory (will be overwritten during the simulation)
-    x_ref = np.array([1.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+    x_ref = np.array([1, 1, 1, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
     ocp.cost.yref   = np.concatenate((x_ref, np.array([model.params.m * g, 0.0, 0.0, 0.0])))
 
     ocp.cost.yref_e = x_ref
@@ -124,7 +125,6 @@ def acados_settings(Ts, Tf, N):
 
     # create ocp solver 
     acados_solver = AcadosOcpSolver(ocp, json_file=(model_ac.name + "_" + "acados_ocp.json"))
-
 
     acados_integrator = export_drone_integrator(Ts, model_ac)
 
