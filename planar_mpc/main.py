@@ -16,7 +16,7 @@ Tf = 1        # prediction horizon
 N  = 100      # number of discretization steps
 Ts = Tf / N   # sampling time[s]
 
-T_hover = 1     # hovering time[s]
+T_hover = 2     # hovering time[s]
 T_traj  = 20.00 # trajectory time[s]
 
 T = T_hover + T_traj # total simulation time
@@ -34,19 +34,19 @@ bound_on_y_z = False
 noisy_measurement = True
 
 # input noise bool
-noisy_input = False
+noisy_input = True
 
 # extended kalman filter bool
-extended_kalman_filter = False
+extended_kalman_filter = True
 
 # generate circulare trajectory with velocties
-traj_with_vel = False
+traj_with_vel = True
 
 # single reference point with phi = 2 * pi
 ref_point = False
 
 # import trajectory with positions and velocities and inputs
-import_trajectory = True
+import_trajectory = False
 
 # use acados integrator (if False, numerical integration is used instead):
 use_acados_integrator = True

@@ -42,7 +42,7 @@ def setup_ekf(DT, m, Ixx, x0, nx, nu):
     Q_gamma[2][2] = (np.pi / 180)**2    # variance on the phi measurement (between -1 degree and +1 degree)
     Q_gamma[3][3] = 0.001**2            # variance on the vy measurement (between -0.01m/s and +0.01m/s)
     Q_gamma[4][4] = 0.001**2            # variance on the vz measurement (between -0.01m/s and +0.01m/s)
-    Q_gamma[5][5] = (np.pi / 180)**2    # variance on the phi_dot measurement (between -1 degrees/s^2 and +1 degrees/s^2)
+    Q_gamma[5][5] = (np.pi / 180)**2    # variance on the phi_dot measurement (between -1 degrees/s and +1 degrees/s)
 
 
     ekf = EKF(initial_x=x0, P_0=P0, m=m, Ixx=Ixx, dt = DT)

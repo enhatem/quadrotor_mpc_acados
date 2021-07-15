@@ -833,10 +833,10 @@ int Planar_drone_acados_create(nlp_solver_capsule * capsule)
     double lbx0[6];
     double ubx0[6];
     
-    lbx0[0] = 0;
-    ubx0[0] = 0;
-    lbx0[1] = 3.0001;
-    ubx0[1] = 3.0001;
+    lbx0[0] = 5;
+    ubx0[0] = 5;
+    lbx0[1] = 5;
+    ubx0[1] = 5;
     lbx0[2] = 0;
     ubx0[2] = 0;
     lbx0[3] = 0;
@@ -998,8 +998,8 @@ int Planar_drone_acados_create(nlp_solver_capsule * capsule)
 
     // initialize with x0
     
-    x0[0] = 0;
-    x0[1] = 3.0001;
+    x0[0] = 5;
+    x0[1] = 5;
     x0[2] = 0;
     x0[3] = 0;
     x0[4] = 0;

@@ -73,10 +73,10 @@ int main()
 
     double lbx0[6];
     double ubx0[6];
-    lbx0[0] = 0;
-    ubx0[0] = 0;
-    lbx0[1] = 3.0001;
-    ubx0[1] = 3.0001;
+    lbx0[0] = 5;
+    ubx0[0] = 5;
+    lbx0[1] = 5;
+    ubx0[1] = 5;
     lbx0[2] = 0;
     ubx0[2] = 0;
     lbx0[3] = 0;
