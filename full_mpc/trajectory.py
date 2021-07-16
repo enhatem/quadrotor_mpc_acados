@@ -148,10 +148,10 @@ def trajectory_generotaor3D_with_vel(   x0: np.array,   # initial potision of th
     # maximum velocity in the trajectory
     v_max = np.max(v) 
     
-    if v_max > model.v_max:
-        sys.exit("The desired trajectory contains velocities that the drone cannot handle.")
-    else:
-        return x, y, z, vx, vy, vz
+    #if v_max > model.v_max:
+    #    sys.exit("The desired trajectory contains velocities that the drone cannot handle.")
+    #else:
+    return x, y, z, vx, vy, vz
 
 def readTrajectory(T_hover, N, Ts):
         

@@ -297,14 +297,14 @@ def plotSim(simX, ref_traj, Nsim, save=False):
     
 
     NUM_STEPS = simX.shape[0]
-    MEAS_EVERY_STEPS = 30
+    PLOT_EVERY_STEPS = 50
 
     X0 = [simX[0,0], simX[0,1]]
     phi_0 = simX[0,2]
     plotDrone(ax,X0,phi_0)
     
     for step in range(NUM_STEPS):
-        if step !=0 and step % MEAS_EVERY_STEPS ==0:
+        if step !=0 and step % PLOT_EVERY_STEPS ==0:
             phi = simX[step,2]
             X = [simX[step,0], simX[step,1]]
             plotDrone(ax,X,phi)

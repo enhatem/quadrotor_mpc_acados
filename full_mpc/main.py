@@ -14,7 +14,7 @@ N = 50      # number of discretization steps
 Ts = Tf / N   # sampling time[s]
 
 T_hover = 2     # hovering time[s]
-T_traj = 10.00  # trajectory time[s]
+T_traj = 20.00  # trajectory time[s]
 
 T = T_hover + T_traj  # total simulation time
 
@@ -31,13 +31,13 @@ noisy_input = False
 # extended_kalman_filter = False
 
 # generate circulare trajectory with velocties
-traj_with_vel = False
+traj_with_vel = True
 
 # use a single reference point
 ref_point = False
 
 # import trajectory with positions and velocities and inputs
-import_trajectory = True
+import_trajectory = False
 
 # bool to save measurements and inputs as .csv files
 save_data = True
@@ -70,7 +70,7 @@ if ref_point == False and import_trajectory == False:
     # creating a reference trajectory
     show_ref_traj = False
     radius = 1  # m
-    freq = 14 * np.pi/10  # frequency
+    freq = 8 * np.pi/10  # frequency
 
     # without velocity
     if traj_with_vel == False:
@@ -241,6 +241,7 @@ for i in range(Nsim):
 # rmse_x, rmse_y, rmse_z = rmseX(simX, ref_traj)
 
 # print the computation times
+print("Total computation time: {}".format(tot_comp_sum))
 print("Average computation time: {}".format(tot_comp_sum / Nsim))
 print("Maximum computation time: {}".format(tcomp_max))
 

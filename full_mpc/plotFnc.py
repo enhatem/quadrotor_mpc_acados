@@ -493,7 +493,7 @@ def plotThrustInput_with_ref(t, simU, ref_U, Nsim, save=False):
     if save ==True:
         fig.savefig('figures/thrustInput.png', dpi=300)
 
-def plotAngularRatesInputs(t, simU, w_ref, Nsim, save=True):
+def plotAngularRatesInputs(t, simU, Nsim, save=True):
     plt.style.use('seaborn')
     fig, (ax1,ax2,ax3) = plt.subplots(nrows=3, ncols=1, sharex=True)
     

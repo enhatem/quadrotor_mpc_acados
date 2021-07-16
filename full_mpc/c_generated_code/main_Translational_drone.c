@@ -77,12 +77,12 @@ int main()
 
     double lbx0[10];
     double ubx0[10];
-    lbx0[0] = 0;
-    ubx0[0] = 0;
+    lbx0[0] = 1;
+    ubx0[0] = 1;
     lbx0[1] = 0;
     ubx0[1] = 0;
-    lbx0[2] = 1.595;
-    ubx0[2] = 1.595;
+    lbx0[2] = 1;
+    ubx0[2] = 1;
     lbx0[3] = 1;
     ubx0[3] = 1;
     lbx0[4] = 0;
