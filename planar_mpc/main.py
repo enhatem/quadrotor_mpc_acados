@@ -30,7 +30,7 @@ bound_on_phi = False
 # bounds on y and z
 bound_on_y_z = False
 
-# measurement noise bool
+# measurement noise bool (If True, make sure to set the extended_kalman_filter variable to True as well)
 noisy_measurement = False
 
 # input noise bool
@@ -40,13 +40,13 @@ noisy_input = False
 extended_kalman_filter = False
 
 # generate circulare trajectory with velocties
-traj_with_vel = True
+traj_with_vel = False
 
 # single reference point with phi = 2 * pi
 ref_point = False
 
 # import trajectory with positions and velocities and inputs
-import_trajectory = False
+import_trajectory = True
 
 # use acados integrator (if False, numerical integration is used instead):
 use_acados_integrator = True

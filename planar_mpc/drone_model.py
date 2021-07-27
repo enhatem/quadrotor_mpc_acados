@@ -77,8 +77,9 @@ def drone_model():
     model.phi_max =  80 * np.pi / 180
 
     # input bounds
-    model.thrust_min = 0
+    
     model.thrust_max = 0.9 * ((46e-3 * g) / 2) # 90 % of max_thrust (max_thrust = 57g)
+    model.thrust_min = 0.1 * model.thrust_max
 
     model.torque_max = 1 / 2 * model.thrust_max * length # divided by 2 since we only have 2 propellers in a planar quadrotor
     model.torque_max = 0.1 * model.torque_max # keeping 10% margin for steering torque. This is done because the torque_max 
@@ -87,7 +88,7 @@ def drone_model():
     model.torque_min = - model.torque_max
 
     # define initial condition
-    model.x0 = np.array([5, 5, 0, 0, 0, 0]) # hovering at y=5, z=5 
+    model.x0 = np.array([0, 0.81642, 0, 0, 0, 0]) # hovering at y=5, z=5 
 
     # define model struct
     params = types.SimpleNamespace()

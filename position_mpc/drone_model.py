@@ -59,9 +59,9 @@ def drone_model():
         vx,
         vy,
         vz,
-        2 * ( qw * qy + qx * qz ) * T,
-        2 * ( qy * qz - qw * qx ) * T,
-        ( 1 - 2 * qx * qx - 2 * qy * qy ) * T - g
+        2 * ( qw * qy + qx * qz ) * T/m,
+        2 * ( qy * qz - qw * qx ) * T/m,
+        ( 1 - 2 * qx * qx - 2 * qy * qy ) * T/m - g
     )
 
     # constraint on quaternion

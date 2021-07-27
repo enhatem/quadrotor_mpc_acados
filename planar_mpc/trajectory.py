@@ -146,8 +146,14 @@ def trajectory_generotaor2D_with_vel(   x0: np.array,   # initial potision of th
 def readTrajectory(T_hover, N):
         
     # import csv file of measX and simU (noisy measurement)
-    ref_traj = pd.read_csv('used_data/matlab/ga4/measX.csv')
-    ref_U = pd.read_csv('used_data/matlab/ga4/simU.csv')
+    # ref_traj = pd.read_csv('used_data/matlab/ga4/measX.csv')
+    # ref_U = pd.read_csv('used_data/matlab/ga4/simU.csv')
+
+    # ref_traj = pd.read_csv('used_data/matlab/fmincon/J=u1/measX.csv')
+    # ref_U = pd.read_csv('used_data/matlab/fmincon/J=u1/simU.csv')
+    
+    ref_traj = pd.read_csv('used_data/matlab/globalsearch_1/measX.csv')
+    ref_U = pd.read_csv('used_data/matlab/globalsearch_1/simU.csv')
     
     # create references to add for the hovering time
     ref_traj_x0 = ref_traj.iloc[[0]*N*T_hover]

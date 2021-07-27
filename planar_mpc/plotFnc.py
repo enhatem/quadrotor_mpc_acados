@@ -297,7 +297,7 @@ def plotSim(simX, ref_traj, Nsim, save=False):
     
 
     NUM_STEPS = simX.shape[0]
-    PLOT_EVERY_STEPS = 50
+    PLOT_EVERY_STEPS = 20
 
     X0 = [simX[0,0], simX[0,1]]
     phi_0 = simX[0,2]
@@ -619,21 +619,21 @@ def plotPos_kalman(t, simX, states, pred, covs, ref_traj, Nsim, save=False):
     ax1.plot(t, simX[1:,0], label='y_meas')
     ax1.plot(t, y_kalman, label='y_kalman')
     # ax1.plot(t, pred[:,0,0], label='y_pred')
-    ax1.plot(t, lower_conf_y, 'r--', label='lower_bound_y')
-    ax1.plot(t, upper_conf_y, 'r--', label='upper_bound_y')
+    # ax1.plot(t, lower_conf_y, 'r--', label='lower_bound_y')
+    # ax1.plot(t, upper_conf_y, 'r--', label='upper_bound_y')
     ax1.plot(t, ref_traj[0:Nsim,0], '--', label='y_ref')
 
     ax2.plot(t, simX[1:,1], label='z')
     ax2.plot(t, z_kalman, label='z_kalman')
     # ax2.plot(t, pred[:,1,0], label='z_pred')
-    ax2.plot(t, lower_conf_z, 'r--', label='lower_bound_z')
-    ax2.plot(t, upper_conf_z, 'r--', label='upper_bound_z')
+    # ax2.plot(t, lower_conf_z, 'r--', label='lower_bound_z')
+    # ax2.plot(t, upper_conf_z, 'r--', label='upper_bound_z')
     ax2.plot(t, ref_traj[0:Nsim,1], '--', label='z_ref')
 
     ax3.plot(t, R2D(phi_kalman), label='phi_kalman')
     # ax3.plot(t, R2D(pred[:,2,0]), label='phi_pred')
-    ax3.plot(t, R2D(lower_conf_phi), 'r--', label='lower_bound_phi')
-    ax3.plot(t, R2D(upper_conf_phi), 'r--', label='upper_bound_phi')
+    # ax3.plot(t, R2D(lower_conf_phi), 'r--', label='lower_bound_phi')
+    # ax3.plot(t, R2D(upper_conf_phi), 'r--', label='upper_bound_phi')
     ax3.plot(t, R2D(simX[1:,2]), label='phi')
     # ax3.plot(t, R2D(ref_traj[0:Nsim,2]), label='phi_ref')
     
@@ -928,23 +928,23 @@ def plotVel_with_vy_vz_references_kalman(t,simX, states, pred, covs, ref_traj, N
     ax1.plot(t, simX[1:,3], label='vy_meas')
     ax1.plot(t, vy_kalman, label='vy_kalman')
     # ax1.plot(t, pred[:,3,0], label='vy_pred')
-    ax1.plot(t, lower_conf_vy, 'r--', label='lower_bound_vy')
-    ax1.plot(t, upper_conf_vy, 'r--', label='upper_bound_vy')
+    # ax1.plot(t, lower_conf_vy, 'r--', label='lower_bound_vy')
+    # ax1.plot(t, upper_conf_vy, 'r--', label='upper_bound_vy')
     ax1.plot(t, ref_traj[0:Nsim,2], '--', label='vy_ref')
     
     ax2.plot(t, simX[1:,4], label='vz_meas')
     ax2.plot(t, vz_kalman, label='vz_kalman')
     # ax2.plot(t, pred[:,4,0], label='vz_pred')
-    ax2.plot(t, lower_conf_vz, 'r--', label='lower_bound_vz')
-    ax2.plot(t, upper_conf_vz, 'r--', label='upper_bound_vz')
+    # ax2.plot(t, lower_conf_vz, 'r--', label='lower_bound_vz')
+    # ax2.plot(t, upper_conf_vz, 'r--', label='upper_bound_vz')
     ax2.plot(t, ref_traj[0:Nsim,3], '--', label='ref_vz')
 
 
     ax3.plot(t, simX[1:,5], label='phi_dot_meas')
     ax3.plot(t, phi_dot_kalman, label='phi_dot_kalman')
     # ax3.plot(t, pred[:,5,0], label='phi_dot_pred')
-    ax3.plot(t, lower_conf_phi_dot, 'r--', label='lower_bound_phi_dot')
-    ax3.plot(t, upper_conf_phi_dot, 'r--', label='upper_bound_phi_dot')
+    # ax3.plot(t, lower_conf_phi_dot, 'r--', label='lower_bound_phi_dot')
+    # ax3.plot(t, upper_conf_phi_dot, 'r--', label='upper_bound_phi_dot')
 
     ax1.legend()
     ax1.set_title('States: Rates')

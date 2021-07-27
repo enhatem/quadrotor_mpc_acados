@@ -39,23 +39,23 @@ def acados_settings(Ts, Tf, N, bound_on_phi, bound_on_y_z):
 
     # set cost 
     Q = np.eye(nx)
-    Q[0][0] = 3e1   # weight of py
-    Q[1][1] = 3e1   # weight of pz
-    Q[2][2] = 0e0   # weight of phi
-    Q[3][3] = 5e0   # weight of vy
-    Q[4][4] = 5e0   # weight of vz
+    Q[0][0] = 5e1   # weight of py
+    Q[1][1] = 5e1   # weight of pz
+    Q[2][2] = 5e0   # weight of phi
+    Q[3][3] = 0e0   # weight of vy
+    Q[4][4] = 0e0   # weight of vz
     Q[5][5] = 0e0   # weight of phidot
 
     R = np.eye(nu)
     R[0][0] = 1e0  # weight of Thrust
-    R[1][1] = 1e0  # weight of Torque
+    R[1][1] = 0e0  # weight of Torque
 
     Qe = np.eye(nx)
-    Qe[0][0] = 3e1   # weight of py
-    Qe[1][1] = 3e1   # weight of pz
-    Qe[2][2] = 0e0   # weight of phi
-    Qe[3][3] = 5e0   # weight of vy
-    Qe[4][4] = 5e0   # weight of vz
+    Qe[0][0] = 5e1   # weight of py
+    Qe[1][1] = 5e1   # weight of pz
+    Qe[2][2] = 5e0   # weight of phi
+    Qe[3][3] = 0e0   # weight of vy
+    Qe[4][4] = 0e0   # weight of vz
     Qe[5][5] = 0e0   # weight of phidot
 
 

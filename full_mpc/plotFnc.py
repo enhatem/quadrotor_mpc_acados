@@ -273,7 +273,7 @@ def plotSim3D(simX, ref_traj, save=False):
 
 
     NUM_STEPS = simX.shape[0]
-    MEAS_EVERY_STEPS = 10
+    MEAS_EVERY_STEPS = 20
 
     X0 = [simX[0,0], simX[0,1], simX[0,2]]
     q0 = [simX[0,3], simX[0,4], simX[0,5], simX[0,6]]

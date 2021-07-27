@@ -77,12 +77,12 @@ int main()
 
     double lbx0[10];
     double ubx0[10];
-    lbx0[0] = 1;
-    ubx0[0] = 1;
+    lbx0[0] = 0;
+    ubx0[0] = 0;
     lbx0[1] = 0;
     ubx0[1] = 0;
-    lbx0[2] = 1;
-    ubx0[2] = 1;
+    lbx0[2] = 0.81642;
+    ubx0[2] = 0.81642;
     lbx0[3] = 1;
     ubx0[3] = 1;
     lbx0[4] = 0;
@@ -129,8 +129,8 @@ int main()
     double elapsed_time;
     int sqp_iter;
 
-    double xtraj[10 * (50+1)];
-    double utraj[4 * (50)];
+    double xtraj[10 * (100+1)];
+    double utraj[4 * (100)];
 
 
     // solve ocp in loop
@@ -157,9 +157,9 @@ int main()
         ocp_nlp_out_get(nlp_config, nlp_dims, nlp_out, ii, "u", &utraj[ii*4]);
 
     printf("\n--- xtraj ---\n");
-    d_print_exp_tran_mat( 10, 50+1, xtraj, 10 );
+    d_print_exp_tran_mat( 10, 100+1, xtraj, 10 );
     printf("\n--- utraj ---\n");
-    d_print_exp_tran_mat( 4, 50, utraj, 4 );
+    d_print_exp_tran_mat( 4, 100, utraj, 4 );
     // ocp_nlp_out_print(nlp_solver->dims, nlp_out);
 
     printf("\nsolved ocp %d times, solution printed above\n\n", NTIMINGS);

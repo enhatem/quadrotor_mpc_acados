@@ -10,7 +10,7 @@ from trajectory import *
 
 # mpc and simulation parameters
 Tf = 1        # prediction horizon
-N = 50      # number of discretization steps
+N = 100      # number of discretization steps
 Ts = Tf / N   # sampling time[s]
 
 T_hover = 2     # hovering time[s]
@@ -31,13 +31,13 @@ noisy_input = False
 # extended_kalman_filter = False
 
 # generate circulare trajectory with velocties
-traj_with_vel = True
+traj_with_vel = False
 
 # use a single reference point
 ref_point = False
 
 # import trajectory with positions and velocities and inputs
-import_trajectory = False
+import_trajectory = True
 
 # bool to save measurements and inputs as .csv files
 save_data = True
@@ -70,7 +70,7 @@ if ref_point == False and import_trajectory == False:
     # creating a reference trajectory
     show_ref_traj = False
     radius = 1  # m
-    freq = 8 * np.pi/10  # frequency
+    freq = 6 * np.pi/10  # frequency
 
     # without velocity
     if traj_with_vel == False:
@@ -293,6 +293,6 @@ elif ref_point == False and import_trajectory == True:
     plotSim_vel_with_ref_for_imported_trajectory(
         t, simX, ref_traj, Nsim, save=True)
     plotThrustInput_with_ref(t, simU, ref_U, Nsim, save=True)
-    plotAngularRatesInputs(t, simU, w_ref, Nsim, save=True)
+    plotAngularRatesInputs(t, simU,  Nsim, save=True)
     plotErrors_with_vel(t, simX, ref_traj, Nsim, save=True)
 plt.show()
