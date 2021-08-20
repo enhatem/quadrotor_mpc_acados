@@ -11,7 +11,7 @@ def drone_model():
     # Quadrotor intrinsic parameters
 
     # crazyflie 2.0 parameters
-    m = 0.027 / 2 # m=27g
+    m = 0.0295 / 2 # m=27g
     Ixx = 1.657171e-05
     Iyy = 1.657171e-05
     Izz = 2.9261652e-05

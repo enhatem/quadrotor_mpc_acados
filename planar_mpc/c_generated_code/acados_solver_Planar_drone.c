@@ -471,7 +471,7 @@ int Planar_drone_acados_create(nlp_solver_capsule * capsule)
     yref_0[3] = 0;
     yref_0[4] = 0;
     yref_0[5] = 0;
-    yref_0[6] = 0.132435;
+    yref_0[6] = 0.1446975;
     yref_0[7] = 0;
     ocp_nlp_cost_model_set(nlp_config, nlp_dims, nlp_in, 0, "yref", yref_0);
 
@@ -552,7 +552,7 @@ int Planar_drone_acados_create(nlp_solver_capsule * capsule)
     yref[3] = 0;
     yref[4] = 0;
     yref[5] = 0;
-    yref[6] = 0.132435;
+    yref[6] = 0.1446975;
     yref[7] = 0;
 
     for (int i = 1; i < N; i++)

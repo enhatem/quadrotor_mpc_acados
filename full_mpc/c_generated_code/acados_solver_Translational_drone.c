@@ -1565,7 +1565,7 @@ int Translational_drone_acados_create(nlp_solver_capsule * capsule)
     double lbu[NBU];
     double ubu[NBU];
     
-    lbu[0] = 0;
+    lbu[0] = 0.04087827000000001;
     ubu[0] = 0.40878270000000005;
     lbu[1] = -12.566370614359172;
     ubu[1] = 12.566370614359172;
