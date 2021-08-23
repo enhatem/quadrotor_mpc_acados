@@ -182,7 +182,7 @@ def plotSim_pos(t, simX, ref_traj, Nsim, save=False):
     ax2.set_ylabel('py[m]')
 
     ax3.legend()
-    ax3.set_xlabel('t[s]')
+    ax3.set_xlabel('Time [s]')
     ax3.set_ylabel('pz[m]')
     
     plt.tight_layout()
@@ -340,7 +340,7 @@ def plotSim_Angles(t, simX, simEuler, Nsim, save=True):
     ax1.legend()
 
     ax2.set_ylabel('Euler angles [deg]')
-    ax2.set_xlabel('t[s]')
+    ax2.set_xlabel('Time [s]')
     ax2.legend()
 
     if save ==True:
@@ -443,7 +443,7 @@ def plotSim_vel_with_ref_for_imported_trajectory(t, simX, ref_traj, Nsim, save=F
     ax2.set_ylabel('vy[m/s]')
 
     ax3.legend()
-    ax3.set_xlabel('t[s]')
+    ax3.set_xlabel('Time [s]')
     ax3.set_ylabel('vz[m/s]')
     
     plt.tight_layout()
@@ -485,13 +485,49 @@ def plotThrustInput_with_ref(t, simU, ref_U, Nsim, save=False):
     ax1.step(t,Thrust, label = 'Thrust_ref')
     ax1.legend()
     ax1.set_title('Control inputs: Thrust')
-    ax1.set_xlabel('t[s]')
+    ax1.set_xlabel('Time [s]')
     ax1.set_ylabel('T[N]')
 
     plt.tight_layout()
 
     if save ==True:
         fig.savefig('figures/thrustInput.png', dpi=300)
+
+def plotAngularRatesInputs_with_ref(t, simU,  Nsim, w_ref, save=True):
+    
+    
+    plt.style.use('seaborn')
+    fig, (ax1,ax2,ax3) = plt.subplots(nrows=3, ncols=1, sharex=True)
+    
+    t = t[0:Nsim]
+    w_ref = w_ref[0:Nsim]
+    wx_ref = w_ref[:,0]
+    wy_ref = w_ref[:,1]
+    wz_ref = w_ref[:,2]
+
+
+    ax1.step(t,simU[:,1], label='$\omega_x$')
+    ax1.step(t,wx_ref, label='$\omega_{x_{ref}}$')
+    ax2.step(t,simU[:,2], label='$\omega_y$')
+    ax2.step(t,wy_ref, label='$\omega_{y_{ref}}$')
+    ax3.step(t,simU[:,3], label='$\omega_z$')
+    ax3.step(t,wz_ref, label='$\omega_{z_{ref}}$')
+
+    ax1.legend()
+    ax1.set_title('Control inputs: Angular Rates')
+    ax1.set_ylabel('$\omega_x$[rad/s]')
+
+    ax2.legend()
+    ax2.set_ylabel('$\omega_y$[rad/s]')
+
+    ax3.legend()
+    ax3.set_xlabel('Time [s]')
+    ax3.set_ylabel('$\omega_z$[rad/s]')
+
+    plt.tight_layout()
+
+    if save ==True:
+        fig.savefig('figures/angulareRatesInputs.png', dpi=300)
 
 def plotAngularRatesInputs(t, simU, Nsim, save=True):
     plt.style.use('seaborn')
@@ -761,7 +797,7 @@ def plotErrors_with_vel(t, simX, ref_traj, Nsim, save=False):
     ax2.set_ylabel('y_error[m]')
 
     ax3.legend()
-    ax3.set_xlabel('t[s]')
+    ax3.set_xlabel('Time [s]')
     ax3.set_ylabel('z_error[m]')
 
     fig2, (ax4,ax5, ax6) = plt.subplots(nrows = 3, ncols = 1, sharex = True)
@@ -778,7 +814,7 @@ def plotErrors_with_vel(t, simX, ref_traj, Nsim, save=False):
     ax5.set_ylabel('vy_error[m/s]')
 
     ax6.legend()
-    ax6.set_xlabel('t[s]')
+    ax6.set_xlabel('Time [s]')
     ax6.set_ylabel('vz_error[m/s]')
 
     if save == True:

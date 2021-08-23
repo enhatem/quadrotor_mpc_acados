@@ -293,6 +293,6 @@ elif ref_point == False and import_trajectory == True:
     plotSim_vel_with_ref_for_imported_trajectory(
         t, simX, ref_traj, Nsim, save=True)
     plotThrustInput_with_ref(t, simU, ref_U, Nsim, save=True)
-    plotAngularRatesInputs(t, simU,  Nsim, save=True)
+    plotAngularRatesInputs_with_ref(t, simU,  Nsim, w_ref, save=True)
     plotErrors_with_vel(t, simX, ref_traj, Nsim, save=True)
 plt.show()

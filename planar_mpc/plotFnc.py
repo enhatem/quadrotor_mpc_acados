@@ -422,7 +422,7 @@ def plotPos_with_imported_traj_kalman(t,simX, states, covs, ref_traj, Nsim, save
     ax2.set_ylabel('z[m]')
 
     ax3.legend()
-    ax3.set_xlabel('t[s]')
+    ax3.set_xlabel('Time [s]')
     ax3.set_ylabel('phi[deg]')
 
     if save == True:
@@ -485,7 +485,7 @@ def plotVel_with_imported_traj_kalman(t,simX, states, covs, ref_traj, Nsim, save
     ax2.set_ylabel('vz[m/s]')
 
     ax3.legend()
-    ax3.set_xlabel('t[s]')
+    ax3.set_xlabel('Time [s]')
     ax3.set_ylabel('phi_dot[rad/s]')
 
     if save == True:
@@ -515,7 +515,7 @@ def plotVel_with_imported_traj(t,simX, ref_traj, Nsim, save=False):
     ax2.set_ylabel('vz[m]')
 
     ax3.legend()
-    ax3.set_xlabel('t[s]')
+    ax3.set_xlabel('Time [s]')
     ax3.set_ylabel('phi_dot[rad/s]')
 
     if save == True:
@@ -549,7 +549,7 @@ def plotPos_with_imported_traj(t,simX, ref_traj, Nsim, save=False):
     ax2.set_ylabel('z[m]')
 
     ax3.legend()
-    ax3.set_xlabel('t[s]')
+    ax3.set_xlabel('Time [s]')
     ax3.set_ylabel('phi[deg]')
 
     if save == True:
@@ -1012,7 +1012,7 @@ def plotSimU_with_ref(t,simU,ref_U, Nsim, save=False):
     ax1.set_ylabel('T[N]')
 
     ax2.legend()
-    ax2.set_xlabel('t[s]')
+    ax2.set_xlabel('Time [s]')
     ax2.set_ylabel('Tau[N.m]')
 
     if save == True:
@@ -1184,7 +1184,7 @@ def plotErrors_with_ref_kalman(t, simX, states, ref_traj, Nsim, save=False):
     ax2.set_ylabel('z_error[m]')
 
     ax3.legend()
-    ax3.set_xlabel('t[s]')
+    ax3.set_xlabel('Time [s]')
     ax3.set_ylabel('phi_error[deg]')
 
     fig2, (ax4,ax5,ax6) = plt.subplots(nrows = 3, ncols = 1, sharex = True)
@@ -1206,7 +1206,7 @@ def plotErrors_with_ref_kalman(t, simX, states, ref_traj, Nsim, save=False):
     ax5.set_ylabel('vz_error[m/s]')
 
     ax6.legend()
-    ax6.set_xlabel('t[s]')
+    ax6.set_xlabel('Time [s]')
     ax6.set_ylabel('phi_dot_error[rad/s]')
 
     if save == True:
@@ -1245,7 +1245,7 @@ def plotErrors_with_ref(t, simX, ref_traj, Nsim, save=False):
     ax2.set_ylabel('z_error[m]')
 
     ax3.legend()
-    ax3.set_xlabel('t[s]')
+    ax3.set_xlabel('Time [s]')
     ax3.set_ylabel('phi_error[deg]')
 
     fig2, (ax4,ax5,ax6) = plt.subplots(nrows = 3, ncols = 1, sharex = True)
@@ -1262,7 +1262,7 @@ def plotErrors_with_ref(t, simX, ref_traj, Nsim, save=False):
     ax5.set_ylabel('vz_error[m/s]')
 
     ax6.legend()
-    ax6.set_xlabel('t[s]')
+    ax6.set_xlabel('Time [s]')
     ax6.set_ylabel('phi_dot_error[rad/s]')
 
     if save == True:

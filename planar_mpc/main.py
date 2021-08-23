@@ -31,13 +31,13 @@ bound_on_phi = False
 bound_on_y_z = False
 
 # measurement noise bool (If True, make sure to set the extended_kalman_filter variable to True as well)
-noisy_measurement = True
+noisy_measurement = False
 
 # input noise bool
-noisy_input = True
+noisy_input = False
 
 # extended kalman filter bool
-extended_kalman_filter = True
+extended_kalman_filter = False
 
 # generate circulare trajectory with velocties
 traj_with_vel = False
