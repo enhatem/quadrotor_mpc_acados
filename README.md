@@ -45,4 +45,4 @@ export ACADOS_SOURCE_DIR="<acados_root>"
 7. In order to be able to successfully render C code templates, you need to download the t_renderer binaries for your platform from
    https://github.com/acados/tera_renderer/releases/ and place them in <acados_root_folder>/bin (please strip the version and platform from the binaries (e.g. ```t_renderer-v0.0.34 -> t_renderer```). Notice that you might need to make ```t_renderer``` executable. Run ```export ACADOS_SOURCE_DIR=<acados_root_folder>``` such that the location of acados will be known to the Python package at run time.
 
-8. Change the path to arcados installation folder in each files in the models folder.
+8. Change the path to acados installation folder in each files in the models folder.
